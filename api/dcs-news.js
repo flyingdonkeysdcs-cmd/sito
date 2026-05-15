@@ -55,9 +55,20 @@ ${text}
 
         const aiData = await aiResponse.json();
 
-        const summary =
-          aiData.output_text ||
-          'Riassunto non disponibile al momento.';
+if (!aiResponse.ok) {
+  console.error('Errore OpenAI:', aiData);
+
+  return {
+    title,
+    url,
+    summary: `Errore OpenAI: ${aiData.error?.message || 'errore sconosciuto'}`
+  };
+}
+
+const summary =
+  aiData.output_text ||
+  aiData.output?.[0]?.content?.[0]?.text ||
+  'Riassunto non disponibile al momento.';
 
         return {
           title,
