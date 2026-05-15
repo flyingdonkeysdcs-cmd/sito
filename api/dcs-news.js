@@ -1,4 +1,5 @@
 export default async function handler(req, res) {
+	console.log('KEY EXISTS:', !!process.env.OPENAI_API_KEY);	
   try {
     const response = await fetch(
       'https://www.digitalcombatsimulator.com/en/news/newsletters/'
