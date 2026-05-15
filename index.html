@@ -2,6 +2,7 @@
 <html lang="it">
 
 <head>
+	<meta name="theme-color" content="#00d9ff">
 	<meta property="og:site_name" content="Flying Donkeys Virtual Squadron">
     <meta property="og:title" content="Flying Donkeys Virtual Squadron">
 	<meta property="og:url" content="https://www.flyingdonkeysvirtualsquadron.it/">
@@ -11,17 +12,18 @@
 	<meta name="twitter:title" content="Flying Donkeys Virtual Squadron">
 	<meta name="twitter:image" content="https://www.flyingdonkeysvirtualsquadron.it/images/F_18_CLOSE.png">
 	<meta charset="utf-8" />
+	<meta name="google-site-verification" content="6iuxDUeprOygzYNrL2xNzTFZd0tk-nwhThAtH2n2gYM" />
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
 	<meta name="description" content="Squadriglia virtuale italiana dedicata a DCS World, operazioni mil-sim cooperative, addestramento strutturato e teamwork tattico.">
 	<meta property="og:description" content="Squadriglia virtuale italiana dedicata a DCS World, operazioni mil-sim cooperative, addestramento strutturato e teamwork tattico.">
 	<meta name="twitter:description" content="Squadriglia virtuale italiana dedicata a DCS World, operazioni mil-sim cooperative, addestramento strutturato e teamwork tattico.">
-  <title>Flying Donkeys Virtual Squadron</title>
+  <title>Squadriglia Virtuale Italiana DCS World | Flying Donkeys Virtual Squadron</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- CSS -->
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="style.css?v=16">
   <link rel="canonical" href="https://www.flyingdonkeysvirtualsquadron.it/">
   <script type="application/ld+json">
 {
@@ -53,6 +55,12 @@
         <span class="brand-text">Flying Donkeys</span>
       </a>
 
+       <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Apri menu" aria-expanded="false">
+		<span></span>
+		<span></span>
+		<span></span>
+		</button>
+	<div class="mobile-menu" id="mobileMenu">	
       <div class="header-actions" aria-label="Azioni principali">
 
         <button class="btn btn-ghost" id="openContact">
@@ -97,8 +105,9 @@
         <a href="#join">Unisciti</a>
         <a href="#operations">Operazioni</a>
         <a href="#gallery">Media</a>
+		<a href="#dcs-news">News DCS</a>
       </nav>
-
+        </div>
     </div>
 
   </header>
@@ -120,10 +129,7 @@
           </div>
 
           <h1 class="hero-title">
-            Flying Donkeys
-          </h1>
-		  <h1 class="hero-title">
-            Virtual Squadron
+            Flying Donkeys Virtual Squadron
           </h1>
 			<h2 class="hero-tagline">
 				Modern NATO-Style Air Operations
@@ -721,43 +727,101 @@
 
 </section>
 
+<hr class="section-divider">
+
+<section class="section container" id="dcs-news">
+  <h2 class="section-title">Ultime News DCS</h2>
+  <p class="muted">
+    Newsletter Eagle Dynamics riassunte in italiano.
+  </p>
+
+  <div class="dcs-news-grid" id="dcsNewsList">
+    <p class="muted">Caricamento newsletter...</p>
+  </div>
+</section>
+
 <footer class="site-footer">
 
-  <div class="container footer-inner footer-grid">
+  <div class="container footer-grid footer-modern">
 
-    <div class="footer-brand">
+    <div class="footer-card footer-brand-card unified-card">
 
-      <img src="images/logo.png" alt="Flying Donkeys Logo" class="footer-logo">
+      <div class="footer-brand">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="footer-logo">
 
-      <div>
-        <h3>Flying Donkeys</h3>
-        <p class="muted small">
-          Stubborn as a mule - loyal as a Donkey
-        </p>
+        <div>
+          <h3>Flying Donkeys</h3>
+          <p class="muted small">
+            Stubborn as a mule - loyal as a Donkey
+          </p>
+        </div>
+      </div>
+
+      <p class="footer-description">
+        Squadriglia virtuale italiana dedicata a DCS World, operazioni NATO-style,
+        addestramento cooperativo e teamwork tattico.
+      </p>
+
+      <div class="footer-cta">
+        <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">
+          Unisciti su Discord
+        </a>
       </div>
 
     </div>
 
-    <div class="footer-links">
-      <a href="#about">Chi siamo</a>
-      <a href="#why-join">Perché unirti</a>
-      <a href="#join">Come entrare</a>
-      <a href="#aircraft">Aircraft</a>
-      <a href="#operations">Operazioni</a>
-    </div>
+    <nav class="footer-card footer-links-card unified-card" aria-label="Navigazione footer">
 
-    <div class="footer-social">
-      <a href="https://discord.gg/ZSgUBNUhgP" target="_blank">Discord</a>
-      <a href="https://www.facebook.com/flyingdonkeysDCS" target="_blank">Facebook</a>
-      <a href="https://instagram.com/flyingdonkeysdcs" target="_blank">Instagram</a>
-      <a href="https://www.tiktok.com/@flyingdonkeysdcs" target="_blank">TikTok</a>
-      <a href="https://youtube.com/@flyingdonkeysdcs443" target="_blank">YouTube</a>
-    </div>
+      <span class="card-kicker">Sito</span>
+
+      <div class="footer-links">
+        <a href="#about">Chi siamo</a>
+        <a href="#how-we-operate">Il nostro approccio</a>
+        <a href="#join">Come entrare</a>
+        <a href="#operations">Operazioni</a>
+        <a href="#gallery">Media</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Pagine utili">
+
+      <span class="card-kicker">Pagine utili</span>
+
+      <div class="footer-links">
+        <a href="raduni.html">Raduni</a>
+        <a href="dove-siamo.html">Mappa</a>
+        <a href="guida-srs.html">Guida SRS</a>
+        <a href="guida-ovgme.html">Guida Open Mod Manager</a>
+        <a href="guida-dtc.html">Guida DTC</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-social-card unified-card" aria-label="Social Flying Donkeys">
+
+      <span class="card-kicker">Social</span>
+
+      <div class="footer-social">
+        <a href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Discord</a>
+        <a href="https://www.facebook.com/flyingdonkeysDCS" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="https://instagram.com/flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.tiktok.com/@flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">TikTok</a>
+        <a href="https://youtube.com/@flyingdonkeysdcs443" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </div>
+
+    </nav>
 
   </div>
 
-  <div class="container footer-bottom">
+  <div class="container footer-bottom footer-bottom-modern">
+
     <span class="copyright small muted" id="copyright"></span>
+
+    <span class="small muted">
+      Flying Donkeys Virtual Squadron • DCS World Community
+    </span>
+
   </div>
 
 </footer>

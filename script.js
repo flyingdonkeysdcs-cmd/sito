@@ -16,25 +16,108 @@ const calendars = [
     server: 'Server JATF'
   }
 ];
-const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-const mobileMenu = document.getElementById('mobileMenu');
+// ==========================================================
+// MOBILE HAMBURGER MENU
+// ==========================================================
+
+const mobileMenuToggle =
+  document.getElementById('mobileMenuToggle');
+
+const mobileMenu =
+  document.getElementById('mobileMenu');
+
+const siteHeader =
+  document.querySelector('.site-header');
 
 if (mobileMenuToggle && mobileMenu) {
-  mobileMenuToggle.addEventListener('click', () => {
-    const isOpen = mobileMenu.classList.toggle('is-open');
 
-    mobileMenuToggle.classList.toggle('is-open', isOpen);
-    mobileMenuToggle.setAttribute('aria-expanded', String(isOpen));
-  });
+  function closeMobileMenu() {
 
-  mobileMenu.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileMenu.classList.remove('is-open');
-      mobileMenuToggle.classList.remove('is-open');
-      mobileMenuToggle.setAttribute('aria-expanded', 'false');
+    mobileMenu.classList.remove('is-open');
+
+    mobileMenuToggle.classList.remove('is-open');
+
+    mobileMenuToggle.setAttribute(
+      'aria-expanded',
+      'false'
+    );
+
+  }
+
+  mobileMenuToggle.addEventListener(
+    'click',
+    function(event){
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      const isOpen =
+        mobileMenu.classList.toggle('is-open');
+
+      mobileMenuToggle.classList.toggle(
+        'is-open',
+        isOpen
+      );
+
+      mobileMenuToggle.setAttribute(
+        'aria-expanded',
+        String(isOpen)
+      );
+
+    }
+  );
+
+  // chiude menu cliccando i link nav
+
+  mobileMenu
+    .querySelectorAll('.header-nav a')
+    .forEach(function(link){
+
+      link.addEventListener(
+        'click',
+        closeMobileMenu
+      );
+
     });
-  });
+
+  // chiude cliccando fuori
+
+  document.addEventListener(
+    'click',
+    function(event){
+
+      if (
+        !mobileMenu.classList.contains('is-open')
+      ) return;
+
+      if (
+        siteHeader &&
+        siteHeader.contains(event.target)
+      ) return;
+
+      closeMobileMenu();
+
+    }
+  );
+
+  // ESC chiude menu
+
+  document.addEventListener(
+    'keydown',
+    function(event){
+
+      if (event.key === 'Escape') {
+
+        closeMobileMenu();
+
+      }
+
+    }
+  );
+
 }
+
 function formatEventDate(dateValue) {
 
   const date = new Date(dateValue);
@@ -1190,4 +1273,31 @@ async function initPilotMapFromSheet() {
 
 initPilotMapFromSheet();
 
+
+async function loadDcsNews() {
+  const listEl = document.getElementById('dcsNewsList');
+  if (!listEl) return;
+
+  const news = [
+    {
+      title: 'DCS Newsletter',
+      date: 'Test locale',
+      url: 'https://www.digitalcombatsimulator.com/en/news/newsletters/',
+      summary: 'Questa è una card di prova. Qui comparirà il riassunto automatico in italiano della newsletter Eagle Dynamics.'
+    }
+  ];
+
+  listEl.innerHTML = news.map(item => `
+    <article class="dcs-news-card unified-card">
+      <span class="news-date">${item.date}</span>
+      <h3>${item.title}</h3>
+      <p>${item.summary}</p>
+      <a class="btn btn-ghost" href="${item.url}" target="_blank" rel="noopener noreferrer">
+        Leggi newsletter
+      </a>
+    </article>
+  `).join('');
+}
+
+loadDcsNews();
 });
