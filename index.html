@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+	<meta property="og:site_name" content="Flying Donkeys Virtual Squadron">
+    <meta property="og:title" content="Flying Donkeys Virtual Squadron">
+	<meta property="og:url" content="https://www.flyingdonkeysvirtualsquadron.it/">
+	<meta property="og:type" content="website">	
+	<meta property="og:image" content="https://www.flyingdonkeysvirtualsquadron.it/images/F_18_CLOSE.png">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="Flying Donkeys Virtual Squadron">
+	<meta name="twitter:image" content="https://www.flyingdonkeysvirtualsquadron.it/images/F_18_CLOSE.png">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<meta name="description" content="Squadriglia virtuale italiana dedicata a DCS World, operazioni mil-sim cooperative, addestramento strutturato e teamwork tattico.">
+	<meta property="og:description" content="Squadriglia virtuale italiana dedicata a DCS World, operazioni mil-sim cooperative, addestramento strutturato e teamwork tattico.">
+	<meta name="twitter:description" content="Squadriglia virtuale italiana dedicata a DCS World, operazioni mil-sim cooperative, addestramento strutturato e teamwork tattico.">
+  <title>Flying Donkeys Virtual Squadron</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="canonical" href="https://www.flyingdonkeysvirtualsquadron.it/">
+  <script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Organization",
+  "name":"Flying Donkeys Virtual Squadron",
+  "url":"https://www.flyingdonkeysvirtualsquadron.it/",
+  "logo":"https://www.flyingdonkeysvirtualsquadron.it/images/logo.png",
+  "sameAs":[
+    "https://www.facebook.com/flyingdonkeysDCS",
+    "https://instagram.com/flyingdonkeysdcs",
+    "https://youtube.com/@flyingdonkeysdcs443"
+  ]
+}
+</script>
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+<link rel="apple-touch-icon" href="/images/favicon.png">
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+
+    <div class="header-inner container">
+
+      <a class="brand" href="#hero" aria-label="Flying Donkeys Home">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="logo">
+        <span class="brand-text">Flying Donkeys</span>
+      </a>
+
+      <div class="header-actions" aria-label="Azioni principali">
+
+        <button class="btn btn-ghost" id="openContact">
+          Contatti
+        </button>
+
+        <a class="btn btn-ghost" href="raduni.html">
+          Raduni
+        </a>
+
+        <div class="roster-dropdown">
+
+          <button class="btn btn-ghost" id="openRoster">
+            Roster
+          </button>
+
+          <div class="roster-menu" id="rosterMenu" hidden>
+
+            <div class="roster-title">
+              Piloti Attivi
+            </div>
+
+            <div id="pilotList" class="pilot-list"></div>
+
+          </div>
+
+        </div>
+
+        <a class="btn btn-ghost" href="dove-siamo.html">
+          Mappa
+        </a>
+
+        <a class="btn btn-ghost" href="guide.html">
+          Guide
+        </a>
+
+      </div>
+
+      <nav class="header-nav" aria-label="Navigazione principale">
+        <a href="#about">Chi siamo</a>
+        <a href="#how-we-operate">Il Nostro Approccio</a>
+        <a href="#join">Unisciti</a>
+        <a href="#operations">Operazioni</a>
+        <a href="#gallery">Media</a>
+      </nav>
+
+    </div>
+
+  </header>
+
+  <main>
+
+    <!-- Hero -->
+   <section class="hero" id="hero">
+
+  <video class="hero-bg-video" autoplay muted loop playsinline>
+    <source src="videos/hero.mp4" type="video/mp4">
+  </video>
+      <div class="hero-inner">
+
+        <div class="hero-left">
+
+          <div class="hero-logo">
+            <img src="images/logo.png" alt="Logo Squadron" class="hero-main-logo">
+          </div>
+
+          <h1 class="hero-title">
+            Flying Donkeys
+          </h1>
+		  <h1 class="hero-title">
+            Virtual Squadron
+          </h1>
+			<h2 class="hero-tagline">
+				Modern NATO-Style Air Operations
+			</h2>
+          <p class="hero-sub">
+            Squadriglia virtuale italiana specializzata in operazioni aeree NATO-style su larga scala in <a href="https://www.digitalcombatsimulator.com/it/" class="hero-link">
+			<strong>Digital Combat Simulator (DCS)</strong></a>. Missioni coordinate, SEAD, STRIKE, CAP e attività multiplayer integrate in un ambiente collaborativo, maturo, privo di tossicità e non gerarchico.
+          </p>
+
+          <div class="hero-ctas">
+
+            <a class="btn btn-primary large"
+               href="https://discord.gg/ZSgUBNUhgP"
+               target="_blank">
+
+              Unisciti Alla Squadriglia!
+
+            </a>
+
+          </div>
+
+        </div>
+
+<div class="hero-card unified-card">
+
+  <h3 class="card-title">
+    Prossimo Evento in Programma
+  </h3>
+
+  <p class="card-meta" id="nextEventTitle">
+    Caricamento evento...
+  </p>
+
+  <p class="card-description" id="nextEventDescription"></p>
+
+  <ul class="card-list">
+
+    <li>
+      <strong>Quando:</strong>
+      <span id="nextEventDate">Caricamento...</span>
+    </li>
+
+    <li>
+      <strong>Dove:</strong>
+      <span id="nextEventLocation">Server Flying Donkeys</span>
+    </li>
+
+  </ul>
+
+  <div class="card-actions">
+
+    <a class="btn btn-ghost" href="#programma-completo">
+		Programma Completo
+	</a>
+
+  </div>
+
+  <!-- QUI -->
+  <div class="next-events-mini" id="nextEventsMini"></div>
+
+</div>
+        
+      </div>
+
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- About -->
+    <section class="section container" id="about">
+
+      <h2 class="section-title">
+        Chi Siamo
+      </h2>
+
+      <p class="lead">
+        Il Flying Donkeys Virtual Squadron è un gruppo di volo virtuale italiano fondato nel Marzo del 2020 da appassionati di volo reale e simulato.
+		Specializzata in operazioni aeree multiplayer coordinate in DCS World, la squadriglia conduce missioni NATO-style integrate con package strike, SEAD, CAP con particolare attenzione alle attività cooperative multi-gruppo come il Joint Air Task Force.
+		Composta da "ragazzi" sugli 'enta e 'anta, adotta da sempre una filosofia mil-sim con debriefing e coordinamento tattico, mantenendo però un ambiente collaborativo, informale e amichevole.
+      </p>
+
+    </section>
+
+    <hr class="section-divider">
+
+<!-- Why Join -->
+<section class="section container" id="why-join">
+
+  <h2 class="section-title">
+    Perché Unirti ai Flying Donkeys
+  </h2>
+
+  <p class="muted">
+    Un ambiente mil-sim serio, collaborativo e costruito per crescere insieme.
+  </p>
+
+  <div class="why-grid">
+
+    <article class="why-card unified-card">
+
+      <span class="card-kicker">Percorso</span>
+
+      <h3>Debrief e Crescita</h3>
+
+      <p>
+        Analisi missioni, mentoring e crescita continua attraverso attività operative e confronto condiviso.
+      </p>
+
+    </article>
+
+    <article class="why-card unified-card">
+
+      <span class="card-kicker">Squadra</span>
+
+      <h3>Ambiente Collaborativo</h3>
+
+      <p>
+        Nessun clima tossico o competitivo:
+        il lavoro di squadra viene prima dell’ego individuale.
+      </p>
+
+    </article>
+
+    <article class="why-card unified-card">
+
+      <span class="card-kicker">Operazioni</span>
+
+      <h3>Operazioni Realistiche</h3>
+
+      <p>
+        Missioni coordinate, briefing, tattiche e procedure
+        ispirate al mondo operativo reale.
+      </p>
+
+    </article>
+
+    <article class="why-card unified-card">
+
+      <span class="card-kicker">Identità</span>
+
+      <h3>Crescita e Progressione</h3>
+
+      <p>
+        Qualifiche, medaglie, riconoscimenti e progressione continua
+        all’interno della squadriglia.
+      </p>
+
+    </article>
+
+  </div>
+
+</section>
+<hr class="section-divider">
+
+<!-- How We Operate -->
+<section class="section container" id="how-we-operate">
+
+  <h2 class="section-title">
+    Il Nostro Approccio
+  </h2>
+
+  <p class="muted">
+    Operazioni serie, persone sane: il nostro modo di volare unisce coordinazione tattica,
+    addestramento progressivo e valori umani.
+  </p>
+
+  <div class="operate-grid">
+
+    <article class="operate-card unified-card">
+      <span class="card-kicker">Coordinamento</span>
+      <h3>Operazioni Coordinate</h3>
+      <p>
+        Missioni multi-flight con ruoli coordinati, briefing chiari e obiettivi condivisi.
+      </p>
+    </article>
+
+    <article class="operate-card unified-card">
+      <span class="card-kicker">Integrazione</span>
+      <h3>Integrazione Tattica</h3>
+      <p>
+        SEAD, STRIKE, CAP ed Escort integrati in scenari cooperativi moderni.
+      </p>
+    </article>
+
+    <article class="operate-card unified-card">
+		<span class="card-kicker">CRESCITA</span>
+		<h3>Analisi e Miglioramento</h3>
+		<p>
+			Analizziamo missioni, errori e decisioni tattiche per crescere come gruppo, e migliorare come singolo.
+	</p>
+	</article>
+
+    <article class="operate-card human-card unified-card">
+      <span class="card-kicker">Persone</span>
+      <h3>Prima le Persone</h3>
+      <p>
+        Professionalità senza tossicità: collaborazione, rispetto delle persone e della vita privata di ognuno. Amicizia prima dell’ego.
+      </p>
+    </article>
+
+  </div>
+
+</section>
+<hr class="section-divider">
+
+<!-- Join -->
+<section class="section container" id="join">
+
+  <h2 class="section-title">
+    Come Entrare
+  </h2>
+
+  <p class="muted">
+    Entrare nei Flying Donkeys è semplice. Non serve essere esperti:
+    ciò che conta davvero è la voglia di imparare e volare in squadra.
+  </p>
+
+  <div class="join-grid">
+
+    <div class="join-step unified-card">
+      <span class="card-kicker">Ingresso</span>
+
+      <h3>Entra Nel Discord</h3>
+
+      <p>
+        Unisciti al nostro server Discord e presentati alla squadriglia.
+      </p>
+    </div>
+
+    <div class="join-step unified-card">
+      <span class="card-kicker">Setup</span>
+
+      <h3>Configura Gli Strumenti</h3>
+
+      <p>
+        Ti aiuteremo a configurare SRS, DTC e gli strumenti necessari.
+      </p>
+    </div>
+
+    <div class="join-step unified-card">
+      <span class="card-kicker">Addestramento</span>
+
+      <h3>Inizia L’Addestramento</h3>
+
+      <p>
+        Verrai seguito durante il percorso iniziale con briefing e voli dedicati.
+      </p>
+    </div>
+
+    <div class="join-step unified-card">
+      <span class="card-kicker">Missioni</span>
+
+      <h3>Vola Con La Squadriglia</h3>
+
+      <p>
+        Partecipa alle missioni operative e cresci insieme al gruppo.
+      </p>
+    </div>
+
+  </div>
+
+  <div class="join-features">
+
+    <div class="join-feature">✔ Sistema HOTAS</div>
+
+    <div class="join-feature">✔ TrackIR o Equivalente</div>
+
+    <div class="join-feature">✔ Minimo 21 anni</div>
+	
+	<div class="join-feature">✔ Conoscenza base dell'inglese</div>
+  </div>
+
+  <div class="join-cta">
+
+    <a class="btn btn-primary large"
+       href="https://discord.gg/ZSgUBNUhgP"
+       target="_blank">
+
+      Cosa aspetti? Unisciti Ora!
+
+    </a>
+
+  </div>
+
+</section>
+
+<hr class="section-divider">
+
+<!-- Aircraft -->
+<section class="section container" id="aircraft">
+
+  <h2 class="section-title">
+    Unità operative
+  </h2>
+
+  <p class="muted">
+    Moduli e piattaforme operative utilizzate dalla squadriglia.
+  </p>
+
+<div class="aircraft-grid">
+
+  <a class="aircraft-card unified-card"
+     href="https://www.digitalcombatsimulator.com/en/products/planes/viper/"
+     target="_blank">
+
+    <img src="images/f16.png" alt="F-16C">
+
+    <h3>F-16C Viper</h3>
+
+    <p>
+      Strike, interdizione e superiorità aerea multiruolo.
+    </p>
+
+  </a>
+
+  <a class="aircraft-card unified-card"
+     href="https://www.digitalcombatsimulator.com/en/products/planes/hornet/"
+     target="_blank">
+
+    <img src="images/fa18.png" alt="F/A-18C">
+
+    <h3>F/A-18C Hornet</h3>
+
+    <p>
+      Operazioni carrier-based e missioni multiruolo.
+    </p>
+
+  </a>
+
+</div>
+
+</section>
+
+	<hr class="section-divider">
+ <!-- Operations -->
+<section class="section container" id="operations">
+
+  <h2 class="section-title">
+    Operazioni
+  </h2>
+
+  <p class="muted">
+    Operazioni aeree multiplayer coordinate, training continuativo e missioni integrate NATO-style.
+  </p>
+
+  <div class="ops-grid">
+
+    <article class="ops-card unified-card">
+      <span class="card-kicker">Addestramento</span>
+
+      <h3>Addestramenti Settimanali</h3>
+
+      <p>
+        Dedichiamo due serate a settimana agli addestramenti interni:
+        il martedì e il giovedì. Un percorso costante per migliorare
+        tecnica, coordinamento e procedure.
+      </p>
+    </article>
+
+    <article class="ops-card unified-card">
+      <span class="card-kicker">Cooperazione</span>
+
+      <h3>Missioni Interne ed Esterne</h3>
+
+      <p>
+        Organizziamo missioni interne di squadriglia e attività esterne
+        con i gruppi con cui collaboriamo, inclusi addestramenti congiunti
+        e scenari cooperativi.
+      </p>
+    </article>
+
+    <article class="ops-card unified-card">
+      <span class="card-kicker">JATF</span>
+
+      <h3>JATF e Campagne</h3>
+
+      <p>
+        Partecipiamo attivamente alle missioni e alle campagne svolte
+        nel Joint Air Task Force, integrandoci con altri gruppi in contesti
+        operativi strutturati.
+      </p>
+    </article>
+
+    <article class="ops-card unified-card">
+      <span class="card-kicker">Task</span>
+
+      <h3>Task Operativi</h3>
+
+      <p>
+        SEAD, CAP e STRIKE sono il nostro pane quotidiano. Utilizziamo
+        comunicazioni in inglese, procedure operative standard JATF
+        e supporto GCI/AWACS umano nelle attività interne.
+      </p>
+    </article>
+
+  </div>
+
+</section>
+    <hr class="section-divider">
+
+    <!-- Gallery -->
+    <section class="section container" id="gallery">
+
+      <h2 class="section-title">
+        Galleria
+      </h2>
+
+      <p class="muted">
+        Immagini delle operazioni recenti
+      </p>
+
+      <div class="slideshow-container">
+
+        <img src="images/2.png" class="slide active-slide" alt="Screenshot Squadron">
+
+        <img src="images/3.png" class="slide" alt="Screenshot Squadron">
+
+        <img src="images/4.png" class="slide" alt="Screenshot Squadron">
+
+        <img src="images/5.png" class="slide" alt="Screenshot Squadron">
+		
+		<img src="images/6.jpg" class="slide" alt="Screenshot Squadron">
+
+      </div>
+
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Video -->
+    <section class="section container" id="video">
+
+      <h2 class="section-title">
+        Video
+      </h2>
+
+      <p class="muted">
+        Highlights e operazioni della squadriglia
+      </p>
+
+      <div class="video-section">
+
+        <div class="video-wrap">
+<-youtube VIDEO LINK BELOW->
+         <iframe
+		width="100%"
+		height="500"
+		src="https://www.youtube.com/embed/lLrXvh9GeR0"
+		title="Flying Donkeys Video"
+		frameborder="0"
+		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+		allowfullscreen>
+	</iframe>
+
+        </div>
+
+      </div>
+
+    </section>
+<hr class="section-divider">
+
+<!-- Social -->
+<section class="section container" id="socials">
+
+  <h2 class="section-title">
+    Seguici sui Social
+  </h2>
+
+  <p class="muted">
+    Rimani aggiornato sulle operazioni e sui contenuti della squadriglia
+  </p>
+
+  <div class="socials-grid">
+
+    <a class="social-card unified-card"
+       href="https://www.facebook.com/flyingdonkeysDCS"
+       target="_blank">
+
+      <img src="images/facebook.png" alt="Facebook">
+      <span>Facebook</span>
+
+    </a>
+
+    <a class="social-card unified-card"
+       href="https://instagram.com/flyingdonkeysdcs"
+       target="_blank">
+
+      <img src="images/instagram.png" alt="Instagram">
+      <span>Instagram</span>
+
+    </a>
+
+    <a class="social-card unified-card"
+       href="https://www.tiktok.com/@flyingdonkeysdcs"
+       target="_blank">
+
+      <img src="images/tiktok.png" alt="TikTok">
+      <span>TikTok</span>
+
+    </a>
+
+    <a class="social-card unified-card"
+       href="https://youtube.com/@flyingdonkeysdcs443"
+       target="_blank">
+
+      <img src="images/youtube.png" alt="YouTube">
+      <span>YouTube</span>
+
+    </a>
+
+  </div>
+
+</section>
+    <hr class="section-divider">
+
+<!-- Organization -->
+<section class="section container" id="structure">
+
+  <h2 class="section-title">
+    Organizzazione Operativa
+  </h2>
+
+  <p class="muted">
+    Una struttura leggera, pensata per coordinare le attività operative senza creare gerarchie inutili.
+  </p>
+
+  <div class="structure-grid">
+
+    <div class="structure-card unified-card">
+      <span class="card-kicker">Coordinamento</span>
+
+      <h4>Coordinamento Operativo</h4>
+
+		<p>
+			Il “Donkey Air Command” è il gruppo di membri che supporta le attività operative,
+			organizzative e formative della squadriglia.
+		</p>
+    </div>
+
+    <div class="structure-card unified-card">
+      <span class="card-kicker">Readiness</span>
+
+      <h4>Readiness Operativa</h4>
+
+      <p>
+        Il percorso di crescita prevede livelli progressivi di preparazione:
+        BCR, LCR e FCR, pensati per accompagnare ogni pilota verso missioni
+        sempre più complesse.
+      </p>
+    </div>
+
+    <div class="structure-card unified-card">
+      <span class="card-kicker">Ruoli</span>
+
+      <h4>Ruoli Operativi</h4>
+
+      <p>
+        Piloti, istruttori e specialisti collaborano nelle attività di training,
+        pianificazione e missione, valorizzando competenze diverse senza
+        formalismi inutili.
+      </p>
+    </div>
+
+    <div class="structure-card unified-card">
+      <span class="card-kicker">Strumenti</span>
+
+      <h4>Strumenti Operativi</h4>
+
+      <p>
+        Utilizziamo SRS, DTC, CombatFlite e procedure condivise per migliorare
+        comunicazione, pianificazione e coordinamento durante le operazioni.
+      </p>
+    </div>
+
+  </div>
+
+</section>	
+	
+
+<hr class="section-divider">
+
+<section class="section container" id="programma-completo">
+
+  <h2 class="section-title">
+    Programma Completo
+  </h2>
+
+  <p class="muted">
+    I prossimi eventi programmati della squadriglia.
+  </p>
+
+  <div class="program-events-list" id="programEventsList">
+    <p class="muted">Caricamento eventi...</p>
+  </div>
+
+</section>
+
+<footer class="site-footer">
+
+  <div class="container footer-inner footer-grid">
+
+    <div class="footer-brand">
+
+      <img src="images/logo.png" alt="Flying Donkeys Logo" class="footer-logo">
+
+      <div>
+        <h3>Flying Donkeys</h3>
+        <p class="muted small">
+          Stubborn as a mule - loyal as a Donkey
+        </p>
+      </div>
+
+    </div>
+
+    <div class="footer-links">
+      <a href="#about">Chi siamo</a>
+      <a href="#why-join">Perché unirti</a>
+      <a href="#join">Come entrare</a>
+      <a href="#aircraft">Aircraft</a>
+      <a href="#operations">Operazioni</a>
+    </div>
+
+    <div class="footer-social">
+      <a href="https://discord.gg/ZSgUBNUhgP" target="_blank">Discord</a>
+      <a href="https://www.facebook.com/flyingdonkeysDCS" target="_blank">Facebook</a>
+      <a href="https://instagram.com/flyingdonkeysdcs" target="_blank">Instagram</a>
+      <a href="https://www.tiktok.com/@flyingdonkeysdcs" target="_blank">TikTok</a>
+      <a href="https://youtube.com/@flyingdonkeysdcs443" target="_blank">YouTube</a>
+    </div>
+
+  </div>
+
+  <div class="container footer-bottom">
+    <span class="copyright small muted" id="copyright"></span>
+  </div>
+
+</footer>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+
+    <div class="modal">
+
+      <button class="modal-close" id="closeModal">
+        &times;
+      </button>
+
+      <h3>
+        Contatta Flying Donkeys
+      </h3>
+
+      <form id="contactForm">
+
+        <label for="name">Nome</label>
+        <input type="text" id="name" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+
+        <label for="message">Messaggio</label>
+        <textarea id="message" rows="5" required></textarea>
+
+        <div class="form-actions">
+
+          <button type="submit" class="btn btn-primary">
+            Invia
+          </button>
+
+          <button type="button" class="btn btn-ghost" id="cancelModal">
+            Annulla
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- JS -->
+  <!--script src="script.js"></script-->
+  <script src="script.js?v=4"></script>
+
+</body>
+</html>
