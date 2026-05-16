@@ -1,6 +1,5 @@
 export default async function handler(req, res) {
   try {
-
     const response = await fetch(
       'https://www.digitalcombatsimulator.com/en/news/newsletters/'
     );
@@ -8,33 +7,24 @@ export default async function handler(req, res) {
     const html = await response.text();
 
     const matches = [
-      ...html.matchAll(
-        /href="(\/en\/news\/newsletters\/[^"]+)"/g
-      )
+      ...html.matchAll(/href="(\/en\/news\/newsletters\/[^"]+)"/g)
     ];
 
-    const uniqueLinks = [...new Set(
-      matches.map(m => m[1])
-    )].slice(0, 3);
+    const uniqueLinks = [...new Set(matches.map(m => m[1]))].slice(0, 3);
 
     const news = await Promise.all(
       uniqueLinks.map(async (path) => {
-
-        const url =
-          `https://www.digitalcombatsimulator.com${path}`;
+        const url = `https://www.digitalcombatsimulator.com${path}`;
 
         const pageResponse = await fetch(url);
-
         const pageHtml = await pageResponse.text();
 
-        const titleMatch =
-          pageHtml.match(/<title>(.*?)<\/title>/i);
+        const titleMatch = pageHtml.match(/<title>(.*?)<\/title>/i);
 
         const title =
           titleMatch?.[1]
             ?.replace('Digital Combat Simulator |', '')
-            ?.trim()
-          || 'DCS Newsletter';
+            ?.trim() || 'DCS Newsletter';
 
         const cleanText = pageHtml
           .replace(/<script[\s\S]*?<\/script>/gi, '')
@@ -48,7 +38,6 @@ export default async function handler(req, res) {
           .replace(/\s+/g, ' ')
           .trim();
 
-        // prende introduzione newsletter
         const introMatch = cleanText.match(
           /Dear Fighter Pilots, Partners and Friends,(.*?)(Thank you for your passion and support\.|Yours sincerely,)/i
         );
@@ -57,33 +46,30 @@ export default async function handler(req, res) {
           ? introMatch[1].trim()
           : cleanText.slice(0, 1200);
 
-        // prende prime 3 frasi
-        const shortEnglish = introText
-          .split(/(?<=[.!?])\s+/)
-          .filter(Boolean)
-          .slice(0, 3)
-          .join(' ');
+        let shortEnglish = introText
+			.split(/(?<=[.!?])\s+/)
+			.filter(Boolean)
+			.slice(0, 3)
+			.join(' ');
 
-        // traduzione gratuita
+			if (shortEnglish.length > 480) {
+				shortEnglish = shortEnglish.slice(0, 477).trim() + '...';
+		}
+
         const translateUrl =
           `https://api.mymemory.translated.net/get?q=${encodeURIComponent(shortEnglish)}&langpair=en|it`;
 
-        const translateResponse =
-          await fetch(translateUrl);
-
-        const translateData =
-          await translateResponse.json();
+        const translateResponse = await fetch(translateUrl);
+        const translateData = await translateResponse.json();
 
         const translatedText =
-          translateData.responseData?.translatedText
-          || shortEnglish;
+          translateData.responseData?.translatedText || shortEnglish;
 
         return {
           title,
           url,
           summary: translatedText
         };
-
       })
     );
 
@@ -95,12 +81,10 @@ export default async function handler(req, res) {
     res.status(200).json(news);
 
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
       error: 'Errore caricamento newsletter'
     });
-
   }
 }
