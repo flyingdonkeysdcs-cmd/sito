@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Guida SRS in italiano per Flying Donkeys Virtual Squadron: download, installazione, configurazione audio, HOTAS, PTT e test finale.">
+  <title>Come installare SRS su DCS World – Guida italiana | Flying Donkeys</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="apple-touch-icon" href="/images/favicon.png">
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="brand" href="index.html" aria-label="Flying Donkeys Home">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="logo">
+        <span class="brand-text">Flying Donkeys</span>
+      </a>
+
+      <div class="header-actions">
+        <a class="btn btn-ghost" href="index.html">← Torna alla Home</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section container guides-hero">
+      <div class="guides-hero-card">
+        <img src="images/logo.png" alt="Flying Donkeys" class="page-hero-logo">
+        <div>
+          <p class="muted">Guida italiana completa per Simple Radio Standalone</p>
+          <h1 class="hero-title">Come installare SRS su DCS World</h1>
+          <p class="hero-sub">
+            Guida in italiano per installare, configurare e testare DCS SimpleRadio Standalone prima delle missioni Flying Donkeys.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="section container">
+      <div class="guide-content-grid">
+        <div>
+          <h2 class="section-title">Prima di iniziare</h2>
+          <p class="muted">
+            SRS è il client radio usato in DCS per comunicazioni realistiche: il programma si integra con il cockpit, le frequenze e i canali radio del modulo in uso.
+            Questa pagina è una versione italiana adattata per la squadriglia, con riferimenti alla guida ufficiale e alla documentazione del progetto.
+          </p>
+
+          <div class="guide-source-card unified-card">
+            <span class="card-kicker">Link rapidi</span>
+            <h3>Fonti ufficiali</h3>
+            <div class="guide-actions guide-actions-row">
+              <a class="btn btn-primary" href="https://github.com/ciribob/DCS-SimpleRadioStandalone/releases/latest" target="_blank" rel="noopener noreferrer">Download SRS</a>
+              <a class="btn btn-ghost" href="https://dcssimpleradio.com/gettingstarted/" target="_blank" rel="noopener noreferrer">Guida ufficiale</a>
+              <a class="btn btn-ghost" href="https://github.com/ciribob/DCS-SimpleRadioStandalone/wiki" target="_blank" rel="noopener noreferrer">Wiki GitHub</a>
+            </div>
+          </div>
+
+          <h2 class="section-title guide-section-title">Procedura</h2>
+          <p class="muted">
+            Segui gli step nell’ordine. Prima di una missione controlla sempre microfono, cuffie, PTT e connessione al server SRS indicato nel briefing.
+          </p>
+
+          <div class="guide-steps guide-steps-numbered">
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">1</span>
+              <div class="guide-step-body">
+                <h3>Scarica SRS</h3>
+                <p>
+                  Apri la pagina ufficiale delle release e scarica l’ultima versione disponibile. Il metodo più comodo è usare <strong>SRS-AutoUpdater.exe</strong>, così potrai installare e aggiornare SRS in modo rapido.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-srs/01-download.webp" alt="Schema download SRS da GitHub Releases" loading="lazy" decoding="async">
+                  <figcaption>Download dalla pagina release ufficiale del progetto.</figcaption>
+                </figure>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">2</span>
+              <div class="guide-step-body">
+                <h3>Installa o aggiorna DCS-SRS</h3>
+                <p>
+                  Esegui l’installer. Controlla che la cartella di installazione e la cartella <strong>Saved Games / Partite Salvate</strong> siano corrette, poi premi <strong>Install / Update DCS-SRS</strong>. Se Windows mostra un avviso SmartScreen, verifica il file e procedi solo se proviene dal link ufficiale.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-srs/02-installer.webp" alt="Schema installer SRS con install location e saved games" loading="lazy" decoding="async">
+                  <figcaption>L’installer prepara i file necessari per collegare SRS a DCS.</figcaption>
+                </figure>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">3</span>
+              <div class="guide-step-body">
+                <h3>Avvia il client</h3>
+                <p>
+                  Apri <strong>SR-ClientRadio.exe</strong> dalla cartella di installazione. Puoi creare un collegamento sul desktop per averlo sempre pronto prima del volo.
+                </p>
+                <p>
+                  SRS può essere avviato prima o dopo DCS, ma per abitudine è consigliato aprirlo prima di entrare nel server di missione.
+                </p>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">4</span>
+              <div class="guide-step-body">
+                <h3>Configura audio e connessione</h3>
+                <p>
+                  Nella scheda <strong>General</strong> seleziona il tuo microfono in <strong>Microphone</strong> e le cuffie in <strong>Speakers & Optional Mic Output</strong>. Usa <strong>audio preview</strong> per verificare che il microfono entri correttamente.
+                </p>
+                <p>
+                  Nel campo <strong>Server</strong> inserisci l’indirizzo indicato nel briefing, oppure lascia che l’auto-connect del server DCS ti colleghi automaticamente quando disponibile.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-srs/03-general.webp" alt="Schema scheda General SRS con microfono, cuffie e server" loading="lazy" decoding="async">
+                  <figcaption>General: microfono, output audio, server e overlay.</figcaption>
+                </figure>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">5</span>
+              <div class="guide-step-body">
+                <h3>Assegna HOTAS e PTT</h3>
+                <p>
+                  Nella scheda <strong>Controls</strong> assegna i tasti per <strong>Radio 1</strong>, <strong>Radio 2</strong> e, se necessario, <strong>Radio 3</strong>. Per F/A-18C e F-16C di solito bastano le radio principali, ma fai sempre riferimento al modulo e al briefing.
+                </p>
+                <p>
+                  Puoi usare un <strong>Common PTT</strong> separato oppure far funzionare il tasto radio direttamente come PTT tramite l’opzione nello step successivo.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-srs/04-controls.webp" alt="Schema scheda Controls SRS per radio e PTT" loading="lazy" decoding="async">
+                  <figcaption>Controls: mappa radio, PTT e overlay sul tuo HOTAS.</figcaption>
+                </figure>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">6</span>
+              <div class="guide-step-body">
+                <h3>Impostazioni consigliate</h3>
+                <p>
+                  Nella scheda <strong>Settings</strong> abilita <strong>Radio Switch works as Push To Talk (PTT)</strong> se vuoi che il tasto usato per selezionare la radio trasmetta anche su quella radio mentre lo tieni premuto.
+                </p>
+                <p>
+                  Lascia attivi gli effetti radio se vuoi una resa più realistica. Per l’audio delle radio puoi scegliere <strong>Both</strong>, <strong>Left</strong> o <strong>Right</strong> in base alle tue preferenze e al setup cuffie.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-srs/05-1-settings.webp" alt="Schema impostazioni Push to Tall" loading="lazy" decoding="async">
+				   <figcaption>Settings: PTT, effetti radio e canali audio.</figcaption>
+				  <img src="images/guide-srs/05-2-settings.webp" alt="Schema impostazioni consigliate SRS TX RX" loading="lazy" decoding="async">
+				   <figcaption>Effetti radio e canali audio realistici senza eccessivi disturbi.</figcaption>
+				  <img src="images/guide-srs/05-3-settings.webp" alt="Schema impostazioni consigliate SRS TX RX" loading="lazy" decoding="async">
+                  <figcaption>Effetti radio e volumi adatti.</figcaption>
+                </figure>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">7</span>
+              <div class="guide-step-body">
+                <h3>Controlla l’overlay</h3>
+                <p>
+                  L’overlay mostra radio attiva, frequenze e stato di trasmissione/ricezione. Puoi aprirlo dal pulsante <strong>toggle radio overlay</strong> o dal tasto che hai assegnato nella scheda Controls.
+                </p>
+                <p>
+                  In alcuni moduli full fidelity la gestione reale passa dal cockpit; in altri casi potresti dover usare i tasti assegnati in SRS. Per capire il comportamento del modulo, usa il pulsante <strong>?</strong> nell’overlay quando sei nell’aereo.
+                </p>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">8</span>
+              <div class="guide-step-body">
+                <h3>Test finale prima del volo</h3>
+                <p>
+                  Entra nel server, verifica che le icone di connessione siano verdi e fai un <strong>radio check</strong> con un altro pilota. Controlla che la frequenza sia quella del briefing e che Discord non stia trasmettendo in parallelo con lo stesso microfono.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-srs/06-connected.webp" alt="Schema test finale SRS connesso" loading="lazy" decoding="async">
+                  <figcaption>Test finale: connessione, frequenza, trasmissione e ricezione.</figcaption>
+                </figure>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <aside class="guide-side-card unified-card">
+          <span class="card-kicker">Checklist FD</span>
+          <h3>Prima della missione</h3>
+          <ul>
+            <li>SRS aggiornato</li>
+            <li>Microfono corretto</li>
+            <li>Cuffie corrette</li>
+            <li>PTT testato</li>
+            <li>Overlay visibile o tasto overlay assegnato</li>
+            <li>Frequenze lette dal briefing</li>
+            <li>Discord non in doppia trasmissione</li>
+          </ul>
+
+          <div class="guide-note">
+            <strong>Problemi comuni</strong>
+            <p>Se non senti nessuno, controlla prima output audio, server, frequenza, volume radio in cockpit e icone VOIP/Game.</p>
+          </div>
+
+          <div class="guide-actions">
+            <a class="btn btn-primary" href="guide.html">Tutte le guide</a>
+            <a class="btn btn-ghost" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Supporto Discord</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+<footer class="site-footer">
+
+  <div class="container footer-grid footer-modern">
+
+    <div class="footer-card footer-brand-card unified-card">
+
+      <div class="footer-brand">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="footer-logo">
+
+        <div>
+          <h3>Flying Donkeys</h3>
+          <p class="muted small">
+            Stubborn as a mule - loyal as a Donkey
+          </p>
+        </div>
+      </div>
+
+      <p class="footer-description">
+        Squadriglia virtuale italiana dedicata a DCS World, operazioni NATO-style,
+        addestramento cooperativo e teamwork tattico.
+      </p>
+
+      <div class="footer-cta">
+        <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">
+          Unisciti su Discord
+        </a>
+      </div>
+
+    </div>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Navigazione footer">
+
+      <span class="card-kicker">Sito</span>
+
+      <div class="footer-links">
+        <a href="index.html#about">Chi siamo</a>
+        <a href="index.html#how-we-operate">Il nostro approccio</a>
+        <a href="index.html#join">Come entrare</a>
+        <a href="index.html#operations">Operazioni</a>
+        <a href="index.html#gallery">Media</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Pagine utili">
+
+      <span class="card-kicker">Pagine utili</span>
+
+      <div class="footer-links">
+        <a href="raduni.html">Raduni</a>
+        <a href="dove-siamo.html">Mappa</a>
+        <a href="guida-srs.html">Guida SRS</a>
+        <a href="guida-ovgme.html">Guida Open Mod Manager</a>
+        <a href="guida-dtc.html">Guida DTC</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-social-card unified-card" aria-label="Social Flying Donkeys">
+
+      <span class="card-kicker">Social</span>
+
+      <div class="footer-social">
+        <a href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Discord</a>
+        <a href="https://www.facebook.com/flyingdonkeysDCS" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="https://instagram.com/flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.tiktok.com/@flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">TikTok</a>
+        <a href="https://youtube.com/@flyingdonkeysdcs443" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </div>
+
+    </nav>
+
+  </div>
+
+  <div class="container footer-bottom footer-bottom-modern">
+
+    <span class="copyright small muted" id="copyright"></span>
+
+    <span class="small muted">
+      Flying Donkeys Virtual Squadron • DCS World Community
+    </span>
+
+  </div>
+
+</footer>
+
+
+
+  <script src="script.js?v=13"></script>
+</body>
+</html>

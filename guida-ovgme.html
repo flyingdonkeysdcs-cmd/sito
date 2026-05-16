@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Guida Open Mod Manager in italiano per Flying Donkeys Virtual Squadron: installazione, HUB, canali, repository, installazione mod e gestione mod manuali.">
+  <title>Come installare Open Mod Manager per DCS – Guida italiana | Flying Donkeys</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="apple-touch-icon" href="/images/favicon.png">
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="brand" href="index.html" aria-label="Flying Donkeys Home">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="logo">
+        <span class="brand-text">Flying Donkeys</span>
+      </a>
+
+      <div class="header-actions">
+        <a class="btn btn-ghost" href="index.html">← Torna alla Home</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section container guides-hero">
+      <div class="guides-hero-card">
+        <img src="images/logo.png" alt="Flying Donkeys" class="page-hero-logo">
+        <div>
+          <p class="muted">Guida OMM italiana</p>
+          <h1 class="hero-title">Come installare Open Mod Manager per DCS</h1>
+          <p class="hero-sub">
+            Guida in italiano per installare Open Mod Manager, configurare i canali DCS, aggiungere repository e gestire mod scaricate online o manualmente.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="section container">
+      <div class="guide-content-grid">
+        <div>
+          <h2 class="section-title">Prima di iniziare</h2>
+          <p class="muted">
+            Open Mod Manager, abbreviato OMM, permette di installare e rimuovere mod senza copiare file a mano dentro DCS.
+            Per una gestione ordinata è consigliato creare prima una cartella chiamata <strong>DCS Mods</strong>, anche su un disco esterno, dove conservare mod, liveries e pacchetti della squadriglia.
+          </p>
+          <p class="muted">
+            Questa pagina traduce e adatta la procedura operativa fornita, senza mantenere la numerazione originale del documento sorgente.
+          </p>
+
+          <div class="guide-source-card unified-card">
+            <span class="card-kicker">Link rapidi</span>
+            <h3>Fonti e riferimenti</h3>
+            <div class="guide-actions guide-actions-row">
+              <a class="btn btn-primary" href="https://github.com/iquercorb/OpenModMan/releases" target="_blank" rel="noopener noreferrer">Download OMM</a>
+              <a class="btn btn-ghost" href="https://github-wiki-see.page/m/iquercorb/OpenModMan/wiki" target="_blank" rel="noopener noreferrer">Wiki OMM</a>
+              <a class="btn btn-ghost" href="https://forum.dcs.world/topic/240333-open-mod-manager/" target="_blank" rel="noopener noreferrer">Forum DCS</a>
+              <a class="btn btn-ghost" href="https://www.youtube.com/watch?v=YxUOH7LhZbk" target="_blank" rel="noopener noreferrer">Video tutorial</a>
+            </div>
+          </div>
+
+          <h2 class="section-title guide-section-title">Procedura</h2>
+          <p class="muted">
+            Segui gli step nell’ordine. L’idea di base è creare un HUB, configurare due canali principali — OpenBeta e Saved Games — e poi usare repository o libreria locale per installare le mod.
+          </p>
+
+          <div class="guide-steps guide-steps-numbered">
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">1</span>
+              <div class="guide-step-body">
+                <h3>Scarica e installa Open Mod Manager</h3>
+                <p>
+                  Apri la pagina di download di Open Mod Manager e scarica l’ultima versione in formato eseguibile, scegliendo <strong>x64</strong> o <strong>x86</strong> in base al tuo sistema operativo.
+                  Avvia il file scaricato e completa il wizard di installazione.
+                </p>
+                <p>
+                  Per evitare problemi di permessi, è consigliato avviare OMM come amministratore, specialmente quando deve scrivere nella cartella principale di DCS.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-omm/01-download.webp" alt="Schema download Open Mod Manager">
+                  <figcaption>Scarica la versione corretta e completa l’installazione guidata.</figcaption>
+                </figure>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">2</span>
+              <div class="guide-step-body">
+                <h3>Crea il Mod HUB</h3>
+                <p>
+                  Al primo avvio vai su <strong>FILE &gt; NEW &gt; MOD HUB...</strong>. Nel campo <strong>HUB NAME</strong> inserisci un nome chiaro, ad esempio <strong>DCS Mods Hub</strong>, così sarà facile distinguerlo da eventuali altri hub.
+                </p>
+                <p>
+                  Seleziona una cartella dove OMM creerà e salverà i file necessari. Puoi crearla vicino alla cartella <strong>DCS Mods</strong> preparata in precedenza.
+                  Quando compare il popup <strong>Adding Channel</strong>, seleziona <strong>YES</strong>.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-omm/02-hub.webp" alt="Schema creazione Mod HUB in Open Mod Manager">
+                  <figcaption>Il Mod HUB è l’ambiente di lavoro OMM dedicato a DCS.</figcaption>
+                </figure>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">3</span>
+              <div class="guide-step-body">
+                <h3>Configura il canale Main OpenBeta</h3>
+                <p>
+                  Nel wizard del nuovo canale inserisci come <strong>Channel title</strong> il nome <strong>DCS Open Beta</strong>.
+                  Nel campo successivo indica il percorso della cartella principale di DCS, di solito:
+                </p>
+                <p>
+                  <strong>C:\Users\TUO_UTENTE\Saved Games\DCS.openbeta</strong>
+                </p>
+                <p>
+                  Nella sezione seguente puoi abilitare <strong>Use custom directory for Mods Library</strong> per indicare una cartella diversa di salvataggio delle mods da OMM come <strong>DCS Mods</strong>,
+                  altrimenti crea una cartella Library dentro la cartella DCS_Open_Beta sul DCS Mods Hub.
+				 </p> 
+				 <p>  
+				  La parte backup può essere saltata se non richiesta dalla squadriglia. Premi <strong>Finish</strong>.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-omm/03-channels.webp" alt="Schema canali OpenBeta e Saved Games in OMM" loading="lazy" decoding="async">
+                  <figcaption>DCS Open Beta installa mod nella cartella saved games di DCS.</figcaption>
+                </figure>
+              </div>
+            </article>
+
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">4</span>
+              <div class="guide-step-body">
+                <h3>Aggiungi una repository</h3>
+                <p>
+                  Le repository sono archivi online da cui OMM può leggere, scaricare e aggiornare pacchetti mod senza dover copiare manualmente i file.
+                </p>
+                <p>
+                  Per aggiungerne una vai su <strong>CHANNEL &gt; ADD REPOSITORY...</strong>, oppure apri la scheda <strong>Network Library</strong> e premi il pulsante <strong>+</strong> verde accanto alla lista repository.
+                  Fai attenzione a non premere il <strong>+</strong> della lista canali.
+                </p>
+                <p>
+                  Inserisci <strong>URL</strong> e <strong>nome</strong> della repository. Se i dati sono corretti, OMM mostrerà il messaggio <strong>Repository appear valid</strong>. Premi <strong>Finish</strong>.
+				</p>  
+				<p>  
+				  <strong>NOTA:</strong> I nomi corretti e i link delle repository saranno disponibili negli appositi canali Discord una volta effettuata l’iscrizione alla squadriglia.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-omm/04-repository.webp" alt="Schema aggiunta repository in Open Mod Manager" loading="lazy" decoding="async">
+                  <figcaption>Una repository valida comparirà nella lista della Network Library.</figcaption>
+                </figure>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">5</span>
+              <div class="guide-step-body">
+                <h3>Scarica e installa un pacchetto dalla repository</h3>
+                <p>
+                  Nella schermata repository fai doppio click sulla repository da interrogare, oppure selezionala e usa la freccia blu laterale.
+                  Comparirà la lista dei pacchetti scaricabili. Se interroghi più repository, OMM può mostrare i pacchetti disponibili in un’unica lista.
+                </p>
+                <p>
+                  Seleziona il pacchetto desiderato e premi <strong>Download</strong> in basso a sinistra. Segui l’avanzamento dalla barra di completamento.
+                  Una volta terminato, torna alla scheda <strong>Local Library</strong>. Se il pacchetto non compare subito, riavvia OMM per aggiornare la lista.
+                </p>
+                <p>
+                  Con il pacchetto selezionato premi <strong>Install</strong>. Per rimuoverlo, premi <strong>Uninstall</strong>.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-omm/05-download-install.webp" alt="Schema download installazione e rimozione pacchetti OMM" loading="lazy" decoding="async">
+                  <figcaption>OMM copia i file nella destinazione corretta e li ripristina alla rimozione.</figcaption>
+                </figure>
+              </div>
+            </article>
+
+            <article class="guide-step-card unified-card">
+              <span class="guide-step-number">6</span>
+              <div class="guide-step-body">
+                <h3>Aggiungi una mod scaricata manualmente</h3>
+                <p>
+                  Se scarichi una mod fuori da una repository, salvala nella cartella <strong>Library</strong> usata come libreria locale.
+                  OMM legge automaticamente cartelle, archivi <strong>.zip</strong> e pacchetti <strong>.ozp</strong>, purché siano strutturati correttamente.
+                </p>
+                <p>
+                 Altrimenti seleziona l'icona a destra a forma di pacco con un piccolo + bianco dentro un quadrato verde, seleziona il pacchetto .zip desiderato e premi apri.
+                  Seleziona il pacchetto, scegli il canale corretto e premi <strong>Install</strong>.
+                </p>
+                <p>
+                  Quando vuoi rimuoverla, seleziona la stessa mod e premi <strong>Uninstall</strong>. OMM eliminerà i file installati e ripristinerà la configurazione precedente, se il pacchetto è stato creato correttamente.
+                </p>
+                <figure class="guide-figure">
+                  <img src="images/guide-omm/06-manual-mod.webp" alt="Schema aggiunta mod manuale alla Local Library OMM" loading="lazy" decoding="async">
+                  <figcaption>Le mod manuali devono essere conservate nella libreria locale configurata.</figcaption>
+                </figure>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <aside class="guide-side-card unified-card">
+          <span class="card-kicker">Checklist FD</span>
+          <h3>Prima della missione</h3>
+          <ul>
+            <li>OMM avviato come amministratore</li>
+            <li>Cartella DCS Mods creata</li>
+            <li>Canale Main OpenBeta configurato</li>
+            <li>Canale Saved Games configurato</li>
+            <li>Repository corrette aggiunte</li>
+            <li>Mod installate nel canale giusto</li>
+            <li>Mod non richieste disattivate</li>
+          </ul>
+
+          <div class="guide-note">
+            <strong>Regola pratica</strong>
+            <p>Se non sei sicuro del canale, chiedi prima sul Discord FD: installare una mod nella cartella sbagliata può impedire l’ingresso al server o creare conflitti.</p>
+          </div>
+
+          <div class="guide-actions">
+            <a class="btn btn-primary" href="guide.html">Tutte le guide</a>
+            <a class="btn btn-ghost" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Supporto Discord</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+<footer class="site-footer">
+
+  <div class="container footer-grid footer-modern">
+
+    <div class="footer-card footer-brand-card unified-card">
+
+      <div class="footer-brand">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="footer-logo">
+
+        <div>
+          <h3>Flying Donkeys</h3>
+          <p class="muted small">
+            Stubborn as a mule - loyal as a Donkey
+          </p>
+        </div>
+      </div>
+
+      <p class="footer-description">
+        Squadriglia virtuale italiana dedicata a DCS World, operazioni NATO-style,
+        addestramento cooperativo e teamwork tattico.
+      </p>
+
+      <div class="footer-cta">
+        <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">
+          Unisciti su Discord
+        </a>
+      </div>
+
+    </div>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Navigazione footer">
+
+      <span class="card-kicker">Sito</span>
+
+      <div class="footer-links">
+        <a href="index.html#about">Chi siamo</a>
+        <a href="index.html#how-we-operate">Il nostro approccio</a>
+        <a href="index.html#join">Come entrare</a>
+        <a href="index.html#operations">Operazioni</a>
+        <a href="index.html#gallery">Media</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Pagine utili">
+
+      <span class="card-kicker">Pagine utili</span>
+
+      <div class="footer-links">
+        <a href="raduni.html">Raduni</a>
+        <a href="dove-siamo.html">Mappa</a>
+        <a href="guida-srs.html">Guida SRS</a>
+        <a href="guida-ovgme.html">Guida Open Mod Manager</a>
+        <a href="guida-dtc.html">Guida DTC</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-social-card unified-card" aria-label="Social Flying Donkeys">
+
+      <span class="card-kicker">Social</span>
+
+      <div class="footer-social">
+        <a href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Discord</a>
+        <a href="https://www.facebook.com/flyingdonkeysDCS" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="https://instagram.com/flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.tiktok.com/@flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">TikTok</a>
+        <a href="https://youtube.com/@flyingdonkeysdcs443" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </div>
+
+    </nav>
+
+  </div>
+
+  <div class="container footer-bottom footer-bottom-modern">
+
+    <span class="copyright small muted" id="copyright"></span>
+
+    <span class="small muted">
+      Flying Donkeys Virtual Squadron • DCS World Community
+    </span>
+
+  </div>
+
+</footer>
+
+
+  <script src="script.js?v=13"></script>
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Guida italiana DTC per DCS World: installazione, setup waypoint, radio preset, countermeasures e caricamento dati missione nei moduli compatibili.">
+  <title>Come installare DTC per DCS World – Guida italiana | Flying Donkeys</title>
+  <link rel="canonical" href="https://www.flyingdonkeysvirtualsquadron.it/guida-dtc.html">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=13">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="apple-touch-icon" href="/images/favicon.png">
+</head>
+
+<body>
+
+  <header class="site-header">
+
+    <div class="header-inner container">
+
+      <a class="brand" href="index.html" aria-label="Flying Donkeys Home">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="logo">
+        <span class="brand-text">Flying Donkeys</span>
+      </a>
+
+      <div class="header-actions">
+        <a class="btn btn-ghost" href="index.html">
+          ← Torna alla Home
+        </a>
+      </div>
+
+    </div>
+
+  </header>
+
+  <main>
+
+    <section class="section container guides-hero">
+
+      <div class="guides-hero-card">
+
+        <img src="images/logo.png" alt="Flying Donkeys" class="page-hero-logo">
+
+        <div>
+
+          <p class="muted">
+            Guida italiana completa per DCS-DTC
+          </p>
+
+          <h1 class="hero-title">
+            Come installare DTC per DCS World
+          </h1>
+
+          <p class="hero-sub">
+            Guida in italiano per installare, configurare e utilizzare DCS-DTC
+            per waypoint, radio preset, CMS e dati missione nei moduli compatibili.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="section container">
+
+      <div class="guide-content-grid">
+
+        <div>
+
+          <h2 class="section-title">Prima di iniziare</h2>
+
+          <p class="muted">
+            DCS-DTC è uno strumento che permette di preparare e caricare
+            dati missione direttamente nei moduli compatibili di DCS World.
+            Il programma consente di gestire waypoint, steerpoint,
+            radio preset, countermeasures e altre configurazioni operative
+            prima dell’ingresso in cockpit.
+          </p>
+
+          <p class="muted">
+            La guida seguente è una versione italiana adattata per
+            Flying Donkeys Virtual Squadron, basata sulla documentazione
+            ufficiale del progetto e sulle procedure operative della squadriglia.
+          </p>
+
+          <p class="muted">
+            DTC è particolarmente utile nei moduli moderni come
+            <strong>F-16C Viper</strong>,
+            <strong>F/A-18C Hornet</strong>,
+            <strong>AH-64D Apache</strong>
+            e altri velivoli compatibili con caricamento dati missione.
+          </p>
+
+          <div class="guide-source-card unified-card">
+
+            <span class="card-kicker">Link rapidi</span>
+
+            <h3>Fonti ufficiali</h3>
+
+            <div class="guide-actions guide-actions-row">
+
+              <a class="btn btn-primary"
+                 href="https://github.com/the-paid-actor/dcs-dtc/releases/latest"
+                 target="_blank"
+                 rel="noopener noreferrer">
+
+                Download DTC
+
+              </a>
+
+              <a class="btn btn-ghost"
+                 href="https://github.com/the-paid-actor/dcs-dtc"
+                 target="_blank"
+                 rel="noopener noreferrer">
+
+                GitHub DTC
+
+              </a>
+
+            </div>
+
+          </div>
+
+          <h2 class="section-title guide-section-title">Procedura</h2>
+
+          <p class="muted">
+            Segui gli step nell’ordine. Prima di una missione verifica sempre
+            waypoint, radio preset, CMS e dati operativi indicati nel briefing.
+          </p>
+
+          <div class="guide-steps guide-steps-numbered">
+
+            <article class="guide-step-card unified-card">
+
+              <span class="guide-step-number">1</span>
+
+              <div class="guide-step-body">
+
+                <h3>Scarica DTC</h3>
+
+                <p>
+                  Apri la pagina ufficiale delle release GitHub e scarica
+                  l’ultima versione stabile di DCS-DTC.
+                  Nella maggior parte dei casi il file consigliato è
+                  l’installer <strong>.msi</strong>.
+                </p>
+
+                <p>
+                  Evita versioni non ufficiali o repository modificati:
+                  utilizza sempre i link condivisi dalla squadriglia o
+                  il repository ufficiale del progetto.
+                </p>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/01-download.webp"
+                       alt="Schema download DTC da GitHub Releases" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Download della release ufficiale DCS-DTC.
+                  </figcaption>
+                </figure>
+
+              </div>
+
+            </article>
+
+            <article class="guide-step-card unified-card">
+
+              <span class="guide-step-number">2</span>
+
+              <div class="guide-step-body">
+
+                <h3>Installa DTC</h3>
+
+                <p>
+                  Avvia l’installer scaricato e completa il wizard.
+                  Se Windows mostra SmartScreen o richieste di sicurezza,
+                  verifica che il file provenga dal repository ufficiale.
+                </p>
+
+                <p>
+                  Alcune versioni possono richiedere il
+                  <strong>.NET Desktop Runtime</strong>.
+                  In caso di errore all’avvio, installa il runtime richiesto
+                  e riapri il programma.
+                </p>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/02-installer.webp"
+                       alt="Schema installazione DTC per DCS World" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Installazione iniziale del tool DCS-DTC.
+                  </figcaption>
+                </figure>
+
+              </div>
+
+            </article>
+
+            <article class="guide-step-card unified-card">
+
+              <span class="guide-step-number">3</span>
+
+              <div class="guide-step-body">
+
+                <h3>Configura DCS e Saved Games</h3>
+
+                <p>
+                  Al primo avvio controlla che DTC rilevi correttamente
+                  la cartella <strong>Saved Games</strong> del tuo DCS.
+                  Il programma utilizza questi percorsi per leggere
+                  dati missione e configurazioni dei moduli.
+                </p>
+
+                <p>
+                  Se utilizzi più installazioni DCS,
+                  verifica che il profilo corretto sia selezionato
+                  prima di procedere.
+                </p>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/03-paths.webp"
+                       alt="Schema configurazione cartella Saved Games DTC" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Configurazione dei percorsi DCS e Saved Games.
+                  </figcaption>
+                </figure>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/03-2-paths.webp"
+                       alt="Scegli l'aereo desiderato e dai il nome al piano di volo" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Configurazione nome del piano di volo.
+                  </figcaption>
+                </figure>
+
+              </div>
+
+            </article>
+
+            <article class="guide-step-card unified-card">
+
+              <span class="guide-step-number">4</span>
+
+              <div class="guide-step-body">
+
+                <h3>Importa waypoint e mission data</h3>
+
+                <p>
+                  Importa i dati missione condivisi nel briefing:
+                  waypoint, steerpoint, target area e flight plan.
+                  In alcuni casi il file può essere fornito direttamente
+                  dalla squadriglia.
+                </p>
+
+                <p>
+                  Controlla sempre coordinate, nomi e ordine degli steerpoint
+                  prima del caricamento finale nel cockpit.
+                </p>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/04-waypoints.webp"
+                       alt="Importazione da file CFlite waypoint DTC per F-16 in DCS" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Importazione waypoint e dati missione.
+                  </figcaption>
+                </figure>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/04-2-waypoints.webp"
+                       alt="Inserimento manuale waypoint DTC per F-16 in DCS" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Inserimento manuale e dati missione.
+                  </figcaption>
+                </figure>
+
+              </div>
+
+            </article>
+
+            <article class="guide-step-card unified-card">
+
+              <span class="guide-step-number">5</span>
+
+              <div class="guide-step-body">
+
+                <h3>Configura radio preset</h3>
+
+                <p>
+                  Inserisci frequenze operative, package frequency,
+                  canali COM1 e COM2 indicati nel briefing.
+                  Questo permette di avere radio già pronte
+                  all’ingresso in cockpit.
+                </p>
+
+                <p>
+                  Nei voli multiplayer è consigliato controllare
+                  sempre frequenze tactical, AWACS, tanker e package common.
+                </p>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/05-radios.webp"
+                       alt="Configurazione radio preset DTC in DCS" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Radio preset e frequenze operative preconfigurate.
+                  </figcaption>
+                </figure>
+
+              </div>
+
+            </article>
+
+            <article class="guide-step-card unified-card">
+
+              <span class="guide-step-number">6</span>
+
+              <div class="guide-step-body">
+
+                <h3>Configura CMS e impostazioni operative</h3>
+
+                <p>
+                  Nei moduli compatibili puoi preparare programmi
+                  <strong>chaff</strong>,
+                  <strong>flare</strong>,
+                  configurazioni CMS e altri parametri operativi
+                  prima del volo.
+                </p>
+
+                <p>
+                  Verifica sempre che i programmi CMS siano coerenti
+                  con il tipo di missione e con le minacce previste.
+                </p>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/06-cms.webp"
+                       alt="Schema configurazione countermeasures DTC" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Setup CMS e programmi countermeasures.
+                  </figcaption>
+                </figure>
+
+              </div>
+
+            </article>
+
+            <article class="guide-step-card unified-card">
+
+              <span class="guide-step-number">7</span>
+
+              <div class="guide-step-body">
+
+                <h3>Controllo impostazioni di importazione</h3>
+
+                <p>
+                  Una volta completato, salva correttamente il file
+                  e prima del decollo verifica che waypoint,
+                  radio preset, CMS e dati operativi siano corretti
+                  e che le impostazioni di importazione siano giuste.
+                </p>
+
+                <p>
+                  In caso di dubbi o dati mancanti,
+                  confrontati con il flight lead prima del taxi.
+                </p>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/07-save_setting.webp"
+                       alt="Salva il piano di volo prima della missione" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Salva il piano di volo prima della missione.
+                  </figcaption>
+                </figure>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/07-2-save_setting.webp"
+                       alt="Controllo finale impostazioni di importazione DTC prima della missione" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Controllo finale impostazioni di importazione DTC prima della missione.
+                  </figcaption>
+                </figure>
+
+              </div>
+
+            </article>
+
+            <article class="guide-step-card unified-card">
+
+              <span class="guide-step-number">8</span>
+
+              <div class="guide-step-body">
+
+                <h3>Carica i dati nel cockpit</h3>
+
+                <p>
+                  Avvia DCS ed entra nel modulo selezionato.
+                  Utilizza la procedura prevista dall’aereo
+                  per caricare i dati del DTC nel cockpit.
+                </p>
+
+                <p>
+                  Alcuni moduli permettono il caricamento automatico,
+                  altri richiedono azioni manuali tramite ICP,
+                  UFC o MFD.
+                </p>
+
+                <figure class="guide-figure">
+                  <img src="images/guide-dtc/08-cockpit-load.webp"
+                       alt="Caricamento DTC nel cockpit del modulo DCS" loading="lazy" decoding="async">
+
+                  <figcaption>
+                    Upload dei dati missione direttamente nel cockpit.
+                  </figcaption>
+                </figure>
+
+              </div>
+
+            </article>
+
+
+          </div>
+
+        </div>
+
+        <aside class="guide-side-card unified-card">
+
+          <span class="card-kicker">Checklist FD</span>
+
+          <h3>Prima della missione</h3>
+
+          <ul>
+            <li>DTC aggiornato</li>
+            <li>Modulo compatibile selezionato</li>
+            <li>Waypoint caricati</li>
+            <li>Radio preset verificati</li>
+            <li>CMS controllato</li>
+            <li>Dati missione aggiornati</li>
+            <li>Upload effettuato in cockpit</li>
+          </ul>
+
+          <div class="guide-note">
+
+            <strong>Problemi comuni</strong>
+
+            <p>
+              Se waypoint o preset non compaiono nel cockpit,
+              controlla che il modulo sia compatibile,
+              che Export.lua non sia bloccato
+              e che DTC abbia accesso corretto alla cartella Saved Games.
+            </p>
+
+          </div>
+
+          <div class="guide-actions">
+
+            <a class="btn btn-primary" href="guide.html">
+              Tutte le guide
+            </a>
+
+            <a class="btn btn-ghost"
+               href="https://discord.gg/ZSgUBNUhgP"
+               target="_blank"
+               rel="noopener noreferrer">
+
+              Supporto Discord
+
+            </a>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+    </section>
+
+  </main>
+
+<footer class="site-footer">
+
+  <div class="container footer-grid footer-modern">
+
+    <div class="footer-card footer-brand-card unified-card">
+
+      <div class="footer-brand">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="footer-logo">
+
+        <div>
+          <h3>Flying Donkeys</h3>
+          <p class="muted small">
+            Stubborn as a mule - loyal as a Donkey
+          </p>
+        </div>
+      </div>
+
+      <p class="footer-description">
+        Squadriglia virtuale italiana dedicata a DCS World, operazioni NATO-style,
+        addestramento cooperativo e teamwork tattico.
+      </p>
+
+      <div class="footer-cta">
+        <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">
+          Unisciti su Discord
+        </a>
+      </div>
+
+    </div>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Navigazione footer">
+
+      <span class="card-kicker">Sito</span>
+
+      <div class="footer-links">
+        <a href="index.html#about">Chi siamo</a>
+        <a href="index.html#how-we-operate">Il nostro approccio</a>
+        <a href="index.html#join">Come entrare</a>
+        <a href="index.html#operations">Operazioni</a>
+        <a href="index.html#gallery">Media</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Pagine utili">
+
+      <span class="card-kicker">Pagine utili</span>
+
+      <div class="footer-links">
+        <a href="raduni.html">Raduni</a>
+        <a href="dove-siamo.html">Mappa</a>
+        <a href="guida-srs.html">Guida SRS</a>
+        <a href="guida-ovgme.html">Guida Open Mod Manager</a>
+        <a href="guida-dtc.html">Guida DTC</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-social-card unified-card" aria-label="Social Flying Donkeys">
+
+      <span class="card-kicker">Social</span>
+
+      <div class="footer-social">
+        <a href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Discord</a>
+        <a href="https://www.facebook.com/flyingdonkeysDCS" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="https://instagram.com/flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.tiktok.com/@flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">TikTok</a>
+        <a href="https://youtube.com/@flyingdonkeysdcs443" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </div>
+
+    </nav>
+
+  </div>
+
+  <div class="container footer-bottom footer-bottom-modern">
+
+    <span class="copyright small muted" id="copyright"></span>
+
+    <span class="small muted">
+      Flying Donkeys Virtual Squadron • DCS World Community
+    </span>
+
+  </div>
+
+</footer>
+<script src="script.js?v=13"></script>
+</body>
+
+</html>

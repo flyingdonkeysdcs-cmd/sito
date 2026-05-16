@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Profilo Pilota — Flying Donkeys</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=4">
+</head>
+
+<body>
+<div id="ribbonModal" class="ribbon-modal-backdrop" hidden>
+  <div class="ribbon-modal">
+    <button id="closeRibbonModal" class="ribbon-modal-close">&times;</button>
+
+    <img id="ribbonModalImage" class="ribbon-modal-image" src="" alt="Nastrino">
+
+    <h3 id="ribbonModalTitle"></h3>
+
+    <p id="ribbonModalDescription"></p>
+
+    <img id="ribbonModalExtraImage" class="ribbon-modal-extra" src="" alt="">
+  </div>
+</div>
+
+<div id="pilotImageModal" class="pilot-image-modal-backdrop" hidden>
+  <div class="pilot-image-modal">
+    <button id="closePilotImageModal" class="pilot-image-modal-close">&times;</button>
+
+    <img id="pilotImageModalImg" src="" alt="Immagine pilota">
+
+    <h3 id="pilotImageModalTitle"></h3>
+    <p id="pilotImageModalDescription"></p>
+  </div>
+</div>
+<header class="site-header">
+
+  <div class="header-inner container">
+
+    <a class="brand" href="index.html" aria-label="Flying Donkeys Home">
+      <img src="images/logo.png" alt="Flying Donkeys Logo" class="logo">
+      <span class="brand-text">Flying Donkeys</span>
+    </a>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="index.html">
+        ← Torna alla Home
+      </a>
+    </div>
+
+  </div>
+
+</header>
+
+  <main>
+    <section class="section container pilot-profile">
+     <div class="pilot-hero-card" id="pilotHeroCard">
+		<img
+			src="images/logo.png"
+			alt="Foto pilota"
+			class="pilot-profile-image"
+			id="pilotProfileImage"
+			loading="lazy"
+			decoding="async"
+			>
+
+			<div class="pilot-hero-info">
+			<p class="muted">Profilo Pilota</p>
+		<h1 class="hero-title" id="pilotNameTitle">Caricamento...</h1>
+	</div>
+
+  <img
+    src=""
+    alt="Logo reparto"
+    class="pilot-aircraft-logo"
+    id="pilotAircraftLogo"
+	loading="lazy"
+	decoding="async"
+    hidden
+  >
+</div>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="section container">
+      <h2 class="section-title">Statistiche Pilota</h2>
+      <p class="muted">Dati letti automaticamente dal foglio Google del roster.</p>
+      <div class="pilot-stats-grid" id="pilotStats">
+        <p class="muted">Caricamento statistiche...</p>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="section container">
+      <h2 class="section-title">Medagliere</h2>
+      <p class="muted">Nastrini e riconoscimenti letti dal foglio medagliere, se disponibili.</p>
+      <div id="pilotMedals" class="pilot-medals-grid">
+		<p class="muted">Caricamento medagliere...</p>
+		</div>
+    </section>
+  </main>
+
+<footer class="site-footer">
+
+  <div class="container footer-grid footer-modern">
+
+    <div class="footer-card footer-brand-card unified-card">
+
+      <div class="footer-brand">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="footer-logo">
+
+        <div>
+          <h3>Flying Donkeys</h3>
+          <p class="muted small">
+            Stubborn as a mule - loyal as a Donkey
+          </p>
+        </div>
+      </div>
+
+      <p class="footer-description">
+        Squadriglia virtuale italiana dedicata a DCS World, operazioni NATO-style,
+        addestramento cooperativo e teamwork tattico.
+      </p>
+
+      <div class="footer-cta">
+        <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">
+          Unisciti su Discord
+        </a>
+      </div>
+
+    </div>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Navigazione footer">
+
+      <span class="card-kicker">Sito</span>
+
+      <div class="footer-links">
+        <a href="index.html#about">Chi siamo</a>
+        <a href="index.html#how-we-operate">Il nostro approccio</a>
+        <a href="index.html#join">Come entrare</a>
+        <a href="index.html#operations">Operazioni</a>
+        <a href="index.html#gallery">Media</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Pagine utili">
+
+      <span class="card-kicker">Pagine utili</span>
+
+      <div class="footer-links">
+        <a href="raduni.html">Raduni</a>
+        <a href="dove-siamo.html">Mappa</a>
+        <a href="guida-srs.html">Guida SRS</a>
+        <a href="guida-ovgme.html">Guida Open Mod Manager</a>
+        <a href="guida-dtc.html">Guida DTC</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-social-card unified-card" aria-label="Social Flying Donkeys">
+
+      <span class="card-kicker">Social</span>
+
+      <div class="footer-social">
+        <a href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Discord</a>
+        <a href="https://www.facebook.com/flyingdonkeysDCS" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="https://instagram.com/flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.tiktok.com/@flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">TikTok</a>
+        <a href="https://youtube.com/@flyingdonkeysdcs443" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </div>
+
+    </nav>
+
+  </div>
+
+  <div class="container footer-bottom footer-bottom-modern">
+
+    <span class="copyright small muted" id="copyright"></span>
+
+    <span class="small muted">
+      Flying Donkeys Virtual Squadron • DCS World Community
+    </span>
+
+  </div>
+
+</footer>
+
+
+  <script src="script.js?v=5"></script>
+</body>
+</html>
