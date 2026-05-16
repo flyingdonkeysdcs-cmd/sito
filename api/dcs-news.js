@@ -52,8 +52,8 @@ export default async function handler(req, res) {
 			.slice(0, 3)
 			.join(' ');
 
-			if (shortEnglish.length > 480) {
-				shortEnglish = shortEnglish.slice(0, 477).trim() + '...';
+			if (shortEnglish.length > 300) {
+				shortEnglish = shortEnglish.slice(0, 297).trim() + '...';
 		}
 
         const translateUrl =
