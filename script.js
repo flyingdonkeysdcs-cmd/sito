@@ -1278,14 +1278,13 @@ async function loadDcsNews() {
   const listEl = document.getElementById('dcsNewsList');
   if (!listEl) return;
 
-  const news = [
-    {
-      title: 'DCS Newsletter',
-      date: 'Test locale',
-      url: 'https://www.digitalcombatsimulator.com/en/news/newsletters/',
-      summary: 'Questa è una card di prova. Qui comparirà il riassunto automatico in italiano della newsletter Eagle Dynamics.'
-    }
-  ];
+ const response = await fetch('/api/dcs-news');
+
+if (!response.ok) {
+  throw new Error('Errore caricamento newsletter');
+}
+
+const news = await response.json();
 
   listEl.innerHTML = news.map(item => `
     <article class="dcs-news-card unified-card">
@@ -1297,6 +1296,41 @@ async function loadDcsNews() {
       </a>
     </article>
   `).join('');
+}
+
+async function loadDcsNews() {
+  const listEl = document.getElementById('dcsNewsList');
+  if (!listEl) return;
+
+  try {
+    const response = await fetch('/api/dcs-news');
+
+    if (!response.ok) {
+      throw new Error('Errore caricamento newsletter');
+    }
+
+    const news = await response.json();
+
+    listEl.innerHTML = news.map(item => `
+      <article class="dcs-news-card unified-card">
+        <span class="news-date">Eagle Dynamics Newsletter</span>
+        <h3>${item.title}</h3>
+        <p>${item.summary}</p>
+        <a class="btn btn-ghost" href="${item.url}" target="_blank" rel="noopener noreferrer">
+          Leggi newsletter
+        </a>
+      </article>
+    `).join('');
+
+  } catch (error) {
+    console.error(error);
+
+    listEl.innerHTML = `
+      <p class="muted">
+        Newsletter DCS non disponibili al momento.
+      </p>
+    `;
+  }
 }
 
 loadDcsNews();
