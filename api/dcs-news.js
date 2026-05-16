@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
-	console.log('KEY EXISTS:', !!process.env.OPENAI_API_KEY);	
   try {
+
     const response = await fetch(
       'https://www.digitalcombatsimulator.com/en/news/newsletters/'
     );
@@ -8,74 +8,82 @@ export default async function handler(req, res) {
     const html = await response.text();
 
     const matches = [
-      ...html.matchAll(/href="(\/en\/news\/newsletters\/[^"]+)"/g)
+      ...html.matchAll(
+        /href="(\/en\/news\/newsletters\/[^"]+)"/g
+      )
     ];
 
-    const uniqueLinks = [...new Set(matches.map(m => m[1]))].slice(0, 3);
+    const uniqueLinks = [...new Set(
+      matches.map(m => m[1])
+    )].slice(0, 3);
 
     const news = await Promise.all(
       uniqueLinks.map(async (path) => {
-        const url = `https://www.digitalcombatsimulator.com${path}`;
+
+        const url =
+          `https://www.digitalcombatsimulator.com${path}`;
 
         const pageResponse = await fetch(url);
+
         const pageHtml = await pageResponse.text();
 
-        const titleMatch = pageHtml.match(/<title>(.*?)<\/title>/i);
+        const titleMatch =
+          pageHtml.match(/<title>(.*?)<\/title>/i);
 
         const title =
           titleMatch?.[1]
             ?.replace('Digital Combat Simulator |', '')
-            ?.trim() || 'DCS Newsletter';
+            ?.trim()
+          || 'DCS Newsletter';
 
-        const text = pageHtml
+        const cleanText = pageHtml
           .replace(/<script[\s\S]*?<\/script>/gi, '')
           .replace(/<style[\s\S]*?<\/style>/gi, '')
           .replace(/<[^>]+>/g, ' ')
+          .replace(/&nbsp;/g, ' ')
+          .replace(/&rsquo;/g, "'")
+          .replace(/&lsquo;/g, "'")
+          .replace(/&ndash;/g, '-')
+          .replace(/&amp;/g, '&')
           .replace(/\s+/g, ' ')
-          .trim()
-          .slice(0, 5000);
+          .trim();
 
-        const aiResponse = await fetch('https://api.openai.com/v1/responses', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: 'gpt-4.1-mini',
-            input: `
-Riassumi in italiano questa newsletter Eagle Dynamics in massimo 3 righe.
-Stile: chiaro, breve, adatto a una community italiana di DCS.
-Non aggiungere titoli, emoji o markdown.
+        // prende introduzione newsletter
+        const introMatch = cleanText.match(
+          /Dear Fighter Pilots, Partners and Friends,(.*?)(Thank you for your passion and support\.|Yours sincerely,)/i
+        );
 
-NEWSLETTER:
-${text}
-`
-          })
-        });
+        const introText = introMatch
+          ? introMatch[1].trim()
+          : cleanText.slice(0, 1200);
 
-        const aiData = await aiResponse.json();
+        // prende prime 3 frasi
+        const shortEnglish = introText
+          .split(/(?<=[.!?])\s+/)
+          .filter(Boolean)
+          .slice(0, 3)
+          .join(' ');
 
-if (!aiResponse.ok) {
-  console.error('Errore OpenAI:', aiData);
+        // traduzione gratuita
+        const translateUrl =
+          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(shortEnglish)}&langpair=en|it`;
 
-  return {
-    title,
-    url,
-    summary: `Errore OpenAI: ${aiData.error?.message || 'errore sconosciuto'}`
-  };
-}
+        const translateResponse =
+          await fetch(translateUrl);
 
-const summary =
-  aiData.output_text ||
-  aiData.output?.[0]?.content?.[0]?.text ||
-  'Riassunto non disponibile al momento.';
+        const translateData =
+          await translateResponse.json();
+
+        const translatedText =
+          translateData.responseData?.translatedText
+          || shortEnglish;
 
         return {
           title,
           url,
-          summary
+          summary: translatedText
         };
+
       })
     );
 
@@ -87,10 +95,12 @@ const summary =
     res.status(200).json(news);
 
   } catch (error) {
+
     console.error(error);
 
     res.status(500).json({
       error: 'Errore caricamento newsletter'
     });
+
   }
 }
