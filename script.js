@@ -1239,7 +1239,7 @@ if (!response.ok) {
 
 const news = await response.json();
 
-  listEl.innerHTML = news.map(item => `
+ listEl.innerHTML = news.map(item => `
   <article class="program-event-card dcs-news-card">
     <div>
       <p class="muted small">Eagle Dynamics Newsletter</p>
@@ -1250,18 +1250,15 @@ const news = await response.json();
     </div>
 
     <div class="program-event-meta">
-      <span>News DCS</span>
-
-      <a class="ato-link"
+      <a class="btn btn-primary"
          href="${item.url}"
          target="_blank"
          rel="noopener noreferrer">
-        Leggi
+        Leggi newsletter
       </a>
     </div>
   </article>
 `).join('');
-}
 
 async function loadDcsNews() {
   const listEl = document.getElementById('dcsNewsList');
