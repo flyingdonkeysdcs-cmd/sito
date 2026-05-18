@@ -1279,9 +1279,7 @@ async function loadDcsNews() {
       <article class="program-event-card dcs-news-card">
         <div>
           <p class="muted small">Eagle Dynamics Newsletter</p>
-
           <h3>${item.title}</h3>
-
           <p>${item.summary}</p>
         </div>
 
@@ -1306,3 +1304,7 @@ async function loadDcsNews() {
     `;
   }
 }
+
+loadDcsNews();
+
+});
