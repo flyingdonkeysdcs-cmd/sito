@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-	const apiKey = 'AIzaSyBJMaFZsCPu_MxWWjUogryUTwJ1i6BG9hk';
     
 const calendars = [
   {
@@ -132,37 +131,7 @@ function formatEventDate(dateValue) {
 
 }
 
-async function fetchCalendarEvents(calendar) {
 
-  const now = new Date().toISOString();
-
-  const url =
-    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendar.id)}/events` +
-    `?key=${apiKey}` +
-    `&timeMin=${now}` +
-    `&singleEvents=true` +
-    `&orderBy=startTime` +
-    `&maxResults=10`;
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Errore calendario ${calendar.name}`);
-  }
-
-  const data = await response.json();
-
-  return (data.items || []).map(event => ({
-
-    ...event,
-
-    calendarLabel: calendar.label,
-    serverName: calendar.server,
-    calendarName: calendar.name
-
-  }));
-
-}
 
 async function loadNextCalendarEvent() {
 
@@ -176,29 +145,13 @@ async function loadNextCalendarEvent() {
 
   try {
 
-    const calendarResults = await Promise.all(
-      calendars.map(calendar => fetchCalendarEvents(calendar))
-    );
+    const calendarResponse = await fetch("/api/calendar-events");
 
-    const events = calendarResults
-      .flat()
-      .map(event => {
+	const events = await calendarResponse.json();
 
-        const startValue =
-          event.start.dateTime || event.start.date;
-
-        return {
-
-          ...event,
-
-          startValue,
-
-          startDate: new Date(startValue)
-
-        };
-
-      })
-      .sort((a, b) => a.startDate - b.startDate);
+		if (!calendarResponse.ok) {
+	throw new Error(events.details || "Errore calendario");
+}
 
     if (!events.length) {
 
