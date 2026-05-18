@@ -1309,4 +1309,4 @@ async function loadDcsNews() {
 }
 
 loadDcsNews();
-};
+});
