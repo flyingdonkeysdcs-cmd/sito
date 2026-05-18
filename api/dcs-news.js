@@ -70,11 +70,17 @@ export default async function handler(req, res) {
           throw new Error(aiData.error?.message || "Errore OpenAI");
         }
 
-        return {
-          title,
-          url,
-          summary: aiData.output_text || "Riassunto non disponibile."
-        };
+        const summary =
+		aiData.output_text ||
+		aiData.output?.[0]?.content?.[0]?.text ||
+		aiData.output?.[1]?.content?.[0]?.text ||
+		"Riassunto non disponibile.";
+
+		return {
+		title,
+		url,
+		summary
+};
       })
     );
 
