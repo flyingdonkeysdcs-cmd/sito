@@ -1263,6 +1263,7 @@ const news = await response.json();
 
 async function loadDcsNews() {
   const listEl = document.getElementById('dcsNewsList');
+
   if (!listEl) return;
 
   try {
@@ -1275,30 +1276,28 @@ async function loadDcsNews() {
     const news = await response.json();
 
     listEl.innerHTML = news.map(item => `
-  <article class="program-event-card dcs-news-card">
-    <div>
-      <p class="muted small">Eagle Dynamics Newsletter</p>
+      <article class="program-event-card dcs-news-card">
+        <div>
+          <p class="muted small">Eagle Dynamics Newsletter</p>
 
-      <h3>${item.title}</h3>
+          <h3>${item.title}</h3>
 
-      <p>${item.summary}</p>
-    </div>
+          <p>${item.summary}</p>
+        </div>
 
-    <div class="program-event-meta">
-      <a class="btn btn-primary"
-         href="${item.url}"
-         target="_blank"
-         rel="noopener noreferrer">
-        Leggi newsletter
-      </a>
-    </div>
-  </article>
-`).join('');
+        <div class="program-event-meta">
+          <a class="btn btn-primary"
+             href="${item.url}"
+             target="_blank"
+             rel="noopener noreferrer">
+            Leggi newsletter
+          </a>
+        </div>
+      </article>
+    `).join('');
 
-  } 
-  
-  catch (error) {
-    console.error(error);
+  } catch (error) {
+    console.error('Errore DCS news:', error);
 
     listEl.innerHTML = `
       <p class="muted">
@@ -1307,6 +1306,3 @@ async function loadDcsNews() {
     `;
   }
 }
-
-loadDcsNews();
-});
