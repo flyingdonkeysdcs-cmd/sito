@@ -1259,6 +1259,7 @@ const news = await response.json();
     </div>
   </article>
 `).join('');
+}
 
 async function loadDcsNews() {
   const listEl = document.getElementById('dcsNewsList');
