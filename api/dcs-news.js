@@ -1,34 +1,8 @@
 export default async function handler(req, res) {
-  try {
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error("OPENAI_API_KEY mancante su Vercel");
-    }
 
-    const response = await fetch(
-      "https://www.digitalcombatsimulator.com/en/news/newsletters/"
-    );
-
-    const html = await response.text();
-
-    const matches = [
-      ...html.matchAll(/href="(\/en\/news\/newsletters\/[^"]+)"/g)
-    ];
-
-    const uniqueLinks = [...new Set(matches.map(m => m[1]))].slice(0, 3);
-
-    const news = await Promise.all(
-      uniqueLinks.map(async path => {
-        const url = `https://www.digitalcombatsimulator.com${path}`;
-
-        const pageResponse = await fetch(url);
-        const pageHtml = await pageResponse.text();
-
-        const titleMatch = pageHtml.match(/<title>(.*?)<\/title>/i);
-
-        const title =
-          titleMatch?.[1]
-            ?.replace("Digital Combat Simulator |", "")
-            ?.trim() || "DCS Newsletter";
+        const releaseDate = dateMatch
+          ? dateMatch[0]
+          : "Data non disponibile";
 
         const cleanText = pageHtml
           .replace(/<script[\s\S]*?<\/script>/gi, "")
@@ -59,7 +33,9 @@ export default async function handler(req, res) {
           body: JSON.stringify({
             model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
             input:
-              "Riassumi in italiano questa newsletter DCS/Eagle Dynamics in massimo 2 frasi. Mantieni nomi tecnici, moduli e velivoli originali. Non inventare nulla.\n\n" +
+              `La newsletter DCS è stata pubblicata il ${releaseDate}. ` +
+              "Riassumi in italiano questa newsletter DCS/Eagle Dynamics in massimo 2 frasi. " +
+              "Mantieni nomi tecnici, moduli e velivoli originali. Non inventare nulla.\n\n" +
               introText.slice(0, 2500)
           })
         });
@@ -71,23 +47,24 @@ export default async function handler(req, res) {
         }
 
         const summary =
-		aiData.output_text ||
-		aiData.output?.[0]?.content?.[0]?.text ||
-		aiData.output?.[1]?.content?.[0]?.text ||
-		"Riassunto non disponibile.";
+          aiData.output_text ||
+          aiData.output?.[0]?.content?.[0]?.text ||
+          aiData.output?.[1]?.content?.[0]?.text ||
+          "Riassunto non disponibile.";
 
-		return {
-		title,
-		url,
-		summary
-};
+        return {
+          title,
+          url,
+          releaseDate,
+          summary
+        };
       })
     );
 
     res.setHeader(
-		"Cache-Control",
-		"s-maxage=86400, stale-while-revalidate=172800"
-		);
+      "Cache-Control",
+      "s-maxage=86400, stale-while-revalidate=172800"
+    );
 
     res.status(200).json(news);
   } catch (error) {
