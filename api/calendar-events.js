@@ -36,7 +36,8 @@ export default async function handler(req, res) {
         const response = await fetch(url);
 
         if (!response.ok) {
-          throw new Error(`Errore calendario ${calendar.name}`);
+          const errorText = await response.text();
+			throw new Error(`Errore calendario ${calendar.name}: ${response.status} ${errorText}`);
         }
 
         const data = await response.json();
