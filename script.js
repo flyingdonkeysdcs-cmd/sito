@@ -1275,17 +1275,29 @@ async function loadDcsNews() {
     const news = await response.json();
 
     listEl.innerHTML = news.map(item => `
-      <article class="dcs-news-card unified-card">
-        <span class="news-date">Eagle Dynamics Newsletter</span>
-        <h3>${item.title}</h3>
-        <p>${item.summary}</p>
-        <a class="btn btn-ghost" href="${item.url}" target="_blank" rel="noopener noreferrer">
-          Leggi newsletter
-        </a>
-      </article>
-    `).join('');
+  <article class="program-event-card dcs-news-card">
+    <div>
+      <p class="muted small">Eagle Dynamics Newsletter</p>
 
-  } catch (error) {
+      <h3>${item.title}</h3>
+
+      <p>${item.summary}</p>
+    </div>
+
+    <div class="program-event-meta">
+      <a class="btn btn-primary"
+         href="${item.url}"
+         target="_blank"
+         rel="noopener noreferrer">
+        Leggi newsletter
+      </a>
+    </div>
+  </article>
+`).join('');
+
+  } 
+  
+  catch (error) {
     console.error(error);
 
     listEl.innerHTML = `
