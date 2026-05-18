@@ -4075,3 +4075,38 @@ section[id]{
   }
 
 }
+
+.dcs-news-grid{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.dcs-news-card{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:24px;
+  align-items:center;
+}
+
+.dcs-news-card p{
+  margin-bottom:0;
+}
+
+.dcs-news-card .program-event-meta{
+  min-width:140px;
+}
+
+.dcs-news-card .ato-link{
+  white-space:nowrap;
+}
+
+@media(max-width:640px){
+  .dcs-news-card{
+    grid-template-columns:1fr;
+  }
+
+  .dcs-news-card .program-event-meta{
+    align-items:flex-start;
+  }
+}
