@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
+
   const list = document.getElementById('missionLogGrid');
+  const index = document.getElementById('missionEventIndex');
   const loading = document.getElementById('missionLogLoading');
   const empty = document.getElementById('missionLogEmpty');
 
@@ -121,7 +123,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     .map(getMissionData);
 
     if (loading) loading.hidden = true;
-
+	if (index) index.hidden = false;
+	
     if (!missions.length) {
       if (empty) empty.hidden = false;
       return;
