@@ -413,3 +413,231 @@
     text-align:left;
   }
 }
+
+
+/* ==========================================================
+   Mission Log Event Index + Debrief Modal
+========================================================== */
+
+.mission-event-index{
+  padding:0;
+  overflow:hidden;
+  border-radius:18px;
+}
+
+.mission-index-head{
+  padding:22px 24px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.02);
+}
+
+.mission-index-head p{
+  margin:6px 0 0;
+}
+
+.mission-event-list{
+  display:grid;
+}
+
+.mission-event-row{
+  width:100%;
+  display:grid;
+  grid-template-columns:150px minmax(0,1fr) auto;
+  gap:18px;
+  align-items:center;
+
+  padding:18px 24px;
+  border:0;
+  border-bottom:1px solid rgba(255,255,255,0.055);
+
+  background:rgba(22,24,26,0.72);
+  color:var(--text);
+  font-family:'Montserrat', sans-serif;
+  text-align:left;
+  cursor:pointer;
+  transition:0.22s ease;
+}
+
+.mission-event-row:last-child{
+  border-bottom:0;
+}
+
+.mission-event-row:hover,
+.mission-event-row:focus-visible{
+  background:rgba(0,217,255,0.07);
+  outline:none;
+  box-shadow:inset 3px 0 0 var(--accent-1);
+}
+
+.mission-event-date{
+  color:var(--accent-1);
+  font-weight:800;
+  font-size:0.86rem;
+}
+
+.mission-event-main strong{
+  display:block;
+  font-size:1.02rem;
+  line-height:1.35;
+}
+
+.mission-event-main small{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:0.82rem;
+}
+
+.mission-event-action{
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid rgba(0,217,255,0.18);
+  color:var(--accent-1);
+  background:rgba(0,217,255,0.06);
+  font-size:0.72rem;
+  font-weight:800;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+body.mission-modal-open{
+  overflow:hidden;
+}
+
+.mission-modal-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(0,0,0,0.78);
+  backdrop-filter:blur(7px);
+}
+
+.mission-modal-backdrop[hidden]{
+  display:none;
+}
+
+.mission-modal{
+  position:relative;
+  width:min(980px, 94vw);
+  max-height:88vh;
+  overflow:hidden;
+  border-radius:20px;
+  background:rgba(15,17,19,0.98);
+  border:1px solid rgba(0,217,255,0.22);
+  box-shadow:0 0 48px rgba(0,217,255,0.16), var(--shadow);
+}
+
+.mission-modal-content{
+  max-height:88vh;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--accent-1) rgba(255,255,255,0.05);
+}
+
+.mission-modal-content::-webkit-scrollbar{
+  width:10px;
+}
+
+.mission-modal-content::-webkit-scrollbar-track{
+  background:rgba(255,255,255,0.05);
+}
+
+.mission-modal-content::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg, var(--accent-1), var(--accent-2));
+  border-radius:10px;
+}
+
+.mission-modal-close{
+  position:absolute;
+  top:14px;
+  right:16px;
+  z-index:2;
+
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(10,12,14,0.86);
+  color:white;
+  font-size:32px;
+  line-height:1;
+  cursor:pointer;
+  transition:0.2s ease;
+}
+
+.mission-modal-close:hover,
+.mission-modal-close:focus-visible{
+  background:var(--accent-1);
+  color:#021014;
+  outline:none;
+}
+
+.mission-modal-hero{
+  height:300px;
+  background:#0b0d0f;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+
+.mission-modal-hero img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+.mission-modal-body{
+  padding:30px;
+}
+
+.mission-modal-meta{
+  margin-bottom:14px;
+}
+
+.mission-modal-body h2{
+  margin:0 0 16px;
+  font-size:1.8rem;
+  line-height:1.2;
+}
+
+.mission-modal-summary{
+  margin-top:22px;
+  color:var(--text);
+}
+
+@media(max-width:720px){
+  .mission-event-row{
+    grid-template-columns:1fr;
+    gap:8px;
+    padding:18px;
+  }
+
+  .mission-event-action{
+    width:max-content;
+  }
+
+  .mission-modal-backdrop{
+    padding:12px;
+  }
+
+  .mission-modal,
+  .mission-modal-content{
+    max-height:92vh;
+  }
+
+  .mission-modal-hero{
+    height:190px;
+  }
+
+  .mission-modal-body{
+    padding:22px;
+  }
+
+  .mission-modal-body h2{
+    font-size:1.38rem;
+  }
+}

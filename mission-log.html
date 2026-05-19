@@ -21,7 +21,7 @@
   <link rel="canonical" href="https://www.flyingdonkeysvirtualsquadron.it/mission-log.html">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=103">
-  <link rel="stylesheet" href="mission-log.css?v=1">
+  <link rel="stylesheet" href="mission-log.css?v=2">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
   <link rel="apple-touch-icon" href="/images/favicon.png">
 
@@ -91,7 +91,14 @@
 
         <p class="mission-loading" id="missionLogLoading">Caricamento Mission Log...</p>
         <p class="mission-empty" id="missionLogEmpty" hidden>Nessuna missione disponibile.</p>
-        <div class="mission-log-grid" id="missionLogGrid"></div>
+
+        <div class="mission-event-index unified-card" id="missionEventIndex" hidden>
+          <div class="mission-index-head">
+            <span class="card-kicker">Indice eventi</span>
+            <p class="muted small">Clicca su una missione per aprire il debriefing completo.</p>
+          </div>
+          <div class="mission-event-list" id="missionLogGrid"></div>
+        </div>
       </section>
     </div>
 
@@ -101,6 +108,14 @@
       </section>
     </div>
   </main>
+
+  <div class="mission-modal-backdrop" id="missionModal" hidden aria-hidden="true">
+    <div class="mission-modal" role="dialog" aria-modal="true" aria-labelledby="missionModalTitle">
+      <button class="mission-modal-close" type="button" id="missionModalClose" aria-label="Chiudi debriefing">×</button>
+      <div class="mission-modal-content" id="missionModalContent"></div>
+    </div>
+  </div>
+
 
 <footer class="site-footer">
 
@@ -188,6 +203,6 @@
 
 </footer>
 
-  <script src="mission-log.js?v=2"></script>
+  <script src="mission-log.js?v=3"></script>
 </body>
 </html>
