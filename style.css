@@ -4665,3 +4665,32 @@ section[id]{
     line-height:1.75;
   }
 }
+
+.mission-summary p{
+  margin:0 0 1rem;
+  text-align:justify;
+}
+
+.mission-heading{
+  display:block;
+  margin:1.4rem 0 0.65rem;
+  color:var(--text);
+  font-weight:800;
+  font-size:1.05rem;
+}
+
+.mission-list{
+  margin:0.4rem 0 1.1rem;
+  padding-left:1.4rem;
+  color:var(--muted);
+}
+
+.mission-list li{
+  margin:0.35rem 0;
+}
+
+@media(max-width:640px){
+  .mission-summary p{
+    text-align:left;
+  }
+}

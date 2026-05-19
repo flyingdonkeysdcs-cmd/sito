@@ -45,9 +45,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       const pilots =
         mission['piloti coinvolti'] || '';
 
-      const summary =
-		(mission['riassunto debriefeing'] || '')
-			.replace(/\n/g, '<br><br>');
+     function formatMissionText(text) {
+  if (!text) return '';
+
+  return text
+    .split('\n')
+    .map(line => {
+      const clean = line.trim();
+
+      if (!clean) return '<br>';
+
+      if (clean.startsWith('##')) {
+        return `<strong class="mission-heading">${clean.replace(/^##\s*/, '')}</strong>`;
+      }
+
+      if (clean.startsWith('-')) {
+        return `<li>${clean.replace(/^-\s*/, '')}</li>`;
+      }
+
+      return `<p>${clean}</p>`;
+    })
+    .join('')
+    .replace(/(<li>.*?<\/li>)+/gs, match => `<ul class="mission-list">${match}</ul>`);
+}
+	const summary =
+		formatMissionText(mission['riassunto debriefeing'] || '');
 
       return `
         <article class="mission-card unified-card">
