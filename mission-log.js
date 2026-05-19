@@ -106,13 +106,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.classList.add('modal-open');
   }
 
-  try {
-    const response = await fetch(url);
-    const missionsRaw = await response.json();
+ try {
 
-    const missions = missionsRaw
-      .reverse()
-      .map(getMissionData);
+  const response = await fetch(url);
+
+  console.log('Mission Log response:', response.status);
+
+  const missionsRaw = await response.json();
+
+  console.log('Missioni caricate:', missionsRaw);
+
+  const missions = missionsRaw
+    .reverse()
+    .map(getMissionData);
 
     if (loading) loading.hidden = true;
 
