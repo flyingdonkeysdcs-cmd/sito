@@ -1231,7 +1231,7 @@ async function loadDcsNews() {
   const listEl = document.getElementById('dcsNewsList');
   if (!listEl) return;
 
- const response = await fetch('/api/dcs-news');
+ const response = await fetch('/api/dcs-news.js');
 
 if (!response.ok) {
   throw new Error('Errore caricamento newsletter');
@@ -1267,7 +1267,7 @@ async function loadDcsNews() {
   if (!listEl) return;
 
   try {
-    const response = await fetch('/api/dcs-news');
+    const response = await fetch('/api/dcs-news.js');
 
     if (!response.ok) {
       throw new Error('Errore caricamento newsletter');
