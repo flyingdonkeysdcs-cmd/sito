@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         mission['piloti coinvolti'] || '';
 
       const summary =
-        mission['riassunto debriefeing'] || '';
+		(mission['riassunto debriefeing'] || '')
+			.replace(/\n/g, '<br><br>');
 
       return `
         <article class="mission-card unified-card">
@@ -83,9 +84,9 @@ document.addEventListener('DOMContentLoaded', async () => {
               ${pilots}
             </p>
 
-            <p class="mission-summary">
-              ${summary}
-            </p>
+            <div class="mission-summary">
+				${summary}
+			</div>
 
           </div>
 
