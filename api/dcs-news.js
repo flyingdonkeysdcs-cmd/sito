@@ -63,9 +63,29 @@ export default async function handler(req, res) {
               ?.replace("Digital Combat Simulator |", "")
               ?.trim() || "DCS Newsletter";
 
-          const dateMatch = pageHtml.match(/(\w+\s\d{1,2},\s\d{4})/);
+          const dateMatch =
+			pageHtml.match(/<time[^>]*datetime="([^"]+)"/i) ||
+			pageHtml.match(/datetime="([^"]+)"/i) ||
+			pageHtml.match(/(\d{1,2}\s+[A-Za-z]+\s+\d{4})/i) ||
+			pageHtml.match(/([A-Za-z]+\s+\d{1,2},\s+\d{4})/i);
 
-          const releaseDate = dateMatch?.[1] || "Data non disponibile";
+			let releaseDate = "Data non disponibile";
+
+			if (dateMatch?.[1]) {
+				const rawDate = dateMatch[1];
+
+				const parsedDate = new Date(rawDate);
+
+				if (!Number.isNaN(parsedDate.getTime())) {
+					releaseDate = parsedDate.toLocaleDateString("it-IT", {
+					day: "2-digit",
+					month: "long",
+					year: "numeric"
+				});
+			} else {
+			releaseDate = rawDate;
+			}
+		}
 
           const cleanText = pageHtml
             .replace(/<script[\s\S]*?<\/script>/gi, "")
