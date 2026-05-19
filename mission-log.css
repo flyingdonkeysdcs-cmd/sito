@@ -217,7 +217,7 @@
 
 .mission-heading{
   display:block;
-  margin:1.4rem 0 0.65rem;
+  margin:1rem 0 0.35rem;
 
   color:var(--text);
   font-weight:800;
@@ -226,14 +226,14 @@
 }
 
 .mission-list{
-  margin:0.35rem 0 1.15rem;
-  padding-left:1.45rem;
+  margin:0.2rem 0 0.7rem;
+  padding-left:1.1rem;
   color:var(--muted);
 }
 
 .mission-list li{
-  margin:0.35rem 0;
-  line-height:1.65;
+  margin:0.12rem 0;
+  line-height:1.45;
 }
 
 .mission-summary br{
