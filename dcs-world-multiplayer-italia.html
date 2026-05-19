@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#00d9ff">
+  <meta name="description" content="Guida italiana per iniziare con DCS World multiplayer: cosa serve, SRS, HOTAS, moduli, differenze tra server pubblici e squadriglia virtuale, e come volare con i Flying Donkeys.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://www.flyingdonkeysvirtualsquadron.it/dcs-world-multiplayer-italia.html">
+
+  <meta property="og:site_name" content="Flying Donkeys Virtual Squadron">
+  <meta property="og:title" content="DCS World Multiplayer Italia – Guida per iniziare">
+  <meta property="og:description" content="La guida italiana per iniziare nel multiplayer di DCS World: setup, SRS, moduli consigliati, milsim e come entrare in una squadriglia virtuale.">
+  <meta property="og:url" content="https://www.flyingdonkeysvirtualsquadron.it/dcs-world-multiplayer-italia.html">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://www.flyingdonkeysvirtualsquadron.it/images/F_18_CLOSE.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DCS World Multiplayer Italia – Guida per iniziare">
+  <meta name="twitter:description" content="Setup, SRS, moduli, squadriglia virtuale e consigli pratici per iniziare a volare online su DCS World.">
+  <meta name="twitter:image" content="https://www.flyingdonkeysvirtualsquadron.it/images/F_18_CLOSE.png">
+
+  <title>DCS World Multiplayer Italia – Guida per iniziare | Flying Donkeys</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=100">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="apple-touch-icon" href="/images/favicon.png">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Article",
+    "headline":"DCS World Multiplayer Italia – Guida per iniziare",
+    "description":"Guida italiana per iniziare con DCS World multiplayer: cosa serve, SRS, HOTAS, moduli, differenze tra server pubblici e squadriglia virtuale.",
+    "inLanguage":"it-IT",
+    "author":{
+      "@type":"Organization",
+      "name":"Flying Donkeys Virtual Squadron",
+      "url":"https://www.flyingdonkeysvirtualsquadron.it/"
+    },
+    "publisher":{
+      "@type":"Organization",
+      "name":"Flying Donkeys Virtual Squadron",
+      "logo":{
+        "@type":"ImageObject",
+        "url":"https://www.flyingdonkeysvirtualsquadron.it/images/logo.png"
+      }
+    },
+    "mainEntityOfPage":"https://www.flyingdonkeysvirtualsquadron.it/dcs-world-multiplayer-italia.html",
+    "image":"https://www.flyingdonkeysvirtualsquadron.it/images/F_18_CLOSE.png"
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {
+        "@type":"Question",
+        "name":"Serve essere esperti per entrare nel multiplayer di DCS World?",
+        "acceptedAnswer":{"@type":"Answer","text":"No. Serve voglia di imparare, disponibilità a seguire procedure comuni e un atteggiamento collaborativo. L'esperienza arriva con training, missioni e confronto con altri piloti."}
+      },
+      {
+        "@type":"Question",
+        "name":"È obbligatorio avere un HOTAS per giocare DCS multiplayer?",
+        "acceptedAnswer":{"@type":"Answer","text":"Un HOTAS è fortemente consigliato perché rende più naturale la gestione di volo, sensori, armi e comunicazioni. Si può iniziare anche con setup più semplice, ma per missioni coordinate un buon sistema di controllo aiuta molto."}
+      },
+      {
+        "@type":"Question",
+        "name":"Cos'è SRS in DCS World?",
+        "acceptedAnswer":{"@type":"Answer","text":"SRS, Simple Radio Standalone, è il programma usato da molte community DCS per comunicazioni radio realistiche integrate con cockpit, frequenze e canali radio dei moduli."}
+      },
+      {
+        "@type":"Question",
+        "name":"Come posso entrare nei Flying Donkeys?",
+        "acceptedAnswer":{"@type":"Answer","text":"Il primo passo è entrare nel server Discord dei Flying Donkeys, presentarsi e parlare con la squadriglia. Da lì vengono spiegati onboarding, training e requisiti minimi per partecipare alle attività."}
+      }
+    ]
+  }
+  </script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="brand" href="index.html" aria-label="Flying Donkeys Home">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="logo">
+        <span class="brand-text">Flying Donkeys</span>
+      </a>
+
+      <div class="header-actions">
+        <a class="btn btn-ghost" href="index.html">← Torna alla Home</a>
+        <a class="btn btn-ghost" href="guide.html">Guide</a>
+        <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Discord</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section container guides-hero dcs-mp-hero">
+      <div class="guides-hero-card dcs-mp-hero-card">
+        <img src="images/logo.png" alt="Flying Donkeys" class="page-hero-logo">
+        <div>
+          <p class="muted">Guida italiana per nuovi piloti virtuali</p>
+          <h1 class="hero-title">DCS World Multiplayer Italia</h1>
+          <p class="hero-sub">
+            Vuoi iniziare a volare online su DCS World ma non sai da dove partire? Questa guida ti accompagna nei primi passi: setup, comunicazioni, moduli, server, mentalità e ingresso in una squadriglia virtuale italiana.
+          </p>
+          <div class="hero-proof-points dcs-mp-proof">
+            <span>DCS multiplayer italiano</span>
+            <span>Squadriglia virtuale</span>
+            <span>SRS e training</span>
+            <span>Milsim senza tossicità</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="section container">
+      <div class="guide-content-grid dcs-mp-layout">
+        <article class="dcs-mp-content">
+          <h2 class="section-title">Cos'è il multiplayer di DCS World</h2>
+          <p class="muted">
+            DCS World è un simulatore di combattimento aereo molto profondo. In single player puoi imparare cockpit, procedure e sistemi d'arma; in multiplayer, però, DCS cambia completamente natura: ogni volo diventa parte di un'operazione coordinata, con altri piloti, ruoli diversi, comunicazioni radio, briefing e obiettivi comuni.
+          </p>
+          <p class="muted">
+            Volare online non significa soltanto entrare in un server e decollare. Nelle missioni più strutturate si lavora come pacchetto: qualcuno protegge lo spazio aereo, qualcuno sopprime le difese nemiche, qualcuno colpisce un obiettivo, qualcuno fornisce supporto ravvicinato o ricognizione. È qui che DCS World multiplayer diventa davvero interessante.
+          </p>
+
+          <div class="dcs-mp-callout unified-card">
+            <span class="card-kicker">Obiettivo della guida</span>
+            <h3>Passare da “volo da solo” a “volo con un gruppo”</h3>
+            <p>
+              Questa pagina è pensata per chi cerca un gruppo DCS italiano, vuole capire come funziona una squadriglia virtuale e desidera entrare nel multiplayer in modo ordinato, senza sentirsi giudicato se è alle prime armi.
+            </p>
+          </div>
+
+          <h2 class="section-title guide-section-title">Cosa serve per iniziare</h2>
+          <p class="muted">
+            Non serve comprare tutto subito. Serve però costruire una base solida, perché in multiplayer devi poter pilotare, comunicare e seguire una missione senza combattere contro il tuo setup.
+          </p>
+
+          <div class="why-grid dcs-mp-requirements">
+            <article class="why-card">
+              <div class="why-icon">🎮</div>
+              <h3>Controlli</h3>
+              <p>Un joystick è il minimo. Un HOTAS è consigliato per gestire volo, e un sistema di Tracking per mantenere la formazione.</p>
+            </article>
+            <article class="why-card">
+              <div class="why-icon">🎧</div>
+              <h3>Cuffie e microfono</h3>
+              <p>La comunicazione è parte della simulazione. Un microfono chiaro vale più di mille mod installate male.</p>
+            </article>
+            <article class="why-card">
+              <div class="why-icon">📻</div>
+              <h3>SRS</h3>
+              <p>Simple Radio Standalone è lo standard per comunicazioni realistiche su molti server e gruppi DCS.</p>
+            </article>
+            <article class="why-card">
+              <div class="why-icon">🧠</div>
+              <h3>Metodo</h3>
+              <p>La cosa più importante è l'atteggiamento: ascoltare, imparare, fare domande e migliorare un volo alla volta.</p>
+            </article>
+          </div>
+
+          <h2 class="section-title guide-section-title">Server pubblici o squadriglia virtuale?</h2>
+          <p class="muted">
+            I server pubblici sono ottimi per fare pratica, testare moduli e accumulare ore di volo. Una squadriglia virtuale, invece, aggiunge continuità: training, procedure comuni, briefing, debriefing e missioni costruite per far lavorare insieme più piloti.
+          </p>
+          <p class="muted">
+            Se cerchi solo azione immediata, un server pubblico può bastare. Se invece vuoi capire come si pianifica una missione, come si vola in package, come si comunica in radio e come si cresce insieme ad altri piloti, una community strutturata è la strada giusta.
+          </p>
+
+          <div class="operate-grid dcs-mp-compare">
+            <article class="operate-card">
+              <span class="operate-kicker">Public server</span>
+              <h3>Libertà immediata</h3>
+              <p>Entri, scegli uno slot e voli. Perfetto per test, pratica e familiarità iniziale.</p>
+            </article>
+            <article class="operate-card">
+              <span class="operate-kicker">Squadriglia</span>
+              <h3>Continuità</h3>
+              <p>Training, missioni ricorrenti, procedure condivise e crescita graduale.</p>
+            </article>
+            <article class="operate-card">
+              <span class="operate-kicker">Milsim</span>
+              <h3>Flight Ops</h3>
+              <p>Ruoli, briefing, radio, tasking e obiettivi integrati in uno scenario comune.</p>
+            </article>
+            <article class="operate-card human-card">
+              <span class="operate-kicker">Community</span>
+              <h3>Persone sane</h3>
+              <p>Per noi il realismo funziona solo se resta umano: serietà in missione, rispetto fuori dal cockpit.</p>
+            </article>
+          </div>
+
+          <h2 class="section-title guide-section-title">Come scegliere il primo modulo</h2>
+          <p class="muted">
+            La scelta del primo modulo dipende dal tipo di esperienza che cerchi. Un caccia moderno multiruolo come F/A-18C o F-16C permette di esplorare aria-aria, aria-suolo, navigazione, sensori e operazioni coordinate. Un elicottero come AH-64D o UH-1H offre invece un ritmo diverso, più vicino al supporto tattico e al volo a bassa quota.
+          </p>
+          <p class="muted">
+            Il consiglio migliore è non comprare troppi moduli subito. Scegline uno, studialo con calma e impara a portarlo in missione in modo affidabile. In una squadriglia, un pilota costante su un solo velivolo è spesso più utile di uno che cambia modulo ogni settimana.
+          </p>
+
+          <h2 class="section-title guide-section-title">Il ruolo delle comunicazioni radio</h2>
+          <p class="muted">
+            Nel multiplayer serio, la radio non è decorazione. È lo strumento che tiene insieme la missione: check-in, push time, contatti, minacce, richieste di supporto, rientro e coordinamento tra voli. Per questo molte community usano SRS, che replica in modo più realistico frequenze, canali e radio di bordo.
+          </p>
+          <p class="muted">
+            Non serve parlare come un controllore professionista dal primo giorno. Serve però imparare a essere chiari, brevi e utili. Una comunicazione semplice ma ordinata è già un grande passo avanti rispetto al caos di una chat vocale libera.
+          </p>
+
+          <div class="guide-source-card unified-card">
+            <span class="card-kicker">Guide utili</span>
+            <h3>Prepara il tuo setup operativo</h3>
+            <div class="guide-actions guide-actions-row">
+              <a class="btn btn-primary" href="guida-srs.html">Guida SRS</a>
+              <a class="btn btn-ghost" href="guida-ovgme.html">Guida Open Mod Manager</a>
+              <a class="btn btn-ghost" href="guida-dtc.html">Guida DTC</a>
+            </div>
+          </div>
+
+          <h2 class="section-title guide-section-title">Come funzionano i Flying Donkeys</h2>
+          <p class="muted">
+            I Flying Donkeys sono una squadriglia virtuale italiana dedicata a DCS World, con focus su operazioni NATO-style, missioni cooperative e ambiente adulto. L'obiettivo non è creare una gerarchia tossica o un finto reparto militare, ma offrire un posto dove volare seriamente con persone affidabili.
+          </p>
+          <p class="muted">
+            Le attività ruotano intorno a training, missioni multiplayer, campagne, eventi con altre community e momenti di vita reale come raduni e incontri. La filosofia è semplice: professionalità in volo, amicizia prima dell'ego.
+          </p>
+
+          <h2 class="section-title guide-section-title">Come entrare in una squadriglia DCS italiana</h2>
+          <p class="muted">
+            Il modo migliore per entrare è presentarsi senza fretta. Racconta che esperienza hai, quali moduli possiedi, che disponibilità hai e cosa cerchi dal multiplayer. Una buona squadriglia non pretende che tu sappia già tutto: cerca persone affidabili, rispettose e disposte a imparare.
+          </p>
+
+          <div class="join-grid dcs-mp-join">
+            <article class="join-step">
+              <div class="join-number">1</div>
+              <h3>Entra su Discord</h3>
+              <p>Presentati, leggi le informazioni iniziali e fai le prime domande.</p>
+            </article>
+            <article class="join-step">
+              <div class="join-number">2</div>
+              <h3>Verifica setup</h3>
+              <p>Controlliamo audio, SRS, DCS, mod richieste e modulo scelto.</p>
+            </article>
+            <article class="join-step">
+              <div class="join-number">3</div>
+              <h3>Training</h3>
+              <p>Si lavora su basi, comunicazioni, procedure e volo coordinato.</p>
+            </article>
+            <article class="join-step">
+              <div class="join-number">4</div>
+              <h3>Missioni</h3>
+              <p>Quando sei pronto, entri nelle attività operative con il gruppo.</p>
+            </article>
+          </div>
+
+          <h2 class="section-title guide-section-title">FAQ</h2>
+          <div class="faq-list">
+            <article class="faq-item unified-card">
+              <h3>Serve essere esperti per iniziare?</h3>
+              <p>No. Serve voglia di imparare e disponibilità a seguire un percorso. L'esperienza arriva volando, sbagliando e facendo debrief con persone sane.</p>
+            </article>
+            <article class="faq-item unified-card">
+              <h3>Devo avere tutti i moduli?</h3>
+              <p>No. Meglio conoscere bene un modulo che possederne dieci senza saperli usare in missione.</p>
+            </article>
+            <article class="faq-item unified-card">
+              <h3>Il milsim è obbligatorio?</h3>
+              <p>Dipende da cosa si intende per milsim. Noi cerchiamo realismo, coordinamento e procedure, ma senza trasformare il gioco in un ambiente pesante o tossico.</p>
+            </article>
+            <article class="faq-item unified-card">
+              <h3>Posso entrare anche se ho poco tempo?</h3>
+              <p>Sì, purché ci sia chiarezza. Molti piloti hanno lavoro, famiglia e impegni: l'importante è comunicare la propria disponibilità e partecipare con costanza quando possibile.</p>
+            </article>
+          </div>
+
+          <div class="dcs-mp-final-cta unified-card">
+            <span class="card-kicker">Pronto al primo check-in?</span>
+            <h2>Unisciti ai Flying Donkeys</h2>
+            <p>
+              Se cerchi una squadriglia virtuale italiana per DCS World multiplayer, entra nel nostro Discord, presentati e inizia il percorso con noi.
+            </p>
+            <a class="btn btn-primary large" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Entra su Discord</a>
+          </div>
+        </article>
+
+        <aside class="dcs-mp-sidebar">
+          <div class="unified-card dcs-mp-sticky-card">
+            <span class="card-kicker">Percorso rapido</span>
+            <h3>Da zero al primo volo</h3>
+            <ol class="dcs-mp-checklist">
+              <li>Installa DCS World.</li>
+              <li>Scegli un modulo da studiare.</li>
+              <li>Configura joystick o HOTAS.</li>
+              <li>Installa e testa SRS.</li>
+              <li>Entra in Discord e presentati.</li>
+            </ol>
+            <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Parla con noi</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid footer-modern">
+      <div class="footer-card footer-brand-card unified-card">
+        <div class="footer-brand">
+          <img src="images/logo.png" alt="Flying Donkeys Logo" class="footer-logo">
+          <div>
+            <h3>Flying Donkeys</h3>
+            <p class="muted small">Stubborn as a mule - loyal as a Donkey</p>
+          </div>
+        </div>
+        <p class="footer-description">
+          Squadriglia virtuale italiana dedicata a DCS World, operazioni NATO-style,
+          addestramento cooperativo e teamwork tattico.
+        </p>
+        <div class="footer-cta">
+          <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Unisciti su Discord</a>
+        </div>
+      </div>
+
+      <nav class="footer-card footer-links-card unified-card" aria-label="Navigazione footer">
+        <span class="card-kicker">Sito</span>
+        <div class="footer-links">
+          <a href="index.html#about">Chi siamo</a>
+          <a href="index.html#how-we-operate">Il nostro approccio</a>
+          <a href="index.html#join">Come entrare</a>
+          <a href="index.html#operations">Operazioni</a>
+          <a href="index.html#gallery">Media</a>
+        </div>
+      </nav>
+
+      <nav class="footer-card footer-links-card unified-card" aria-label="Pagine utili">
+        <span class="card-kicker">Pagine utili</span>
+        <div class="footer-links">
+          <a href="dcs-world-multiplayer-italia.html">DCS Multiplayer Italia</a>
+          <a href="raduni.html">Raduni</a>
+          <a href="dove-siamo.html">Mappa</a>
+          <a href="guida-srs.html">Guida SRS</a>
+          <a href="guida-ovgme.html">Guida Open Mod Manager</a>
+          <a href="guida-dtc.html">Guida DTC</a>
+        </div>
+      </nav>
+
+      <nav class="footer-card footer-social-card unified-card" aria-label="Social Flying Donkeys">
+        <span class="card-kicker">Social</span>
+        <div class="footer-social">
+          <a href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Discord</a>
+          <a href="https://www.facebook.com/flyingdonkeysDCS" target="_blank" rel="noopener noreferrer">Facebook</a>
+          <a href="https://instagram.com/flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href="https://www.tiktok.com/@flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">TikTok</a>
+          <a href="https://youtube.com/@flyingdonkeysdcs443" target="_blank" rel="noopener noreferrer">YouTube</a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container footer-bottom footer-bottom-modern">
+      <span class="copyright small muted" id="copyright"></span>
+      <span class="small muted">Flying Donkeys Virtual Squadron • DCS World Community</span>
+    </div>
+  </footer>
+
+  <script src="script.js?v=12"></script>
+</body>
+</html>
