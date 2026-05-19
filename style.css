@@ -4359,9 +4359,10 @@ section[id]{
 .mission-card-media img{
   width:100%;
   height:100%;
-  object-fit:cover;
-  opacity:0.82;
+  object-fit:contain;
+  opacity:0.95;
   transition:0.35s ease;
+  background:#0b0d0f;
 }
 
 .mission-card:hover .mission-card-media img{
@@ -4550,5 +4551,10 @@ section[id]{
   .mission-detail-hero img{
     min-height:440px;
     height:440px;
+  }
+}
+@media(max-width:640px){
+  .mission-card-media{
+    height:220px;
   }
 }

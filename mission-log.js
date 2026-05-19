@@ -51,19 +51,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       return `
         <article class="mission-card unified-card">
 
-          <div class="mission-image-wrapper">
-            <img
-              src="${image}"
-              alt="${title}"
-              class="mission-image"
-              loading="lazy"
-              decoding="async"
-            >
-          </div>
+         <div class="mission-card-media">
+			<img
+			src="${image}"
+			alt="${title}"
+			loading="lazy"
+			decoding="async"
+			>
+		</div>
 
-          <div class="mission-content">
+		<div class="mission-card-body">
 
-            <div class="mission-meta">
+            <div class="mission-card-meta">
 
               <span class="mission-tag">
                 ${theatre}
