@@ -27,7 +27,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     text = escapeHTML(text);
 
-    text = text.replace(/^##\s(.+)$/gm, '<strong class="mission-heading">$1</strong>');
+    /* H2 */
+
+		text = text.replace(
+			/^##\s(.+)$/gm,
+			'<strong class="mission-heading">$1</strong>'
+			);
+
+	/* H3 */
+
+		text = text.replace(
+			/^###\s(.+)$/gm,
+			'<strong class="mission-subheading">$1</strong>'
+			);
+			
     text = text.replace(/^-+\s(.+)$/gm, '<li>$1</li>');
     text = text.replace(/(<li>.*?<\/li>)+/gs, match => `<ul class="mission-list">${match}</ul>`);
     text = text.replace(/\n\s*\n/g, '<br><br>');

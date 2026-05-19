@@ -1012,3 +1012,40 @@ body.modal-open{
 
   box-shadow:0 0 22px rgba(0,217,255,0.45);
 }
+
+/* ==========================================================
+   Mission headings
+========================================================== */
+
+.mission-heading{
+  display:block;
+
+  margin:
+    34px 0 18px;
+
+  color:var(--accent-1);
+
+  font-size:1.45rem;
+  font-weight:800;
+
+  letter-spacing:0.04em;
+
+  text-shadow:
+    0 0 16px rgba(0,217,255,0.16);
+}
+
+.mission-subheading{
+  display:block;
+
+  margin:
+    24px 0 12px;
+
+  color:#d7f7ff;
+
+  font-size:1.05rem;
+  font-weight:700;
+
+  letter-spacing:0.03em;
+
+  opacity:0.95;
+}
