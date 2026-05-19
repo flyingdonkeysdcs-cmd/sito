@@ -4596,51 +4596,72 @@ section[id]{
   }
 
 }
-/* =========================
-   Mission Log Images
-========================= */
+/* === FIX DEFINITIVO MISSION LOG === */
+
+.mission-log-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+  gap:22px;
+}
+
+.mission-card{
+  padding:0 !important;
+  overflow:hidden;
+}
 
 .mission-card-media{
-
   width:100%;
-
-  max-height:340px;
+  height:260px !important;
+  max-height:260px !important;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
   overflow:hidden;
-
-  background:rgba(0,0,0,0.28);
-
-  border-radius:14px 14px 0 0;
+  background:#0b0d0f;
 }
 
 .mission-card-media img{
+  width:100% !important;
+  height:100% !important;
 
-  width:100%;
-  height:auto;
-
-  max-height:340px;
-
-  object-fit:contain;
+  object-fit:contain !important;
+  object-position:center;
 
   display:block;
+  background:#0b0d0f;
 }
 
-/* Mobile */
+.mission-card:hover .mission-card-media img{
+  transform:none !important;
+}
+
+.mission-card-body{
+  padding:24px !important;
+}
+
+.mission-summary{
+  text-align:justify !important;
+  line-height:1.85;
+  color:var(--muted);
+  font-size:0.98rem;
+}
+
+.mission-summary br{
+  display:block;
+  content:"";
+  margin-bottom:0.85rem;
+}
 
 @media(max-width:640px){
-
   .mission-card-media{
-
-    max-height:220px;
+    height:190px !important;
+    max-height:190px !important;
   }
 
-  .mission-card-media img{
-
-    max-height:220px;
+  .mission-summary{
+    text-align:left !important;
+    line-height:1.75;
   }
-
 }
