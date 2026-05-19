@@ -4,28 +4,38 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (!container) return;
 	function formatMissionText(text) {
-		if (!text) return '';
 
-  return text
-    .split('\n')
-    .map(line => {
-      const clean = line.trim();
+  if (!text) return '';
 
-      if (!clean) return '<br>';
+  // normalizza newline
+  text = text.replace(/\r\n/g, '\n');
 
-      if (clean.startsWith('##')) {
-        return `<strong class="mission-heading">${clean.replace(/^##\s*/, '')}</strong>`;
-      }
+  // headings ##
+  text = text.replace(
+    /^##\s(.+)$/gm,
+    '<strong class="mission-heading">$1</strong>'
+  );
 
-      if (clean.startsWith('-')) {
-        return `<li>${clean.replace(/^-\s*/, '')}</li>`;
-      }
+  // liste -
+  text = text.replace(
+    /^-\s(.+)$/gm,
+    '<li>$1</li>'
+  );
 
-      return `<p>${clean}</p>`;
-    })
-    .join('')
-	.replace(/(<li>.*?<\/li>)+/gs, match => `<ul class="mission-list">${match}</ul>`);
- }
+  // wrappa liste consecutive
+  text = text.replace(
+    /(<li>.*?<\/li>)+/gs,
+    match => `<ul class="mission-list">${match}</ul>`
+  );
+
+  // paragrafi vuoti
+  text = text.replace(/\n\s*\n/g, '<br><br>');
+
+  // newline normali
+  text = text.replace(/\n/g, '<br>');
+
+  return text;
+}
   const SHEET_ID = '1EM0RGmnRNoso32nElUh-hn_Bjv5AvMneL7ks-pedZwk';
   const SHEET_NAME = 'AAR';
 
