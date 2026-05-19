@@ -1,6 +1,4 @@
-import { Redis } from "@upstash/redis";
-
-const redis = Redis.fromEnv();
+import { kv } from "@vercel/kv";
 
 export default async function handler(req, res) {
   const CACHE_KEY = "dcs-news-cache";
@@ -28,7 +26,7 @@ export default async function handler(req, res) {
 
     const latestUrl = `https://www.digitalcombatsimulator.com${uniqueLinks[0]}`;
 
-    const cached = await redis.get(CACHE_KEY);
+    const cached = await kv.get(CACHE_KEY);
 
     if (cached?.latestUrl === latestUrl && cached?.news?.length) {
       res.setHeader(
@@ -91,33 +89,43 @@ export default async function handler(req, res) {
 
           let summary = `Newsletter pubblicata il ${releaseDate}. Riassunto non disponibile.`;
 
-          const aiResponse = await fetch("https://api.openai.com/v1/responses", {
-			method: "POST",
-			headers: {
-			"Content-Type": "application/json",
-				Authorization: "Bearer " + process.env.OPENAI_API_KEY
-		},
-			body: JSON.stringify({
-				model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
-				input:
-				"Data di rilascio della newsletter: " + releaseDate + ".\n\n" +
-				"Traduci e riassumi in italiano questa newsletter DCS/Eagle Dynamics in massimo 2 frasi.\n" +
-				"Includi la data di rilascio nel testo finale.\n" +
-				"Mantieni nomi tecnici, moduli e velivoli originali. Non inventare nulla.\n\n" +
-				introText.slice(0, 2500)
-			})
-			});
+          if (process.env.OPENAI_API_KEY) {
+            const aiResponse = await fetch("https://api.openai.com/v1/responses", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + process.env.OPENAI_API_KEY
+              },
+              body: JSON.stringify({
+                model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
+                input:
+                  "Data di rilascio della newsletter: " + releaseDate + ".\n\n" +
+                  "Traduci e riassumi in italiano questa newsletter DCS/Eagle Dynamics in massimo 2 frasi.\n" +
+                  "Includi la data di rilascio nel testo finale.\n" +
+                  "Mantieni nomi tecnici, moduli e velivoli originali. Non inventare nulla.\n\n" +
+                  introText.slice(0, 2500)
+              })
+            });
 
-          const aiData = await aiResponse.json();
+            let aiData = {};
 
-          if (aiResponse.ok) {
-            summary =
-              aiData.output_text ||
-              aiData.output?.[0]?.content?.[0]?.text ||
-              aiData.output?.[1]?.content?.[0]?.text ||
-              summary;
+            try {
+              aiData = await aiResponse.json();
+            } catch (jsonError) {
+              console.error("OPENAI JSON ERROR:", jsonError);
+            }
+
+            if (aiResponse.ok) {
+              summary =
+                aiData.output_text ||
+                aiData.output?.[0]?.content?.[0]?.text ||
+                aiData.output?.[1]?.content?.[0]?.text ||
+                summary;
+            } else {
+              console.error("OPENAI ERROR:", aiData);
+            }
           } else {
-            console.error("OPENAI ERROR:", aiData);
+            console.error("OPENAI_API_KEY mancante.");
           }
 
           return {
@@ -139,7 +147,7 @@ export default async function handler(req, res) {
       })
     );
 
-    await redis.set(CACHE_KEY, {
+    await kv.set(CACHE_KEY, {
       latestUrl,
       updatedAt: new Date().toISOString(),
       news
