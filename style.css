@@ -4558,3 +4558,25 @@ section[id]{
     height:220px;
   }
 }
+.mission-summary,
+.mission-debrief,
+.mission-content p{
+
+  text-align:justify;
+
+  line-height:1.9;
+
+  hyphens:auto;
+
+  text-wrap:pretty;
+}
+@media(max-width:640px){
+
+  .mission-summary,
+  .mission-debrief,
+  .mission-content p{
+
+    text-align:left;
+  }
+
+}
