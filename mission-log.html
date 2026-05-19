@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Mission Log Flying Donkeys: After Action Report, debriefing e operazioni multiplayer DCS World della squadriglia virtuale italiana.">
+  <meta name="theme-color" content="#00d9ff">
+  <meta property="og:site_name" content="Flying Donkeys Virtual Squadron">
+  <meta property="og:title" content="Mission Log DCS World | Flying Donkeys Virtual Squadron">
+  <meta property="og:description" content="After Action Report, debriefing e operazioni multiplayer DCS World della squadriglia virtuale italiana Flying Donkeys.">
+  <meta property="og:url" content="https://www.flyingdonkeysvirtualsquadron.it/mission-log.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://www.flyingdonkeysvirtualsquadron.it/images/F_18_CLOSE.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mission Log DCS World | Flying Donkeys">
+  <meta name="twitter:description" content="After Action Report e debriefing delle missioni DCS World multiplayer dei Flying Donkeys.">
+  <meta name="twitter:image" content="https://www.flyingdonkeysvirtualsquadron.it/images/F_18_CLOSE.png">
+
+  <title>Mission Log DCS World – After Action Reports | Flying Donkeys</title>
+  <link rel="canonical" href="https://www.flyingdonkeysvirtualsquadron.it/mission-log.html">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=100">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="apple-touch-icon" href="/images/favicon.png">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"CollectionPage",
+    "name":"Mission Log Flying Donkeys",
+    "description":"Archivio After Action Report e debriefing delle missioni multiplayer DCS World dei Flying Donkeys Virtual Squadron.",
+    "url":"https://www.flyingdonkeysvirtualsquadron.it/mission-log.html",
+    "publisher":{
+      "@type":"Organization",
+      "name":"Flying Donkeys Virtual Squadron",
+      "url":"https://www.flyingdonkeysvirtualsquadron.it/",
+      "logo":"https://www.flyingdonkeysvirtualsquadron.it/images/logo.png"
+    }
+  }
+  </script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="brand" href="index.html" aria-label="Flying Donkeys Home">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="logo">
+        <span class="brand-text">Flying Donkeys</span>
+      </a>
+
+      <div class="header-actions">
+        <a class="btn btn-ghost" href="index.html">← Home</a>
+        <a class="btn btn-ghost" href="dcs-world-multiplayer-italia.html">Inizia con DCS</a>
+        <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Discord</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="missionArchiveView">
+      <section class="section container mission-log-hero">
+        <div class="mission-log-hero-card">
+          <img src="images/logo.png" alt="Flying Donkeys" class="page-hero-logo">
+          <div>
+            <p class="muted">Flying Donkeys Virtual Squadron</p>
+            <h1 class="hero-title">Mission Log</h1>
+            <p class="hero-sub">
+              After Action Report, debriefing e operazioni multiplayer DCS World della squadriglia. Un archivio vivo delle missioni FD e JATF, pensato per raccontare attività reale, coordinamento e vita operativa della community.
+            </p>
+            <div class="mission-log-kpis">
+              <span>DCS World Multiplayer</span>
+              <span>After Action Reports</span>
+              <span>Debriefing Operativi</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider">
+
+      <section class="section container">
+        <div class="mission-toolbar">
+          <div>
+            <h2 class="section-title">Archivio Operazioni</h2>
+            <p class="muted">Missioni lette automaticamente dal foglio Google della squadriglia.</p>
+          </div>
+          <div class="mission-filters" id="missionFilters" aria-label="Filtri Mission Log"></div>
+        </div>
+
+        <p class="mission-loading" id="missionLogLoading">Caricamento Mission Log...</p>
+        <p class="mission-empty" id="missionLogEmpty" hidden>Nessuna missione disponibile.</p>
+        <div class="mission-log-grid" id="missionLogGrid"></div>
+      </section>
+    </div>
+
+    <div id="missionDetailView" hidden>
+      <section class="section container mission-back-link">
+        <a class="btn btn-ghost" href="mission-log.html">← Torna al Mission Log</a>
+      </section>
+    </div>
+  </main>
+
+<footer class="site-footer">
+
+  <div class="container footer-grid footer-modern">
+
+    <div class="footer-card footer-brand-card unified-card">
+
+      <div class="footer-brand">
+        <img src="images/logo.png" alt="Flying Donkeys Logo" class="footer-logo">
+
+        <div>
+          <h3>Flying Donkeys</h3>
+          <p class="muted small">
+            Stubborn as a mule - loyal as a Donkey
+          </p>
+        </div>
+      </div>
+
+      <p class="footer-description">
+        Squadriglia virtuale italiana dedicata a DCS World, operazioni NATO-style,
+        addestramento cooperativo e teamwork tattico.
+      </p>
+
+      <div class="footer-cta">
+        <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">
+          Unisciti su Discord
+        </a>
+      </div>
+
+    </div>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Navigazione footer">
+
+      <span class="card-kicker">Sito</span>
+
+      <div class="footer-links">
+        <a href="index.html#about">Chi siamo</a>
+        <a href="index.html#how-we-operate">Il nostro approccio</a>
+        <a href="index.html#join">Come entrare</a>
+        <a href="index.html#operations">Operazioni</a>
+        <a href="index.html#gallery">Media</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-links-card unified-card" aria-label="Pagine utili">
+
+      <span class="card-kicker">Pagine utili</span>
+
+      <div class="footer-links">
+        <a href="raduni.html">Raduni</a>
+        <a href="dove-siamo.html">Mappa</a>
+        <a href="guida-srs.html">Guida SRS</a>
+        <a href="guida-ovgme.html">Guida Open Mod Manager</a>
+        <a href="guida-dtc.html">Guida DTC</a>
+      </div>
+
+    </nav>
+
+    <nav class="footer-card footer-social-card unified-card" aria-label="Social Flying Donkeys">
+
+      <span class="card-kicker">Social</span>
+
+      <div class="footer-social">
+        <a href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Discord</a>
+        <a href="https://www.facebook.com/flyingdonkeysDCS" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="https://instagram.com/flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.tiktok.com/@flyingdonkeysdcs" target="_blank" rel="noopener noreferrer">TikTok</a>
+        <a href="https://youtube.com/@flyingdonkeysdcs443" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </div>
+
+    </nav>
+
+  </div>
+
+  <div class="container footer-bottom footer-bottom-modern">
+
+    <span class="copyright small muted" id="copyright"></span>
+
+    <span class="small muted">
+      Flying Donkeys Virtual Squadron • DCS World Community
+    </span>
+
+  </div>
+
+</footer>
+
+  <script src="mission-log.js?v=1"></script>
+</body>
+</html>
