@@ -790,3 +790,225 @@ body.modal-open{
     padding:22px;
   }
 }
+
+/* ==========================================================
+   FDVS Mission Log - Uniform UI polish
+========================================================== */
+
+/* Scrollbar popup stile sito */
+
+.mission-modal,
+.mission-modal-content{
+  scrollbar-width:thin;
+  scrollbar-color:var(--accent-1) rgba(255,255,255,0.04);
+}
+
+.mission-modal::-webkit-scrollbar,
+.mission-modal-content::-webkit-scrollbar{
+  width:10px;
+}
+
+.mission-modal::-webkit-scrollbar-track,
+.mission-modal-content::-webkit-scrollbar-track{
+  background:rgba(255,255,255,0.04);
+  border-radius:10px;
+}
+
+.mission-modal::-webkit-scrollbar-thumb,
+.mission-modal-content::-webkit-scrollbar-thumb{
+  background:linear-gradient(
+    180deg,
+    var(--accent-1),
+    var(--accent-2)
+  );
+
+  border-radius:10px;
+
+  border:2px solid rgba(22,24,26,0.96);
+
+  box-shadow:0 0 18px rgba(0,217,255,0.22);
+}
+
+.mission-modal::-webkit-scrollbar-thumb:hover,
+.mission-modal-content::-webkit-scrollbar-thumb:hover{
+  background:var(--accent-1);
+  box-shadow:0 0 24px rgba(0,217,255,0.45);
+}
+
+/* Lista missioni più coerente */
+
+.mission-event-index{
+  background:var(--card-bg-unified);
+  border:1px solid rgba(255,255,255,0.05);
+  box-shadow:var(--shadow);
+}
+
+.mission-event-row{
+  position:relative;
+
+  background:transparent;
+
+  border:1px solid rgba(255,255,255,0.04);
+
+  box-shadow:none;
+
+  overflow:hidden;
+}
+
+.mission-event-row::before{
+  content:"";
+
+  position:absolute;
+
+  left:18px;
+  right:18px;
+  top:0;
+
+  height:1px;
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(0,217,255,0.7),
+    transparent
+  );
+
+  opacity:0.35;
+}
+
+.mission-event-row:hover{
+  transform:translateY(-3px) scale(1.01);
+
+  border-color:rgba(0,217,255,0.38);
+
+  box-shadow:
+    0 0 24px rgba(0,217,255,0.14),
+    0 10px 28px rgba(0,0,0,0.35);
+}
+
+/* Data */
+
+.mission-event-date{
+  color:var(--accent-1);
+
+  font-weight:800;
+
+  letter-spacing:0.05em;
+
+  text-shadow:0 0 12px rgba(0,217,255,0.22);
+}
+
+/* Teatro */
+
+.mission-event-theatre{
+  padding:8px 12px;
+
+  border-radius:999px;
+
+  border:1px solid rgba(0,217,255,0.16);
+
+  background:rgba(0,217,255,0.05);
+
+  color:var(--accent-1);
+
+  font-size:0.72rem;
+
+  letter-spacing:0.08em;
+
+  text-transform:uppercase;
+}
+
+/* Popup */
+
+.mission-modal{
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(0,217,255,0.08),
+      transparent 28%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(22,24,26,0.98),
+      rgba(12,14,16,0.98)
+    );
+
+  border:1px solid rgba(0,217,255,0.24);
+
+  box-shadow:
+    0 0 38px rgba(0,217,255,0.14),
+    0 18px 44px rgba(0,0,0,0.55);
+}
+
+/* Header popup */
+
+.mission-modal-body h2{
+  font-size:2rem;
+
+  line-height:1.15;
+
+  margin-bottom:18px;
+}
+
+/* Meta popup */
+
+.mission-modal-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+
+  margin-bottom:24px;
+}
+
+.mission-modal-meta span{
+  padding:8px 12px;
+
+  border-radius:999px;
+
+  background:rgba(0,217,255,0.06);
+
+  border:1px solid rgba(0,217,255,0.16);
+
+  color:var(--accent-1);
+
+  font-size:0.78rem;
+
+  font-weight:700;
+}
+
+/* Debriefing */
+
+.mission-summary{
+  color:var(--text);
+
+  line-height:1.9;
+}
+
+.mission-heading{
+  color:var(--accent-1);
+
+  text-shadow:0 0 12px rgba(0,217,255,0.18);
+}
+
+/* Close button */
+
+.mission-modal-close{
+  width:44px;
+  height:44px;
+
+  border-radius:50%;
+
+  background:rgba(10,12,14,0.82);
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  transition:0.22s ease;
+}
+
+.mission-modal-close:hover{
+  background:var(--accent-1);
+
+  color:#021014;
+
+  box-shadow:0 0 22px rgba(0,217,255,0.45);
+}
