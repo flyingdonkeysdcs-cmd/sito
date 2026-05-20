@@ -1308,16 +1308,3 @@ async function loadDcsNews() {
 loadDcsNews();
 
 });
-
-const openRosterMobile = document.getElementById("openRosterMobile");
-const rosterMenuMobile = document.getElementById("rosterMenuMobile");
-
-openRosterMobile?.addEventListener("click", () => {
-	const isHidden = rosterMenuMobile.hasAttribute("hidden");
-
-	if (isHidden) {
-		rosterMenuMobile.removeAttribute("hidden");
-	} else {
-		rosterMenuMobile.setAttribute("hidden", "");
-	}
-});
