@@ -3496,11 +3496,11 @@ section[id]{
 
 .dcs-news-grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:1fr;
   gap:18px;
-  margin-top:24px;
+  max-width:900px;
+  margin:24px auto 0;
 }
-
 .dcs-news-card{
   padding:24px;
 }
