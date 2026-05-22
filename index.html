@@ -24,6 +24,8 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="style.css?v=102">
+   <link rel="stylesheet" href="mission-log.css?v=1">
+   <link rel="stylesheet" href="event-preview.css?v=1">
   <link rel="canonical" href="https://www.flyingdonkeysvirtualsquadron.it/">
   <script type="application/ld+json">
 {
@@ -80,6 +82,7 @@
 
 			<nav class="header-nav" aria-label="Navigazione principale">
 				<a href="#about">Chi siamo</a>
+				<a href="#mission-preview">Ultime Operazioni</a>
 				<a href="#how-we-operate">Il Nostro Approccio</a>
 				<a href="#join">Unisciti</a>
 				<a href="#operations">Operazioni</a>
@@ -132,10 +135,10 @@
 			<h2 class="hero-tagline">
 				Modern NATO-Style Air Operations
 			</h2>
-          <p class="hero-sub">
-            Squadriglia virtuale italiana specializzata in operazioni aeree NATO-style su larga scala in <a href="https://www.digitalcombatsimulator.com/it/" class="hero-link">
-			<strong>Digital Combat Simulator (DCS)</strong></a>. Missioni coordinate, SEAD, STRIKE, CAP e attività multiplayer integrate in un ambiente collaborativo, maturo, privo di tossicità e non gerarchico.
-          </p>
+			<p class="hero-sub">
+				Squadriglia virtuale italiana dedicata a <a href="https://www.digitalcombatsimulator.com/it/" class="hero-link">
+			<strong>Digital Combat Simulator</strong></a>: missioni NATO-style, teamwork tattico in ambiente maturo, collaborativo e privo di gerarchie tossiche.
+			</p>
 
           <div class="hero-ctas">
 
@@ -143,14 +146,14 @@
 				href="https://discord.gg/ZSgUBNUhgP"
 				target="_blank">
 
-				Unisciti Alla Squadriglia!
+				Unisciti alla Squadriglia
 
 			</a>
 
 			<a class="btn btn-primary large"
 			href="mission-log.html">
 
-			Eventi Missioni
+			Guarda le Missioni
 
 			</a>
 
@@ -210,15 +213,37 @@
         Chi Siamo
       </h2>
 
-      <p class="lead">
-        Il Flying Donkeys Virtual Squadron è un gruppo di volo virtuale italiano fondato nel Marzo del 2020 da appassionati di volo reale e simulato.
-		Specializzata in operazioni aeree multiplayer coordinate in DCS World, la squadriglia conduce missioni NATO-style integrate con package strike, SEAD, CAP con particolare attenzione alle attività cooperative multi-gruppo come il Joint Air Task Force.
-		Composta da "ragazzi" sugli 'enta e 'anta, adotta da sempre una filosofia mil-sim con debriefing e coordinamento tattico, mantenendo però un ambiente collaborativo, informale e amichevole.
-      </p>
+     <p class="lead">
+		I Flying Donkeys sono un gruppo di volo virtuale italiano dedicato a DCS World e alla simulazione aerea avanzata. Operiamo con procedure realistiche, coordinamento tattico NATO, comunicazioni strutturate e attenzione agli aspetti operativi del volo operativo militare, mantenendo un ambiente maturo, collaborativo e privo di gerarchie artificiali o roleplay militare forzato.
+		</p>
 
     </section>
+	
+<!-- Event Mission -->	
 
     <hr class="section-divider">
+	
+<section class="section mission-preview-section" id="mission-preview">
+  <div class="container">
+    <span class="card-kicker">Mission Log</span>
+
+    <h2 class="section-title">Ultime Operazioni</h2>
+
+    <p class="lead">
+      After Action Report, debriefing operativi e missioni multiplayer DCS World dei Flying Donkeys.
+    </p>
+
+    <div class="mission-preview-grid" id="homeMissionPreview">
+      <p class="muted">Caricamento ultime operazioni...</p>
+    </div>
+
+    <div class="mission-preview-footer">
+      <a class="btn btn-primary large" href="mission-log.html">
+        Apri Mission Log
+      </a>
+    </div>
+  </div>
+</section>
 
 <!-- Why Join -->
 <section class="section container" id="why-join">
@@ -347,50 +372,49 @@
     Come Entrare
   </h2>
 
-  <p class="muted">
-    Entrare nei Flying Donkeys è semplice. Non serve essere esperti:
-    ciò che conta davvero è la voglia di imparare e volare in squadra.
-  </p>
+  <p class="lead">
+  Entrare nei Flying Donkeys significa condividere passione per la simulazione aerea avanzata, spirito di squadra e voglia di migliorare missione dopo missione. Non cerchiamo piloti perfetti, ma persone mature con cui volare bene insieme.
+</p>
 
   <div class="join-grid">
 
     <div class="join-step unified-card">
-      <span class="card-kicker">Ingresso</span>
+      <span class="card-kicker">Entra</span>
 
-      <h3>Entra Nel Discord</h3>
+      <h3>Discord</h3>
 
       <p>
-        Unisciti al nostro server Discord e presentati alla squadriglia.
+        Entra nel nostro Discord, presentati e scopri le attività operative della squadriglia.
       </p>
     </div>
 
     <div class="join-step unified-card">
-      <span class="card-kicker">Setup</span>
+      <span class="card-kicker">Configura</span>
 
-      <h3>Configura Gli Strumenti</h3>
+      <h3>Strumenti</h3>
 
       <p>
-        Ti aiuteremo a configurare SRS, DTC e gli strumenti necessari.
+        Ti aiutiamo a configurare SRS, mod e strumenti necessari per volare con il gruppo.
       </p>
     </div>
 
     <div class="join-step unified-card">
-      <span class="card-kicker">Addestramento</span>
+      <span class="card-kicker">Impara</span>
 
-      <h3>Inizia L’Addestramento</h3>
+      <h3>Addestramento</h3>
 
       <p>
-        Verrai seguito durante il percorso iniziale con briefing e voli dedicati.
+        Training pratici, procedure operative e coordinamento tattico per integrarsi nelle missioni multiplayer.
       </p>
     </div>
 
     <div class="join-step unified-card">
-      <span class="card-kicker">Missioni</span>
+      <span class="card-kicker">Vola</span>
 
-      <h3>Vola Con La Squadriglia</h3>
+      <h3>Operazioni</h3>
 
       <p>
-        Partecipa alle missioni operative e cresci insieme al gruppo.
+        Missioni cooperative DCS World con briefing, package coordinati e attività operative condivise.
       </p>
     </div>
 
@@ -398,13 +422,14 @@
 
   <div class="join-features">
 
-    <div class="join-feature">✔ Sistema HOTAS</div>
+    <div class="join-feature">Età minima 21+</div>
 
-    <div class="join-feature">✔ TrackIR o Equivalente</div>
-
-    <div class="join-feature">✔ Minimo 21 anni</div>
+    <div class="join-feature">Microfono e SRS</div>
 	
-	<div class="join-feature">✔ Conoscenza base dell'inglese</div>
+	<div class="join-feature">Conoscenza base dell’inglese operativo</div>
+
+    <div class="join-feature">Voglia di imparare e lavorare in team</div>
+
   </div>
 
   <div class="join-cta">
@@ -413,7 +438,7 @@
        href="https://discord.gg/ZSgUBNUhgP"
        target="_blank">
 
-      Cosa aspetti? Unisciti Ora!
+      Unisciti al prossimo volo
 
     </a>
 
@@ -874,8 +899,17 @@
   </div>
 
   <!-- JS -->
-  <script src="mobile.js?v=1"></script>
   <script src="script.js?v=100"></script>
+  <script src="mobile.js?v=1"></script>
+  <script src="home-mission-preview.js?v=1"></script>
+  
+  <div class="mission-modal-backdrop" id="homeMissionModal" hidden aria-hidden="true">
+  <div class="mission-modal" role="dialog" aria-modal="true">
+    <button class="mission-modal-close" type="button" id="homeMissionModalClose" aria-label="Chiudi debriefing">×</button>
+    <div class="mission-modal-content" id="homeMissionModalContent"></div>
+  </div>
+</div>
+
 
 </body>
 </html>
