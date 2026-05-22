@@ -244,6 +244,7 @@ body::before{
   animation:heroZoom 18s ease-in-out infinite alternate;
 }
 
+@keyframes heroZoom{
   from{
     transform:scale(1);
   }
@@ -251,8 +252,8 @@ body::before{
   to{
     transform:scale(1.06);
   }
-
 }
+
 @media(max-width:640px){
 
   .hero-video{
@@ -1146,220 +1147,7 @@ textarea{
 }
 
 
-/* ==========================================================
-   MOBILE HAMBURGER
-========================================================== */
-
-.mobile-menu-toggle{
-  display:none;
-
-  width:44px;
-  height:44px;
-
-  border:1px solid rgba(255,255,255,0.12);
-
-  border-radius:10px;
-
-  background:rgba(255,255,255,0.03);
-
-  cursor:pointer;
-
-  align-items:center;
-  justify-content:center;
-
-  flex-direction:column;
-
-  gap:5px;
-
-  padding:0;
-}
-
-.mobile-menu-toggle span{
-  width:22px;
-  height:2px;
-
-  background:var(--text);
-
-  border-radius:999px;
-
-  transition:
-    transform 0.22s ease,
-    opacity 0.22s ease;
-}
-
-/* ================= MOBILE ================= */
-
-@media(max-width:900px){
-
-  .header-inner{
-
-    grid-template-columns:
-      minmax(0,1fr)
-      auto !important;
-
-    gap:12px;
-  }
-
-  .brand-text{
-    display:inline-flex !important;
-  }
-
-  .mobile-menu-toggle{
-    display:flex;
-  }
-
-  .mobile-menu{
-
-    display:none;
-
-    grid-column:1 / -1;
-
-    width:100%;
-
-    padding-top:14px;
-    padding-bottom:18px;
-
-    border-top:
-      1px solid rgba(255,255,255,0.06);
-  }
-
-  .mobile-menu.is-open{
-    display:block;
-  }
-
-  .mobile-menu .header-actions,
-  .mobile-menu .header-nav{
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:stretch;
-
-    gap:10px;
-  }
-
-  .mobile-menu .header-nav{
-    margin-top:12px;
-  }
-
-  .mobile-menu .btn,
-  .mobile-menu .header-nav a{
-
-    width:100%;
-
-    min-height:44px;
-
-    justify-content:center;
-
-    text-align:center;
-  }
-
-  .mobile-menu-toggle.is-open span:nth-child(1){
-    transform:
-      translateY(7px)
-      rotate(45deg);
-  }
-
-  .mobile-menu-toggle.is-open span:nth-child(2){
-    opacity:0;
-  }
-
-  .mobile-menu-toggle.is-open span:nth-child(3){
-    transform:
-      translateY(-7px)
-      rotate(-45deg);
-  }
-
-  .roster-menu{
-
-    position:static !important;
-
-    width:100% !important;
-
-    margin-top:10px;
-  }
-
-}
-
-/* ================= DESKTOP ================= */
-
-/* ==========================================================
-   DESKTOP / MOBILE MENU SEPARATION
-   ========================================================== */
-
-.desktop-menu{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  align-items:flex-end;
-}
-
-/* ================= DESKTOP ================= */
-
-@media(min-width:901px){
-
-  .desktop-menu{
-    display:flex;
-  }
-
-  .mobile-menu,
-  .mobile-menu-toggle{
-    display:none !important;
-  }
-
-}
-
-/* ================= MOBILE ================= */
-
-@media(max-width:900px){
-
-  .desktop-menu{
-    display:none !important;
-  }
-
-  .mobile-menu-toggle{
-    display:flex;
-  }
-
-  .mobile-menu{
-    display:none;
-
-    grid-column:1 / -1;
-
-    width:100%;
-
-    padding-top:14px;
-    padding-bottom:18px;
-
-    border-top:
-      1px solid rgba(255,255,255,0.06);
-  }
-
-  .mobile-menu.is-open{
-    display:block;
-  }
-
-}
-
-@media(max-width:640px){
-
-  .brand-text{
-    display:none;
-  }
-
-  .header-inner{
-    min-height:auto;
-  }
-
-  .header-nav{
-    order:3;
-  }
-
-  .header-actions{
-    order:2;
-  }
-}
+/* Header mobile rules: consolidated in final header block below. */
 
 /* Responsive */
 .header-actions{
@@ -3216,190 +3004,16 @@ body.has-pilot-page-bg::before{
 
 /* Dropdown roster centrato rispetto al tasto */
 .site-header .roster-dropdown{
-  position:relative !important;
+  position:relative;
 }
 
 .site-header .roster-menu{
-  left:50% !important;
-  right:auto !important;
-  transform:translateX(-50%) !important;
-  top:120% !important;
+  left:50%;
+  right:auto;
+  transform:translateX(-50%);
+  top:120%;
 }
 
-/* Mobile: righe compatte e leggibili */
-@media(max-width:640px){
-  .site-header .header-inner{
-    gap:7px !important;
-    padding-top:8px !important;
-    padding-bottom:8px !important;
-  }
-
-  .site-header .brand-text{
-    display:inline-flex !important;
-    font-size:0.82rem !important;
-  }
-
-  .site-header .logo{
-    width:36px !important;
-    height:36px !important;
-  }
-
-  .site-header .header-actions{
-    gap:6px !important;
-  }
-
-  .site-header .btn{
-    font-size:0.70rem !important;
-  }
-
-  .site-header .btn-ghost{
-    padding:6px 8px !important;
-  }
-
-  .site-header .header-nav{
-    gap:4px !important;
-  }
-
-  .site-header .header-nav a{
-    font-size:0.68rem !important;
-    padding:5px 7px !important;
-  }
-
-  .site-header .roster-menu{
-    width:min(260px, 92vw) !important;
-  }
-}
-
-/* ==========================================================
-   HEADER HOMEPAGE - layout verticale ordinato v2
-   Tasti invariati, hero-nav più piccola, logo più morbido
-   ========================================================== */
-
-.site-header .header-inner{
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:8px !important;
-  min-height:auto !important;
-  padding-top:10px !important;
-  padding-bottom:10px !important;
-}
-
-.site-header .brand{
-  order:1 !important;
-  flex:none !important;
-  justify-content:center !important;
-  align-items:center !important;
-  gap:10px !important;
-}
-
-.site-header .header-actions{
-  order:2 !important;
-  width:100% !important;
-  display:flex !important;
-  justify-content:center !important;
-  align-items:center !important;
-  flex-wrap:wrap !important;
-  gap:12px !important;
-}
-
-/* Dimensione tasti principali lasciata come prima */
-.site-header .header-actions .btn,
-.site-header .header-actions .btn-ghost{
-  font-size:0.95rem !important;
-  padding:10px 16px !important;
-  border-radius:8px !important;
-}
-
-.site-header .header-nav{
-  order:3 !important;
-  width:100% !important;
-  display:flex !important;
-  justify-content:center !important;
-  align-items:center !important;
-  flex-wrap:wrap !important;
-  gap:5px !important;
-  padding-top:2px !important;
-}
-
-/* Ridotta solo la nav: Chi siamo / Approccio / Unisciti / ecc */
-.site-header .header-nav a{
-  font-size:0.74rem !important;
-  padding:5px 8px !important;
-  line-height:1.2 !important;
-  letter-spacing:0.02em !important;
-}
-
-/* Logo più morbido/anti-aliased */
-.site-header .logo{
-  width:48px !important;
-  height:48px !important;
-  image-rendering:auto !important;
-  transform:translateZ(0) scale(1.001);
-  backface-visibility:hidden;
-  filter:
-    drop-shadow(0 0 12px rgba(0,217,255,0.18))
-    blur(0.01px);
-}
-
-.site-header .brand-text{
-  font-size:1.05rem !important;
-  letter-spacing:0.8px !important;
-}
-
-/* Dropdown roster centrato rispetto al tasto */
-.site-header .roster-dropdown{
-  position:relative !important;
-}
-
-.site-header .roster-menu{
-  left:50% !important;
-  right:auto !important;
-  transform:translateX(-50%) !important;
-  top:120% !important;
-}
-
-@media(max-width:640px){
-  .site-header .header-inner{
-    gap:7px !important;
-    padding-top:8px !important;
-    padding-bottom:8px !important;
-  }
-
-  .site-header .brand-text{
-    display:inline-flex !important;
-    font-size:0.92rem !important;
-  }
-
-  .site-header .logo{
-    width:42px !important;
-    height:42px !important;
-  }
-
-  .site-header .header-actions{
-    gap:8px !important;
-  }
-
-  .site-header .header-actions .btn,
-  .site-header .header-actions .btn-ghost{
-    font-size:0.82rem !important;
-    padding:8px 11px !important;
-  }
-
-  .site-header .header-nav{
-    gap:4px !important;
-  }
-
-  .site-header .header-nav a{
-    font-size:0.66rem !important;
-    padding:5px 6px !important;
-  }
-
-  .site-header .roster-menu{
-    width:min(260px, 92vw) !important;
-  }
-}
 /* FIX anchor scroll sotto header sticky */
 
 section[id]{
@@ -3640,6 +3254,7 @@ section[id]{
   .section-divider{
     display:none;
   }
+}
 
 @media(max-width:768px){
 
@@ -3659,87 +3274,6 @@ section[id]{
     background-position:center;
   }
 
-}
-
-.mobile-menu-toggle{
-  display:none;
-  width:44px;
-  height:44px;
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:10px;
-  background:rgba(255,255,255,0.03);
-  cursor:pointer;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  gap:5px;
-}
-
-.mobile-menu-toggle span{
-  width:22px;
-  height:2px;
-  background:var(--text);
-  border-radius:999px;
-  transition:0.2s ease;
-}
-
-.mobile-menu{
-  display:contents;
-}
-
-@media(max-width:900px){
-
-  .header-inner{
-    grid-template-columns:auto auto;
-  }
-
-  .mobile-menu-toggle{
-    display:flex;
-    justify-self:end;
-  }
-
-  .mobile-menu{
-    display:none;
-    grid-column:1 / -1;
-    width:100%;
-    padding:14px 0 18px;
-    border-top:1px solid rgba(255,255,255,0.06);
-  }
-
-  .mobile-menu.is-open{
-    display:block;
-  }
-
-  .header-nav,
-  .header-actions{
-    flex-direction:column;
-    align-items:stretch;
-    justify-content:flex-start;
-    gap:10px;
-  }
-
-  .header-nav{
-    margin-top:12px;
-  }
-
-  .header-nav a,
-  .header-actions .btn{
-    width:100%;
-    justify-content:center;
-    padding:12px 14px;
-  }
-
-  .mobile-menu-toggle.is-open span:nth-child(1){
-    transform:translateY(7px) rotate(45deg);
-  }
-
-  .mobile-menu-toggle.is-open span:nth-child(2){
-    opacity:0;
-  }
-
-  .mobile-menu-toggle.is-open span:nth-child(3){
-    transform:translateY(-7px) rotate(-45deg);
-  }
 }
 
 /* ==========================================================
@@ -4442,83 +3976,206 @@ section[id]{
 }
 
 /* ==========================================================
-   DESKTOP / MOBILE MENU SEPARATION
+   HEADER COMPAT FIX v2
+   Compatibile con l'header attuale dell'index:
+   - prima .header-inner = brand/logo
+   - seconda .header-inner = desktop-menu + hamburger + mobile-menu
+   Mantiene il layout elegante senza far comparire il menu mobile su desktop.
    ========================================================== */
 
-.desktop-menu{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  align-items:flex-end;
+/* Base: il menu mobile non deve mai essere visibile finché non entra la media query mobile */
+.site-header .mobile-menu,
+.site-header .mobile-menu-toggle{
+  display:none !important;
+}
+
+.site-header > .header-inner:first-of-type{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  min-height:auto !important;
+  padding-top:10px !important;
+  padding-bottom:4px !important;
+}
+
+.site-header > .header-inner:first-of-type .brand{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:10px !important;
+  flex:none !important;
+}
+
+.site-header > .header-inner:nth-of-type(2){
+  min-height:auto !important;
+  padding-top:4px !important;
+  padding-bottom:10px !important;
 }
 
 @media(min-width:901px){
-
-  .desktop-menu{
-    display:flex;
+  .site-header > .header-inner:nth-of-type(2){
+    display:flex !important;
+    justify-content:center !important;
+    align-items:center !important;
   }
 
-  .mobile-menu,
-  .mobile-menu-toggle{
+  .site-header .desktop-menu{
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:8px !important;
+    width:100% !important;
+  }
+
+  .site-header .header-actions{
+    display:flex !important;
+    flex-direction:row !important;
+    justify-content:center !important;
+    align-items:center !important;
+    flex-wrap:wrap !important;
+    gap:12px !important;
+    width:100% !important;
+  }
+
+  .site-header .header-nav{
+    display:flex !important;
+    flex-direction:row !important;
+    justify-content:center !important;
+    align-items:center !important;
+    flex-wrap:wrap !important;
+    gap:5px !important;
+    width:100% !important;
+    padding-top:2px !important;
+  }
+
+  .site-header .header-nav a{
+    font-size:0.74rem !important;
+    padding:5px 8px !important;
+    line-height:1.2 !important;
+    letter-spacing:0.02em !important;
+  }
+
+  .site-header .mobile-menu,
+  .site-header .mobile-menu-toggle{
     display:none !important;
   }
-
 }
 
 @media(max-width:900px){
+  .site-header > .header-inner:first-of-type{
+    padding-top:8px !important;
+    padding-bottom:4px !important;
+  }
 
-  .desktop-menu{
+  .site-header > .header-inner:nth-of-type(2){
+    display:grid !important;
+    grid-template-columns:1fr auto;
+    align-items:center !important;
+    gap:12px !important;
+    padding-top:4px !important;
+    padding-bottom:8px !important;
+  }
+
+  .site-header .desktop-menu{
     display:none !important;
   }
 
-  .mobile-menu-toggle{
-    display:flex;
-  }
-
-  .mobile-menu{
-    display:none;
-    grid-column:1 / -1;
-    width:100%;
-    padding-top:14px;
-    padding-bottom:18px;
-    border-top:1px solid rgba(255,255,255,0.06);
-  }
-
-  .mobile-menu.is-open{
-    display:block;
-  }
-
-}
-@media(min-width:901px){
-  .desktop-menu{
+  .site-header .mobile-menu-toggle{
     display:flex !important;
+    grid-column:2;
+    justify-self:end;
   }
 
-  .mobile-menu,
-  .mobile-menu-toggle{
-    display:none !important;
-  }
-}
-
-@media(max-width:900px){
-  .desktop-menu{
-    display:none !important;
-  }
-
-  .mobile-menu-toggle{
-    display:flex !important;
-  }
-
-  .mobile-menu{
+  .site-header .mobile-menu{
     display:none !important;
     grid-column:1 / -1;
     width:100%;
-    padding-top:14px;
-    padding-bottom:18px;
+    margin-top:8px;
+    padding:14px 0 18px;
     border-top:1px solid rgba(255,255,255,0.06);
   }
 
-  .mobile-menu.is-open{
+  .site-header .mobile-menu.is-open{
     display:block !important;
+  }
+
+  .site-header .mobile-nav{
+    display:flex !important;
+    flex-direction:column;
+    gap:12px;
+    padding:0;
+  }
+
+  .site-header .mobile-nav a{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:48px;
+    padding:12px 16px;
+    border-radius:10px;
+    text-decoration:none;
+		color:var(--text);
+    font-weight:600;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.05);
+  }
+}
+
+/* ==========================================================
+   HOTFIX v4 - Mobile navigation default-closed
+   Default state: mobile controls are hidden everywhere.
+   Mobile breakpoint then selectively re-enables them.
+   ========================================================== */
+
+.site-header .mobile-menu-toggle,
+.site-header .mobile-menu,
+.site-header .mobile-nav{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  height:0 !important;
+  max-height:0 !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+}
+
+@media (max-width:900px){
+  .site-header .desktop-menu{
+    display:none !important;
+  }
+
+  .site-header .mobile-menu-toggle{
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    max-height:none !important;
+    overflow:visible !important;
+    pointer-events:auto !important;
+  }
+
+  .site-header .mobile-menu.is-open{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+    pointer-events:auto !important;
+  }
+
+  .site-header .mobile-menu.is-open .mobile-nav{
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+    pointer-events:auto !important;
+    flex-direction:column !important;
   }
 }
