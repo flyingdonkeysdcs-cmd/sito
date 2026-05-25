@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('missionModalTheatre').textContent = mission.theatre;
     document.getElementById('missionModalTitle').textContent = mission.title;
     document.getElementById('missionModalDate').textContent = mission.date;
-    document.getElementById('missionModalPilots').textContent = mission.pilots ? `Piloti: ${mission.pilots}` : '';
+    document.getElementById('missionModalPilots').textContent = mission.pilots ? `Teatro: ${mission.pilots}` : '';
     document.getElementById('missionModalSummary').innerHTML = formatMissionText(mission.summary);
 
     modal.hidden = false;

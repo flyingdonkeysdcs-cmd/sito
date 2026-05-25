@@ -122,7 +122,7 @@ function openHomeMissionModal(mission) {
 
     <h2>${escapeHTML(title)}</h2>
 
-    ${pilots ? `<p class="muted"><strong>Piloti coinvolti:</strong> ${escapeHTML(pilots)}</p>` : ''}
+    ${pilots ? `<p class="muted"><strong>Teatro Operativo:</strong> ${escapeHTML(pilots)}</p>` : ''}
 
     <div class="mission-detail-text">
       ${formatMissionText(summary)}
