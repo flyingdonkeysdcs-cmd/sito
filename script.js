@@ -157,7 +157,7 @@ function formatEventDescription(description) {
 
   // Cerca un URL
   const urlMatch =
-    description.match(/https?:\/\/[^\s<]+/);
+    description.match(/https?:\/\/[^\s"<]+/);
 
   // Nessun link
   if (!urlMatch) {
