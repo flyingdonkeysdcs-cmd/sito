@@ -168,9 +168,11 @@ function formatEventDescription(description) {
 
   // Pulisce il testo
   const cleanDescription = description
-    .replace(url, '')
-    .replace(/Discord:/gi, '')
-    .trim();
+    .replace(/<a[^>]*>(.*?)<\/a>/gi, '')
+	.replace(url, '')
+	.replace(/<[^>]+>/g, '')
+	.replace(/Discord:/gi, '')
+	.trim();
 
   // Ritorna HTML formattato
   return `
