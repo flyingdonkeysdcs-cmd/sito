@@ -786,7 +786,7 @@ if (pilotMedals) {
         'AB', // Levantine
         'AC', // INIOCHOS
         'AD'  // SHADDER
-		'AE'  // DAMASCUS
+		'AE'  // DAMASCUS 
       ].forEach(addBestNumMedal);
 
       // ASTRA
