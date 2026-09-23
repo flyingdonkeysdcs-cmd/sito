@@ -22,8 +22,15 @@ function safeExternalUrl(value) {
   }
 }    
 function safeAssetUrl(value) {
+  const rawValue = String(value ?? '').trim();
+
+  // Un valore vuoto NON deve diventare l'URL della pagina corrente
+  if (!rawValue) {
+    return '';
+  }
+
   try {
-    const url = new URL(String(value ?? '').trim(), window.location.href);
+    const url = new URL(rawValue, window.location.href);
 
     return ['http:', 'https:'].includes(url.protocol)
       ? url.href
@@ -32,7 +39,7 @@ function safeAssetUrl(value) {
   } catch {
     return '';
   }
-}	
+}
 const calendars = [
   {
     name: 'Flying Donkeys',
