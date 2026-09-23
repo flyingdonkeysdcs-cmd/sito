@@ -7,7 +7,7 @@ const calendars = [
   },
 	{
 		  name: "Flying Donkeys Events",
-		  id: "flyingdonkeys@gmail.com",
+		  id: "flyingdonkeysdcs@gmail.com",
 		  label: "Evento Flying Donkeys",
 		  server: "Server Flying Donkeys"
 		},
