@@ -1083,12 +1083,17 @@ function buildPilotMapGroups(rows) {
 
     if (!pilotName || !coordinates) return;
 
-    const key = `${coordinates.lat.toFixed(4)},${coordinates.lng.toFixed(4)}`;
+    // Riduce la precisione della posizione a circa 1 km.
+    // Evitiamo di usare sulla mappa coordinate eccessivamente precise.
+    const lat = Number(coordinates.lat.toFixed(2));
+    const lng = Number(coordinates.lng.toFixed(2));
+
+    const key = `${lat.toFixed(2)},${lng.toFixed(2)}`;
 
     if (!groups.has(key)) {
       groups.set(key, {
-        lat: coordinates.lat,
-        lng: coordinates.lng,
+        lat,
+        lng,
         pilots: []
       });
     }
