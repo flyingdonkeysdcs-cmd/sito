@@ -698,19 +698,19 @@ function setupPilotImagePopups(selectedPilot, pilotRow) {
 
 		// boolean TRUE -> mostra solo il nome statistica
 		if (value.toUpperCase() === 'TRUE') {
-			return `
-			<div class="stat-card boolean-true">
-				<strong>${header}</strong>
-			</div>
-			`;
-		}
+		  return `
+   		 <div class="stat-card boolean-true">
+    	  <strong>${escapeHTML(header)}</strong>
+    </div>
+  `;
+}
 
 		// statistiche normali
 		return `
-			<div class="stat-card">
-		<span>${header}</span>
-			<strong>${value}</strong>
-			</div>
+		  <div class="stat-card">
+		    <span>${escapeHTML(header)}</span>
+		    <strong>${escapeHTML(value)}</strong>
+		  </div>
 		`;
 
 		}).join('');
