@@ -18,70 +18,139 @@ const calendars = [
     server: "Server JATF"
   }
 ];
-
 export default async function handler(req, res) {
+
+  // L'endpoint serve soltanto lettura dati.
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET');
+
+    return res.status(405).json({
+      error: 'Metodo non consentito'
+    });
+  }
+
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+
   try {
+
     const apiKey = process.env.GOOGLE_CALENDAR_API_KEY;
 
     if (!apiKey) {
-      throw new Error("GOOGLE_CALENDAR_API_KEY mancante");
+      throw new Error('GOOGLE_CALENDAR_API_KEY mancante');
     }
 
     const now = new Date().toISOString();
 
     const results = await Promise.all(
       calendars.map(async calendar => {
-        const url =
-          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendar.id)}/events` +
-          `?key=${apiKey}` +
-          `&timeMin=${now}` +
-          `&singleEvents=true` +
-          `&orderBy=startTime` +
-          `&maxResults=10`;
 
-        const response = await fetch(url);
+        try {
 
-        if (!response.ok) {
-          const errorText = await response.text();
-			throw new Error(`Errore calendario ${calendar.name}: ${response.status} ${errorText}`);
+          const params = new URLSearchParams({
+            key: apiKey,
+            timeMin: now,
+            singleEvents: 'true',
+            orderBy: 'startTime',
+            maxResults: '10'
+          });
+
+          const url =
+            `https://www.googleapis.com/calendar/v3/calendars/` +
+            `${encodeURIComponent(calendar.id)}/events?${params.toString()}`;
+
+          const response = await fetch(url, {
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+
+            const errorText = await response.text();
+
+            // Dettagli disponibili soltanto nei log Vercel
+            console.error(
+              `Errore Google Calendar ${calendar.name}:`,
+              response.status,
+              errorText
+            );
+
+            return [];
+          }
+
+          const data = await response.json();
+
+          return (data.items || [])
+            .map(event => {
+
+              const startValue =
+                event.start?.dateTime ||
+                event.start?.date ||
+                '';
+
+              // Mandiamo al browser SOLO i dati necessari
+              return {
+                summary:
+                  String(event.summary || calendar.label),
+
+                description:
+                  String(event.description || ''),
+
+                startValue,
+
+                calendarLabel:
+                  calendar.label,
+
+                serverName:
+                  calendar.server,
+
+                calendarName:
+                  calendar.name
+              };
+
+            })
+            .filter(event => event.startValue);
+
+        } catch (calendarError) {
+
+          console.error(
+            `Errore calendario ${calendar.name}:`,
+            calendarError
+          );
+
+          // Un calendario guasto non blocca gli altri
+          return [];
         }
 
-        const data = await response.json();
-
-        return (data.items || []).map(event => ({
-          ...event,
-          calendarLabel: calendar.label,
-          serverName: calendar.server,
-          calendarName: calendar.name
-        }));
       })
     );
 
     const events = results
       .flat()
-      .map(event => {
-        const startValue = event.start.dateTime || event.start.date;
-
-        return {
-          ...event,
-          startValue,
-          startDate: new Date(startValue)
-        };
-      })
-      .sort((a, b) => a.startDate - b.startDate);
+      .sort(
+        (a, b) =>
+          new Date(a.startValue) -
+          new Date(b.startValue)
+      );
 
     res.setHeader(
-      "Cache-Control",
-      "s-maxage=300, stale-while-revalidate=900"
+      'Cache-Control',
+      's-maxage=300, stale-while-revalidate=900'
     );
 
-    res.status(200).json(events);
-  } catch (error) {
-    console.error("CALENDAR ERROR:", error);
+    return res.status(200).json(events);
 
-    res.status(500).json({
-      error: "Errore caricamento calendario",
-      details: error.message
+  } catch (error) {
+
+    console.error(
+      'CALENDAR ERROR:',
+      error
+    );
+
+    // Nessun dettaglio interno inviato al browser
+    return res.status(500).json({
+      error: 'Errore caricamento calendario'
     });
+
   }
 }
