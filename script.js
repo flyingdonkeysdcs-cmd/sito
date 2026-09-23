@@ -497,12 +497,19 @@ if (profileUrl && pilotProfileImage) {
 }
 
 if (headerUrl) {
+
   document.body.style.setProperty(
     '--pilot-page-bg',
     `url("${headerUrl}")`
   );
 
   document.body.classList.add('has-pilot-page-bg');
+
+} else {
+
+  document.body.style.removeProperty('--pilot-page-bg');
+  document.body.classList.remove('has-pilot-page-bg');
+
 }
 
       setupPilotImagePopups(selectedPilot, pilotRow);
