@@ -1244,7 +1244,11 @@ async function loadDcsNews() {
   if (!listEl) return;
 
   try {
-    const response = await fetch('/api/dcs-news');
+    const response = await fetch('/api/dcs-news', {
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
 
     if (!response.ok) {
       throw new Error('Errore caricamento newsletter');
@@ -1252,33 +1256,93 @@ async function loadDcsNews() {
 
     const news = await response.json();
 
-    listEl.innerHTML = news.map(item => `
-      <article class="program-event-card dcs-news-card">
-        <div>
-          <p class="muted small">Eagle Dynamics Newsletter</p>
-          <h3>${item.title}</h3>
-          <p>${item.summary}</p>
-        </div>
+    // Verifica che l'API abbia restituito il formato previsto
+    if (!Array.isArray(news)) {
+      throw new Error('Formato newsletter non valido');
+    }
 
-        <div class="program-event-meta">
-          <a class="btn btn-primary"
-             href="${item.url}"
-             target="_blank"
-             rel="noopener noreferrer">
-            Leggi newsletter
-          </a>
-        </div>
-      </article>
-    `).join('');
+    listEl.replaceChildren();
+
+    // Nessuna newsletter disponibile
+    if (news.length === 0) {
+      const emptyMessage = document.createElement('p');
+      emptyMessage.className = 'muted';
+      emptyMessage.textContent =
+        'Newsletter DCS non disponibili al momento.';
+
+      listEl.appendChild(emptyMessage);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    news.forEach(item => {
+      const article = document.createElement('article');
+      article.className =
+        'program-event-card dcs-news-card';
+
+      const content = document.createElement('div');
+
+      const source = document.createElement('p');
+      source.className = 'muted small';
+      source.textContent =
+        'Eagle Dynamics Newsletter';
+
+      const title = document.createElement('h3');
+      title.textContent =
+        String(item?.title || 'DCS Newsletter');
+
+      const summary = document.createElement('p');
+      summary.textContent =
+        String(
+          item?.summary ||
+          'Riassunto non disponibile.'
+        );
+
+      content.appendChild(source);
+      content.appendChild(title);
+      content.appendChild(summary);
+
+      article.appendChild(content);
+
+      // Gli URL provenienti dall'API vengono validati
+      const newsletterUrl =
+        safeExternalUrl(item?.url);
+
+      if (newsletterUrl) {
+        const meta = document.createElement('div');
+        meta.className = 'program-event-meta';
+
+        const link = document.createElement('a');
+        link.className = 'btn btn-primary';
+        link.href = newsletterUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Leggi newsletter';
+
+        meta.appendChild(link);
+        article.appendChild(meta);
+      }
+
+      fragment.appendChild(article);
+    });
+
+    listEl.appendChild(fragment);
 
   } catch (error) {
-    console.error('Errore DCS news:', error);
+    console.error(
+      'Errore DCS news:',
+      error
+    );
 
-    listEl.innerHTML = `
-      <p class="muted">
-        Newsletter DCS non disponibili al momento.
-      </p>
-    `;
+    listEl.replaceChildren();
+
+    const errorMessage = document.createElement('p');
+    errorMessage.className = 'muted';
+    errorMessage.textContent =
+      'Newsletter DCS non disponibili al momento.';
+
+    listEl.appendChild(errorMessage);
   }
 }
 
