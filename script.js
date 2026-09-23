@@ -1130,7 +1130,7 @@ async function initPilotMapFromSheet() {
     }).setView([42.8, 12.6], 5.6);
 
     L.tileLayer(
-  'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_3v5x_1_6575c6116c0e4ee017777007',
+  'https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_3v5x_1_6575c6116c0e4ee017777007',
   {
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, ' +
