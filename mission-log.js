@@ -19,7 +19,33 @@ document.addEventListener('DOMContentLoaded', async () => {
       .replaceAll('"', '&quot;')
       .replaceAll("'", '&#039;');
   }
+function safeAssetUrl(value) {
+  const rawValue = String(value ?? '').trim();
 
+  const invalidValues = [
+    '',
+    '-',
+    'n/a',
+    'na',
+    'null',
+    'undefined'
+  ];
+
+  if (invalidValues.includes(rawValue.toLowerCase())) {
+    return '';
+  }
+
+  try {
+    const url = new URL(rawValue, window.location.href);
+
+    return ['http:', 'https:'].includes(url.protocol)
+      ? url.href
+      : '';
+
+  } catch {
+    return '';
+  }
+}
   function formatMissionText(text) {
     if (!text) return '';
 
@@ -51,7 +77,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function getMissionData(mission) {
     return {
-      image: mission.immagine || 'images/default-mission.jpg',
+    image:
+	  safeAssetUrl(mission.immagine) ||
+	  safeAssetUrl('images/default-mission.jpg'),
       title: mission.titolo || 'Untitled Operation',
       date: mission.data || '',
       theatre: mission.teatro || '',
@@ -67,7 +95,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     modal.hidden = true;
 
     modal.innerHTML = `
-      <div class="mission-modal" role="dialog" aria-modal="true">
+      <div
+		  class="mission-modal"
+		  role="dialog"
+		  aria-modal="true"
+		  aria-labelledby="missionModalTitle">
         <button class="mission-modal-close" type="button" aria-label="Chiudi">×</button>
         <div class="mission-modal-media">
           <img id="missionModalImage" src="" alt="">

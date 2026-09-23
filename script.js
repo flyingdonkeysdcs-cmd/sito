@@ -1,5 +1,53 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[char]);
+}
+
+function safeExternalUrl(value) {
+  try {
+    const url = new URL(String(value ?? '').trim());
+
+    return ['http:', 'https:'].includes(url.protocol)
+      ? url.href
+      : '';
+
+  } catch {
+    return '';
+  }
+}    
+function safeAssetUrl(value) {
+  const rawValue = String(value ?? '').trim();
+
+  const invalidValues = [
+    '',
+    '-',
+    'n/a',
+    'na',
+    'null',
+    'undefined'
+  ];
+
+  if (invalidValues.includes(rawValue.toLowerCase())) {
+    return '';
+  }
+
+  try {
+    const url = new URL(rawValue, window.location.href);
+
+    return ['http:', 'https:'].includes(url.protocol)
+      ? url.href
+      : '';
+
+  } catch {
+    return '';
+  }
+}
 const calendars = [
   {
     name: 'Flying Donkeys',
@@ -66,8 +114,8 @@ async function loadNextCalendarEvent() {
         'Server Flying Donkeys';
 
       if (programListEl) {
-        programListEl.innerHTML = '';
-      }
+		  programListEl.replaceChildren();
+	}
 
       return;
     }
@@ -104,16 +152,16 @@ locationEl.textContent =
     <article class="program-event-card">
 	
       <div>
-        <p class="muted small">${event.calendarLabel}</p>
+        <p class="muted small">${escapeHTML(event.calendarLabel)}</p>
 
-        <h3>${event.summary || event.calendarLabel}</h3>
+        <h3>${escapeHTML(event.summary || event.calendarLabel)}</h3>
 
         <p>${formatEventDescription(event.description || '')}</p>
       </div>
 
       <div class="program-event-meta">
-        <span>${formatEventDate(event.startValue)}</span>
-        <strong>${event.serverName}</strong>
+        <span>${escapeHTML(formatEventDate(event.startValue))}</span>
+        <strong>${escapeHTML(event.serverName)}</strong>
       </div>
 
     </article>
@@ -151,36 +199,45 @@ locationEl.textContent =
 }
 
 loadNextCalendarEvent();
-function formatEventDescription(description) {
+
+	function formatEventDescription(description) {
 
   if (!description) return '';
 
-  // Cerca un URL
-  const urlMatch =
-    description.match(/https?:\/\/[^\s"<]+/);
+  const plainDescription = String(description);
 
-  // Nessun link
+  // Cerca un URL HTTP/HTTPS
+  const urlMatch =
+    plainDescription.match(/https?:\/\/[^\s"<]+/);
+
+  // Nessun link: restituisce solo testo sicuro
   if (!urlMatch) {
-    return description;
+    return escapeHTML(plainDescription);
   }
 
-  const url = urlMatch[0];
+  const url = safeExternalUrl(urlMatch[0]);
 
-  // Pulisce il testo
-  const cleanDescription = description
-    .replace(/<a[^>]*>(.*?)<\/a>/gi, '')
-	.replace(url, '')
-	.replace(/<[^>]+>/g, '')
-	.replace(/Discord:/gi, '')
-	.trim();
+  // Pulisce il testo da eventuale HTML e dal link
+  const cleanDescription = plainDescription
+    .replace(/<a[^>]*>(.*?)<\/a>/gi, '$1')
+    .replace(urlMatch[0], '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/Discord:/gi, '')
+    .trim();
 
-  // Ritorna HTML formattato
+  const safeDescription = escapeHTML(cleanDescription);
+
+  // Se l'URL non è valido, mostra soltanto il testo
+  if (!url) {
+    return safeDescription;
+  }
+
   return `
-    <span>${cleanDescription}</span>
+    <span>${safeDescription}</span>
 
     <div class="event-links">
       <a class="ato-link"
-         href="${url}"
+         href="${escapeHTML(url)}"
          target="_blank"
          rel="noopener noreferrer">
         ATO
@@ -188,6 +245,7 @@ function formatEventDescription(description) {
     </div>
   `;
 }
+	
   // Smooth scrolling
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -380,7 +438,8 @@ ${message}`
 		});
       })
       .catch(error => {
-        pilotList.innerHTML = `<p class="muted small">${error.message}</p>`;
+        pilotList.innerHTML =
+		  `<p class="muted small">${escapeHTML(error.message)}</p>`;
       });
   }
 
@@ -433,18 +492,51 @@ function loadPilotVisuals(selectedPilot, pilotRow) {
         setupPilotImagePopups(selectedPilot, pilotRow);
         return;
       }
+const profileUrl = safeAssetUrl(
+  getCellByHeader(photoHeaders, photoRow, 'FotoProfilo')
+);
 
-      const profileUrl = getCellByHeader(photoHeaders, photoRow, 'FotoProfilo');
-      const headerUrl = getCellByHeader(photoHeaders, photoRow, 'FotoHeader');
+const headerUrl = safeAssetUrl(
+  getCellByHeader(photoHeaders, photoRow, 'FotoHeader')
+);
 
-      if (profileUrl && pilotProfileImage) {
-        pilotProfileImage.src = profileUrl;
-      }
+if (profileUrl && pilotProfileImage) {
+  pilotProfileImage.src = profileUrl;
+}
 
-      if (headerUrl) {
-        document.body.style.setProperty('--pilot-page-bg', `url("${headerUrl}")`);
-        document.body.classList.add('has-pilot-page-bg');
-      }
+// Stato iniziale: fallback standard del sito
+document.body.style.removeProperty('--pilot-page-bg');
+document.body.classList.remove('has-pilot-page-bg');
+
+if (headerUrl) {
+
+  const testImage = new Image();
+
+  testImage.onload = () => {
+
+    document.body.style.setProperty(
+      '--pilot-page-bg',
+      `url("${headerUrl}")`
+    );
+
+    document.body.classList.add('has-pilot-page-bg');
+
+  };
+
+  testImage.onerror = () => {
+
+    console.warn(
+      'Sfondo pilota non disponibile:',
+      headerUrl
+    );
+
+    document.body.style.removeProperty('--pilot-page-bg');
+    document.body.classList.remove('has-pilot-page-bg');
+
+  };
+
+  testImage.src = headerUrl;
+}
 
       setupPilotImagePopups(selectedPilot, pilotRow);
     })
@@ -647,19 +739,19 @@ function setupPilotImagePopups(selectedPilot, pilotRow) {
 
 		// boolean TRUE -> mostra solo il nome statistica
 		if (value.toUpperCase() === 'TRUE') {
-			return `
-			<div class="stat-card boolean-true">
-				<strong>${header}</strong>
-			</div>
-			`;
-		}
+		  return `
+   		 <div class="stat-card boolean-true">
+    	  <strong>${escapeHTML(header)}</strong>
+    </div>
+  `;
+}
 
 		// statistiche normali
 		return `
-			<div class="stat-card">
-		<span>${header}</span>
-			<strong>${value}</strong>
-			</div>
+		  <div class="stat-card">
+		    <span>${escapeHTML(header)}</span>
+		    <strong>${escapeHTML(value)}</strong>
+		  </div>
 		`;
 
 		}).join('');
@@ -667,7 +759,8 @@ function setupPilotImagePopups(selectedPilot, pilotRow) {
         pilotStats.innerHTML = html || '<p class="muted">Nessuna statistica disponibile.</p>';
       })
       .catch(error => {
-        pilotStats.innerHTML = `<p class="muted">${error.message}</p>`;
+        pilotStats.innerHTML =
+		  `<p class="muted">${escapeHTML(error.message)}</p>`;
       });
 
 if (pilotMedals) {
@@ -811,19 +904,33 @@ if (pilotMedals) {
 	  
 	console.log('MEDAGLIE FINALI:', medals);
 	
-  const medalsHtml = medals.slice(0, 20).map(rule => `
-  <div class="ribbon-slot">
-    <img
-      src="${rule.img.trim()}"
-      alt="${rule.med}"
-      class="ribbon-clickable"
-      data-title="${rule.titolo || rule.med}"
-      data-description="${rule.descrizione || ''}"
-      data-image="${rule.img.trim()}"
-      data-extra="${rule.immagineDettaglio || ''}"
-    >
-  </div>
-`).join('');
+const medalsHtml = medals.slice(0, 20).map(rule => {
+
+  const imageUrl = safeAssetUrl(rule.img);
+  const extraImageUrl = safeAssetUrl(rule.immagineDettaglio);
+
+  // Una medaglia senza immagine valida non viene renderizzata
+  if (!imageUrl) return '';
+
+  const medalName = escapeHTML(rule.med || '');
+  const medalTitle = escapeHTML(rule.titolo || rule.med || '');
+  const medalDescription = escapeHTML(rule.descrizione || '');
+
+  return `
+    <div class="ribbon-slot">
+      <img
+        src="${escapeHTML(imageUrl)}"
+        alt="${medalName}"
+        class="ribbon-clickable"
+        data-title="${medalTitle}"
+        data-description="${medalDescription}"
+        data-image="${escapeHTML(imageUrl)}"
+        data-extra="${escapeHTML(extraImageUrl)}"
+      >
+    </div>
+  `;
+
+}).join('');
 
 pilotMedals.innerHTML =
   medalsHtml || '<p class="muted">Nessun nastrino assegnato.</p>';
@@ -860,8 +967,10 @@ document.getElementById('ribbonModal').addEventListener('click', e => {
     })
     .catch(error => {
       console.error('Errore medagliere:', error);
-      pilotMedals.innerHTML =
-        '<p class="muted">Errore medagliere: ' + error.message + '</p>';
+       pilotMedals.innerHTML =
+ 		 '<p class="muted">Errore medagliere: ' +
+ 		 escapeHTML(error.message) +
+ 		 '</p>';
     });
   }
 }
@@ -1014,12 +1123,17 @@ function buildPilotMapGroups(rows) {
 
     if (!pilotName || !coordinates) return;
 
-    const key = `${coordinates.lat.toFixed(4)},${coordinates.lng.toFixed(4)}`;
+    // Riduce la precisione della posizione a circa 1 km.
+    // Evitiamo di usare sulla mappa coordinate eccessivamente precise.
+    const lat = Number(coordinates.lat.toFixed(2));
+    const lng = Number(coordinates.lng.toFixed(2));
+
+    const key = `${lat.toFixed(2)},${lng.toFixed(2)}`;
 
     if (!groups.has(key)) {
       groups.set(key, {
-        lat: coordinates.lat,
-        lng: coordinates.lng,
+        lat,
+        lng,
         pilots: []
       });
     }
@@ -1056,12 +1170,15 @@ async function initPilotMapFromSheet() {
     }).setView([42.8, 12.6], 5.6);
 
     L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      {
-        attribution: '&copy; OpenStreetMap &copy; CARTO',
-        maxZoom: 18
-      }
-    ).addTo(map);
+  'https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_3v5x_1_6575c6116c0e4ee017777007',
+  {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, ' +
+      '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
+  }
+).addTo(map);
 
     const bounds = [];
 
@@ -1079,19 +1196,37 @@ async function initPilotMapFromSheet() {
         iconAnchor: location.pilots.length > 1 ? [13, 13] : [9, 9]
       });
 
-      const pilotsHtml = location.pilots
-        .sort((a, b) => a.localeCompare(b, 'it'))
-        .map(p => `<li>${p}</li>`)
-        .join('');
+   	const sortedPilots = [...location.pilots]
+  .sort((a, b) => a.localeCompare(b, 'it'));
 
-      L.marker([location.lat, location.lng], { icon: markerIcon })
-        .addTo(map)
-        .bindPopup(`
-          <div class="fd-map-popup">
-            <strong>${location.pilots.length} pilota/i</strong>
-            <ul>${pilotsHtml}</ul>
-          </div>
-        `);
+const popupEl = document.createElement('div');
+popupEl.className = 'fd-map-popup';
+
+const popupTitle = document.createElement('strong');
+popupTitle.textContent =
+  `${location.pilots.length} pilota/i`;
+
+const popupList = document.createElement('ul');
+
+sortedPilots.forEach(pilotName => {
+  const item = document.createElement('li');
+
+  // textContent: il nome viene sempre trattato come testo,
+  // mai come HTML eseguibile.
+  item.textContent = pilotName;
+
+  popupList.appendChild(item);
+});
+
+popupEl.appendChild(popupTitle);
+popupEl.appendChild(popupList);
+
+L.marker(
+  [location.lat, location.lng],
+  { icon: markerIcon }
+)
+  .addTo(map)
+  .bindPopup(popupEl);
     });
 
     if (bounds.length > 1) {
@@ -1106,17 +1241,32 @@ async function initPilotMapFromSheet() {
       statusEl.textContent = `${totalPilots} pilota/i geolocalizzati in ${pilotLocations.length} posizione/i.`;
     }
 
-    if (listEl) {
-      listEl.innerHTML = pilotLocations
-        .sort((a, b) => b.pilots.length - a.pilots.length)
-        .map(location => `
-          <div class="pilot-map-item">
-            <strong>${location.pilots.join(', ')}</strong>
-            <span>${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}</span>
-          </div>
-        `)
-        .join('');
-    }
+ 	if (listEl) {
+	  listEl.replaceChildren();
+
+	  const sortedLocations = [...pilotLocations]
+    .sort((a, b) => b.pilots.length - a.pilots.length);
+	
+	  const fragment = document.createDocumentFragment();
+
+  sortedLocations.forEach(location => {
+    const item = document.createElement('div');
+    item.className = 'pilot-map-item';
+
+    const pilots = document.createElement('strong');
+    pilots.textContent = location.pilots.join(', ');
+
+    const position = document.createElement('span');
+    position.textContent = 'Posizione approssimativa';
+
+    item.appendChild(pilots);
+    item.appendChild(position);
+
+    fragment.appendChild(item);
+  });
+
+  listEl.appendChild(fragment);
+}
   } catch (error) {
     console.error('Errore caricamento mappa piloti:', error);
 
@@ -1128,48 +1278,17 @@ async function initPilotMapFromSheet() {
 
 initPilotMapFromSheet();
 
-
-async function loadDcsNews() {
-  const listEl = document.getElementById('dcsNewsList');
-  if (!listEl) return;
-
- const response = await fetch('/api/dcs-news');
-
-if (!response.ok) {
-  throw new Error('Errore caricamento newsletter');
-}
-
-const news = await response.json();
-
- listEl.innerHTML = news.map(item => `
-  <article class="program-event-card dcs-news-card">
-    <div>
-      <p class="muted small">Eagle Dynamics Newsletter</p>
-
-      <h3>${item.title}</h3>
-
-      <p>${item.summary}</p>
-    </div>
-
-    <div class="program-event-meta">
-      <a class="btn btn-primary"
-         href="${item.url}"
-         target="_blank"
-         rel="noopener noreferrer">
-        Leggi newsletter
-      </a>
-    </div>
-  </article>
-`).join('');
-}
-
 async function loadDcsNews() {
   const listEl = document.getElementById('dcsNewsList');
 
   if (!listEl) return;
 
   try {
-    const response = await fetch('/api/dcs-news');
+    const response = await fetch('/api/dcs-news', {
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
 
     if (!response.ok) {
       throw new Error('Errore caricamento newsletter');
@@ -1177,33 +1296,93 @@ async function loadDcsNews() {
 
     const news = await response.json();
 
-    listEl.innerHTML = news.map(item => `
-      <article class="program-event-card dcs-news-card">
-        <div>
-          <p class="muted small">Eagle Dynamics Newsletter</p>
-          <h3>${item.title}</h3>
-          <p>${item.summary}</p>
-        </div>
+    // Verifica che l'API abbia restituito il formato previsto
+    if (!Array.isArray(news)) {
+      throw new Error('Formato newsletter non valido');
+    }
 
-        <div class="program-event-meta">
-          <a class="btn btn-primary"
-             href="${item.url}"
-             target="_blank"
-             rel="noopener noreferrer">
-            Leggi newsletter
-          </a>
-        </div>
-      </article>
-    `).join('');
+    listEl.replaceChildren();
+
+    // Nessuna newsletter disponibile
+    if (news.length === 0) {
+      const emptyMessage = document.createElement('p');
+      emptyMessage.className = 'muted';
+      emptyMessage.textContent =
+        'Newsletter DCS non disponibili al momento.';
+
+      listEl.appendChild(emptyMessage);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    news.forEach(item => {
+      const article = document.createElement('article');
+      article.className =
+        'program-event-card dcs-news-card';
+
+      const content = document.createElement('div');
+
+      const source = document.createElement('p');
+      source.className = 'muted small';
+      source.textContent =
+        'Eagle Dynamics Newsletter';
+
+      const title = document.createElement('h3');
+      title.textContent =
+        String(item?.title || 'DCS Newsletter');
+
+      const summary = document.createElement('p');
+      summary.textContent =
+        String(
+          item?.summary ||
+          'Riassunto non disponibile.'
+        );
+
+      content.appendChild(source);
+      content.appendChild(title);
+      content.appendChild(summary);
+
+      article.appendChild(content);
+
+      // Gli URL provenienti dall'API vengono validati
+      const newsletterUrl =
+        safeExternalUrl(item?.url);
+
+      if (newsletterUrl) {
+        const meta = document.createElement('div');
+        meta.className = 'program-event-meta';
+
+        const link = document.createElement('a');
+        link.className = 'btn btn-primary';
+        link.href = newsletterUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Leggi newsletter';
+
+        meta.appendChild(link);
+        article.appendChild(meta);
+      }
+
+      fragment.appendChild(article);
+    });
+
+    listEl.appendChild(fragment);
 
   } catch (error) {
-    console.error('Errore DCS news:', error);
+    console.error(
+      'Errore DCS news:',
+      error
+    );
 
-    listEl.innerHTML = `
-      <p class="muted">
-        Newsletter DCS non disponibili al momento.
-      </p>
-    `;
+    listEl.replaceChildren();
+
+    const errorMessage = document.createElement('p');
+    errorMessage.className = 'muted';
+    errorMessage.textContent =
+      'Newsletter DCS non disponibili al momento.';
+
+    listEl.appendChild(errorMessage);
   }
 }
 

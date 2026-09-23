@@ -1,6 +1,16 @@
 import { kv } from "@vercel/kv";
 
 export default async function handler(req, res) {
+	 if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET');
+
+    return res.status(405).json({
+      error: 'Metodo non consentito'
+    });
+  }
+
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+	
   const CACHE_KEY = "dcs-news-cache";
 
   try {
@@ -26,7 +36,13 @@ export default async function handler(req, res) {
 
     const latestUrl = `https://www.digitalcombatsimulator.com${uniqueLinks[0]}`;
 
-    const cached = await kv.get(CACHE_KEY);
+    let cached = null;
+
+	try {
+ 	 cached = await kv.get(CACHE_KEY);
+	} catch (cacheError) {
+ 	 console.error('DCS NEWS CACHE READ ERROR:', cacheError);
+	}
 
     if (cached?.latestUrl === latestUrl && cached?.news?.length) {
       res.setHeader(
@@ -167,11 +183,15 @@ export default async function handler(req, res) {
       })
     );
 
-    await kv.set(CACHE_KEY, {
-      latestUrl,
-      updatedAt: new Date().toISOString(),
-      news
-    });
+    try {
+		  await kv.set(CACHE_KEY, {
+	    latestUrl,
+ 	   updatedAt: new Date().toISOString(),
+ 	   news
+	  });
+	} catch (cacheError) {
+ 	 console.error('DCS NEWS CACHE WRITE ERROR:', cacheError);
+	}
 
     res.setHeader(
       "Cache-Control",
@@ -180,11 +200,10 @@ export default async function handler(req, res) {
 
     return res.status(200).json(news);
   } catch (error) {
-    console.error("DCS NEWS ERROR:", error);
+  console.error('DCS NEWS ERROR:', error);
 
-    return res.status(500).json({
-      error: "Errore caricamento newsletter",
-      details: error.message
-    });
-  }
+  return res.status(500).json({
+    error: 'Errore caricamento newsletter'
+  });
+}
 }
