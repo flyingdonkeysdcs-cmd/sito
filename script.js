@@ -862,19 +862,33 @@ if (pilotMedals) {
 	  
 	console.log('MEDAGLIE FINALI:', medals);
 	
-  const medalsHtml = medals.slice(0, 20).map(rule => `
-  <div class="ribbon-slot">
-    <img
-      src="${rule.img.trim()}"
-      alt="${rule.med}"
-      class="ribbon-clickable"
-      data-title="${rule.titolo || rule.med}"
-      data-description="${rule.descrizione || ''}"
-      data-image="${rule.img.trim()}"
-      data-extra="${rule.immagineDettaglio || ''}"
-    >
-  </div>
-`).join('');
+const medalsHtml = medals.slice(0, 20).map(rule => {
+
+  const imageUrl = safeAssetUrl(rule.img);
+  const extraImageUrl = safeAssetUrl(rule.immagineDettaglio);
+
+  // Una medaglia senza immagine valida non viene renderizzata
+  if (!imageUrl) return '';
+
+  const medalName = escapeHTML(rule.med || '');
+  const medalTitle = escapeHTML(rule.titolo || rule.med || '');
+  const medalDescription = escapeHTML(rule.descrizione || '');
+
+  return `
+    <div class="ribbon-slot">
+      <img
+        src="${escapeHTML(imageUrl)}"
+        alt="${medalName}"
+        class="ribbon-clickable"
+        data-title="${medalTitle}"
+        data-description="${medalDescription}"
+        data-image="${escapeHTML(imageUrl)}"
+        data-extra="${escapeHTML(extraImageUrl)}"
+      >
+    </div>
+  `;
+
+}).join('');
 
 pilotMedals.innerHTML =
   medalsHtml || '<p class="muted">Nessun nastrino assegnato.</p>';
