@@ -51,7 +51,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function getMissionData(mission) {
     return {
-      image: mission.immagine || 'images/default-mission.jpg',
+    image:
+	  safeAssetUrl(mission.immagine) ||
+	  safeAssetUrl('images/default-mission.jpg'),
       title: mission.titolo || 'Untitled Operation',
       date: mission.data || '',
       theatre: mission.teatro || '',
