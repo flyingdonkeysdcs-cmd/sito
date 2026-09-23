@@ -1,5 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[char]);
+}
+
+function safeExternalUrl(value) {
+  try {
+    const url = new URL(String(value ?? '').trim());
+
+    return ['http:', 'https:'].includes(url.protocol)
+      ? url.href
+      : '';
+
+  } catch {
+    return '';
+  }
+}    
+	
 const calendars = [
   {
     name: 'Flying Donkeys',
