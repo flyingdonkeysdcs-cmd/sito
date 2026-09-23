@@ -21,7 +21,18 @@ function safeExternalUrl(value) {
     return '';
   }
 }    
-	
+function safeAssetUrl(value) {
+  try {
+    const url = new URL(String(value ?? '').trim(), window.location.href);
+
+    return ['http:', 'https:'].includes(url.protocol)
+      ? url.href
+      : '';
+
+  } catch {
+    return '';
+  }
+}	
 const calendars = [
   {
     name: 'Flying Donkeys',
