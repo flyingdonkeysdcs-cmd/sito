@@ -18,39 +18,64 @@ async function loadHomeMissionPreview() {
     const latestMissions = missions.slice(-3).reverse();
 	window.homeLatestMissions = latestMissions;
 
-    container.innerHTML = latestMissions.map((mission, index) => {
-      const image = mission.immagine || 'images/default-mission.jpg';
-      const title = mission.titolo || 'Operazione Flying Donkeys';
-      const date = mission.data || '';
-      const theatre = mission.teatro || '';
-      const summary =
-        mission['riassunto debriefing'] ||
-        mission['riassunto debriefeing'] ||
-        '';
+  container.innerHTML = latestMissions.map((mission, index) => {
 
-      return `
-        <article class="mission-preview-card unified-card"
-         data-mission-index="${index}"
-         role="button"
-         tabindex="0">
-          <div class="mission-preview-image">
-            <img src="${image}" alt="${title}" loading="lazy">
-          </div>
+  const image =
+    safeAssetUrl(mission.immagine) ||
+    safeAssetUrl('images/default-mission.jpg');
 
-          <div class="mission-preview-content">
-            <span class="mission-preview-date">${date}</span>
+  const title =
+    mission.titolo ||
+    'Operazione Flying Donkeys';
 
-            <h3>${title}</h3>
+  const date =
+    mission.data || '';
 
-            <p>${theatre}</p>
+  const theatre =
+    mission.teatro || '';
 
-            <p>${summary.slice(0, 160)}...</p>
+  const summary =
+    mission['riassunto debriefing'] ||
+    mission['riassunto debriefeing'] ||
+    '';
 
-           
-          </div>
-        </article>
-      `;
-    }).join('');
+  return `
+    <article
+      class="mission-preview-card unified-card"
+      data-mission-index="${index}"
+      role="button"
+      tabindex="0">
+
+      <div class="mission-preview-image">
+        <img
+          src="${escapeHTML(image)}"
+          alt="${escapeHTML(title)}"
+          loading="lazy">
+      </div>
+
+      <div class="mission-preview-content">
+
+        <span class="mission-preview-date">
+          ${escapeHTML(date)}
+        </span>
+
+        <h3>
+          ${escapeHTML(title)}
+        </h3>
+
+        <p>
+          ${escapeHTML(theatre)}
+        </p>
+
+        <p>
+          ${escapeHTML(String(summary).slice(0, 160))}...
+        </p>
+
+      </div>
+    </article>
+  `;
+
+}).join('');
 	
 container.querySelectorAll('.mission-preview-card').forEach(card => {
   card.addEventListener('click', () => {
@@ -80,7 +105,33 @@ function escapeHTML(value) {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 }
+function safeAssetUrl(value) {
+  const rawValue = String(value ?? '').trim();
 
+  const invalidValues = [
+    '',
+    '-',
+    'n/a',
+    'na',
+    'null',
+    'undefined'
+  ];
+
+  if (invalidValues.includes(rawValue.toLowerCase())) {
+    return '';
+  }
+
+  try {
+    const url = new URL(rawValue, window.location.href);
+
+    return ['http:', 'https:'].includes(url.protocol)
+      ? url.href
+      : '';
+
+  } catch {
+    return '';
+  }
+}
 function formatMissionText(text) {
   if (!text) return '';
 
@@ -102,7 +153,9 @@ function openHomeMissionModal(mission) {
   const content = document.getElementById('homeMissionModalContent');
   if (!modal || !content || !mission) return;
 
-  const image = mission.immagine || 'images/default-mission.jpg';
+  const image =
+  	safeAssetUrl(mission.immagine) ||
+ 	 safeAssetUrl('images/default-mission.jpg');
   const title = mission.titolo || 'Operazione Flying Donkeys';
   const date = mission.data || '';
   const theatre = mission.teatro || '';
