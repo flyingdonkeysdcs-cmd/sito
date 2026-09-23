@@ -98,9 +98,9 @@ async function loadNextCalendarEvent() {
       locationEl.textContent =
         'Server Flying Donkeys';
 
-      if (programListEl) {
-        programListEl.innerHTML = '';
-      }
+      if (listEl) {
+		  listEl.replaceChildren();
+	}
 
       return;
     }
