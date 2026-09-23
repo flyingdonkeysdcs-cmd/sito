@@ -1153,19 +1153,37 @@ async function initPilotMapFromSheet() {
         iconAnchor: location.pilots.length > 1 ? [13, 13] : [9, 9]
       });
 
-      const pilotsHtml = location.pilots
-        .sort((a, b) => a.localeCompare(b, 'it'))
-        .map(p => `<li>${p}</li>`)
-        .join('');
+   	const sortedPilots = [...location.pilots]
+  .sort((a, b) => a.localeCompare(b, 'it'));
 
-      L.marker([location.lat, location.lng], { icon: markerIcon })
-        .addTo(map)
-        .bindPopup(`
-          <div class="fd-map-popup">
-            <strong>${location.pilots.length} pilota/i</strong>
-            <ul>${pilotsHtml}</ul>
-          </div>
-        `);
+const popupEl = document.createElement('div');
+popupEl.className = 'fd-map-popup';
+
+const popupTitle = document.createElement('strong');
+popupTitle.textContent =
+  `${location.pilots.length} pilota/i`;
+
+const popupList = document.createElement('ul');
+
+sortedPilots.forEach(pilotName => {
+  const item = document.createElement('li');
+
+  // textContent: il nome viene sempre trattato come testo,
+  // mai come HTML eseguibile.
+  item.textContent = pilotName;
+
+  popupList.appendChild(item);
+});
+
+popupEl.appendChild(popupTitle);
+popupEl.appendChild(popupList);
+
+L.marker(
+  [location.lat, location.lng],
+  { icon: markerIcon }
+)
+  .addTo(map)
+  .bindPopup(popupEl);
     });
 
     if (bounds.length > 1) {
