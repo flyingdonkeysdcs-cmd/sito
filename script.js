@@ -719,7 +719,8 @@ function setupPilotImagePopups(selectedPilot, pilotRow) {
         pilotStats.innerHTML = html || '<p class="muted">Nessuna statistica disponibile.</p>';
       })
       .catch(error => {
-        pilotStats.innerHTML = `<p class="muted">${error.message}</p>`;
+        pilotStats.innerHTML =
+		  `<p class="muted">${escapeHTML(error.message)}</p>`;
       });
 
 if (pilotMedals) {
@@ -926,8 +927,10 @@ document.getElementById('ribbonModal').addEventListener('click', e => {
     })
     .catch(error => {
       console.error('Errore medagliere:', error);
-      pilotMedals.innerHTML =
-        '<p class="muted">Errore medagliere: ' + error.message + '</p>';
+       pilotMedals.innerHTML =
+ 		 '<p class="muted">Errore medagliere: ' +
+ 		 escapeHTML(error.message) +
+ 		 '</p>';
     });
   }
 }
