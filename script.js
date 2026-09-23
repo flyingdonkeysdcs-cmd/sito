@@ -504,20 +504,38 @@ if (profileUrl && pilotProfileImage) {
   pilotProfileImage.src = profileUrl;
 }
 
+// Stato iniziale: fallback standard del sito
+document.body.style.removeProperty('--pilot-page-bg');
+document.body.classList.remove('has-pilot-page-bg');
+
 if (headerUrl) {
 
-  document.body.style.setProperty(
-    '--pilot-page-bg',
-    `url("${headerUrl}")`
-  );
+  const testImage = new Image();
 
-  document.body.classList.add('has-pilot-page-bg');
+  testImage.onload = () => {
 
-} else {
+    document.body.style.setProperty(
+      '--pilot-page-bg',
+      `url("${headerUrl}")`
+    );
 
-  document.body.style.removeProperty('--pilot-page-bg');
-  document.body.classList.remove('has-pilot-page-bg');
+    document.body.classList.add('has-pilot-page-bg');
 
+  };
+
+  testImage.onerror = () => {
+
+    console.warn(
+      'Sfondo pilota non disponibile:',
+      headerUrl
+    );
+
+    document.body.style.removeProperty('--pilot-page-bg');
+    document.body.classList.remove('has-pilot-page-bg');
+
+  };
+
+  testImage.src = headerUrl;
 }
 
       setupPilotImagePopups(selectedPilot, pilotRow);
