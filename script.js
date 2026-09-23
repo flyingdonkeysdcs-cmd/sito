@@ -476,18 +476,26 @@ function loadPilotVisuals(selectedPilot, pilotRow) {
         setupPilotImagePopups(selectedPilot, pilotRow);
         return;
       }
+const profileUrl = safeAssetUrl(
+  getCellByHeader(photoHeaders, photoRow, 'FotoProfilo')
+);
 
-      const profileUrl = getCellByHeader(photoHeaders, photoRow, 'FotoProfilo');
-      const headerUrl = getCellByHeader(photoHeaders, photoRow, 'FotoHeader');
+const headerUrl = safeAssetUrl(
+  getCellByHeader(photoHeaders, photoRow, 'FotoHeader')
+);
 
-      if (profileUrl && pilotProfileImage) {
-        pilotProfileImage.src = profileUrl;
-      }
+if (profileUrl && pilotProfileImage) {
+  pilotProfileImage.src = profileUrl;
+}
 
-      if (headerUrl) {
-        document.body.style.setProperty('--pilot-page-bg', `url("${headerUrl}")`);
-        document.body.classList.add('has-pilot-page-bg');
-      }
+if (headerUrl) {
+  document.body.style.setProperty(
+    '--pilot-page-bg',
+    `url("${headerUrl}")`
+  );
+
+  document.body.classList.add('has-pilot-page-bg');
+}
 
       setupPilotImagePopups(selectedPilot, pilotRow);
     })
