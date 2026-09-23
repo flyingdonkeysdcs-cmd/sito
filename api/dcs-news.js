@@ -1,6 +1,16 @@
 import { kv } from "@vercel/kv";
 
 export default async function handler(req, res) {
+	 if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET');
+
+    return res.status(405).json({
+      error: 'Metodo non consentito'
+    });
+  }
+
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+	
   const CACHE_KEY = "dcs-news-cache";
 
   try {
