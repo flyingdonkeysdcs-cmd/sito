@@ -2143,7 +2143,19 @@ textarea{
     text-align:center;
   }
 }
+body.pilot-page:not(.has-pilot-page-bg){
+  background:
+    linear-gradient(
+      rgba(5,12,18,0.90),
+      rgba(5,12,18,0.96)
+    ),
+    url("images/camo.jpg");
 
+  background-size:1900px;
+  background-position:center;
+  background-repeat:repeat;
+  background-attachment:fixed;
+}
 body.has-pilot-page-bg{
   background:
     linear-gradient(
