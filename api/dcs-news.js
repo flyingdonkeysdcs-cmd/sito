@@ -36,7 +36,13 @@ export default async function handler(req, res) {
 
     const latestUrl = `https://www.digitalcombatsimulator.com${uniqueLinks[0]}`;
 
-    const cached = await kv.get(CACHE_KEY);
+    let cached = null;
+
+	try {
+ 	 cached = await kv.get(CACHE_KEY);
+	} catch (cacheError) {
+ 	 console.error('DCS NEWS CACHE READ ERROR:', cacheError);
+	}
 
     if (cached?.latestUrl === latestUrl && cached?.news?.length) {
       res.setHeader(
