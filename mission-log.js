@@ -95,7 +95,11 @@ function safeAssetUrl(value) {
     modal.hidden = true;
 
     modal.innerHTML = `
-      <div class="mission-modal" role="dialog" aria-modal="true">
+      <div
+		  class="mission-modal"
+		  role="dialog"
+		  aria-modal="true"
+		  aria-labelledby="missionModalTitle">
         <button class="mission-modal-close" type="button" aria-label="Chiudi">×</button>
         <div class="mission-modal-media">
           <img id="missionModalImage" src="" alt="">
