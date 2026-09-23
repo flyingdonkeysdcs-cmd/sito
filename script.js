@@ -1238,41 +1238,6 @@ L.marker(
 
 initPilotMapFromSheet();
 
-
-async function loadDcsNews() {
-  const listEl = document.getElementById('dcsNewsList');
-  if (!listEl) return;
-
- const response = await fetch('/api/dcs-news');
-
-if (!response.ok) {
-  throw new Error('Errore caricamento newsletter');
-}
-
-const news = await response.json();
-
- listEl.innerHTML = news.map(item => `
-  <article class="program-event-card dcs-news-card">
-    <div>
-      <p class="muted small">Eagle Dynamics Newsletter</p>
-
-      <h3>${item.title}</h3>
-
-      <p>${item.summary}</p>
-    </div>
-
-    <div class="program-event-meta">
-      <a class="btn btn-primary"
-         href="${item.url}"
-         target="_blank"
-         rel="noopener noreferrer">
-        Leggi newsletter
-      </a>
-    </div>
-  </article>
-`).join('');
-}
-
 async function loadDcsNews() {
   const listEl = document.getElementById('dcsNewsList');
 
