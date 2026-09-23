@@ -98,8 +98,8 @@ async function loadNextCalendarEvent() {
       locationEl.textContent =
         'Server Flying Donkeys';
 
-      if (listEl) {
-		  listEl.replaceChildren();
+      if (programListEl) {
+		  programListEl.replaceChildren();
 	}
 
       return;
