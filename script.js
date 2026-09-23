@@ -1198,17 +1198,32 @@ L.marker(
       statusEl.textContent = `${totalPilots} pilota/i geolocalizzati in ${pilotLocations.length} posizione/i.`;
     }
 
-    if (listEl) {
-      listEl.innerHTML = pilotLocations
-        .sort((a, b) => b.pilots.length - a.pilots.length)
-        .map(location => `
-          <div class="pilot-map-item">
-            <strong>${location.pilots.join(', ')}</strong>
-            <span>${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}</span>
-          </div>
-        `)
-        .join('');
-    }
+ 	if (listEl) {
+	  listEl.replaceChildren();
+
+	  const sortedLocations = [...pilotLocations]
+    .sort((a, b) => b.pilots.length - a.pilots.length);
+	
+	  const fragment = document.createDocumentFragment();
+
+  sortedLocations.forEach(location => {
+    const item = document.createElement('div');
+    item.className = 'pilot-map-item';
+
+    const pilots = document.createElement('strong');
+    pilots.textContent = location.pilots.join(', ');
+
+    const position = document.createElement('span');
+    position.textContent = 'Posizione approssimativa';
+
+    item.appendChild(pilots);
+    item.appendChild(position);
+
+    fragment.appendChild(item);
+  });
+
+  listEl.appendChild(fragment);
+}
   } catch (error) {
     console.error('Errore caricamento mappa piloti:', error);
 
