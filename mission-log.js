@@ -19,7 +19,33 @@ document.addEventListener('DOMContentLoaded', async () => {
       .replaceAll('"', '&quot;')
       .replaceAll("'", '&#039;');
   }
+function safeAssetUrl(value) {
+  const rawValue = String(value ?? '').trim();
 
+  const invalidValues = [
+    '',
+    '-',
+    'n/a',
+    'na',
+    'null',
+    'undefined'
+  ];
+
+  if (invalidValues.includes(rawValue.toLowerCase())) {
+    return '';
+  }
+
+  try {
+    const url = new URL(rawValue, window.location.href);
+
+    return ['http:', 'https:'].includes(url.protocol)
+      ? url.href
+      : '';
+
+  } catch {
+    return '';
+  }
+}
   function formatMissionText(text) {
     if (!text) return '';
 
