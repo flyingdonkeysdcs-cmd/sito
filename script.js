@@ -423,7 +423,8 @@ ${message}`
 		});
       })
       .catch(error => {
-        pilotList.innerHTML = `<p class="muted small">${error.message}</p>`;
+        pilotList.innerHTML =
+		  `<p class="muted small">${escapeHTML(error.message)}</p>`;
       });
   }
 
