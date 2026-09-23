@@ -6,7 +6,7 @@ const calendars = [
     server: "Server Flying Donkeys"
   },
 	{
-		  name: "Flying Donkeys",
+		  name: "Flying Donkeys Events",
 		  id: "flyingdonkeys@gmail.com",
 		  label: "Evento Flying Donkeys",
 		  server: "Server Flying Donkeys"
