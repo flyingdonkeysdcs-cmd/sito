@@ -126,16 +126,16 @@ locationEl.textContent =
     <article class="program-event-card">
 	
       <div>
-        <p class="muted small">${event.calendarLabel}</p>
+        <p class="muted small">${escapeHTML(event.calendarLabel)}</p>
 
-        <h3>${event.summary || event.calendarLabel}</h3>
+        <h3>${escapeHTML(event.summary || event.calendarLabel)}</h3>
 
         <p>${formatEventDescription(event.description || '')}</p>
       </div>
 
       <div class="program-event-meta">
-        <span>${formatEventDate(event.startValue)}</span>
-        <strong>${event.serverName}</strong>
+        <span>${escapeHTML(formatEventDate(event.startValue))}</span>
+        <strong>${escapeHTML(event.serverName)}</strong>
       </div>
 
     </article>
