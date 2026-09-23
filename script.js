@@ -173,36 +173,45 @@ locationEl.textContent =
 }
 
 loadNextCalendarEvent();
-function formatEventDescription(description) {
+
+	function formatEventDescription(description) {
 
   if (!description) return '';
 
-  // Cerca un URL
-  const urlMatch =
-    description.match(/https?:\/\/[^\s"<]+/);
+  const plainDescription = String(description);
 
-  // Nessun link
+  // Cerca un URL HTTP/HTTPS
+  const urlMatch =
+    plainDescription.match(/https?:\/\/[^\s"<]+/);
+
+  // Nessun link: restituisce solo testo sicuro
   if (!urlMatch) {
-    return description;
+    return escapeHTML(plainDescription);
   }
 
-  const url = urlMatch[0];
+  const url = safeExternalUrl(urlMatch[0]);
 
-  // Pulisce il testo
-  const cleanDescription = description
-    .replace(/<a[^>]*>(.*?)<\/a>/gi, '')
-	.replace(url, '')
-	.replace(/<[^>]+>/g, '')
-	.replace(/Discord:/gi, '')
-	.trim();
+  // Pulisce il testo da eventuale HTML e dal link
+  const cleanDescription = plainDescription
+    .replace(/<a[^>]*>(.*?)<\/a>/gi, '$1')
+    .replace(urlMatch[0], '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/Discord:/gi, '')
+    .trim();
 
-  // Ritorna HTML formattato
+  const safeDescription = escapeHTML(cleanDescription);
+
+  // Se l'URL non è valido, mostra soltanto il testo
+  if (!url) {
+    return safeDescription;
+  }
+
   return `
-    <span>${cleanDescription}</span>
+    <span>${safeDescription}</span>
 
     <div class="event-links">
       <a class="ato-link"
-         href="${url}"
+         href="${escapeHTML(url)}"
          target="_blank"
          rel="noopener noreferrer">
         ATO
@@ -210,6 +219,7 @@ function formatEventDescription(description) {
     </div>
   `;
 }
+	
   // Smooth scrolling
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
