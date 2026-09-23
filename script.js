@@ -24,8 +24,16 @@ function safeExternalUrl(value) {
 function safeAssetUrl(value) {
   const rawValue = String(value ?? '').trim();
 
-  // Un valore vuoto NON deve diventare l'URL della pagina corrente
-  if (!rawValue) {
+  const invalidValues = [
+    '',
+    '-',
+    'n/a',
+    'na',
+    'null',
+    'undefined'
+  ];
+
+  if (invalidValues.includes(rawValue.toLowerCase())) {
     return '';
   }
 
