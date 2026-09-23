@@ -5,6 +5,12 @@ const calendars = [
     label: "Evento Flying Donkeys",
     server: "Server Flying Donkeys"
   },
+	{
+		  name: "Flying Donkeys",
+		  id: "flyingdonkeys@gmail.com",
+		  label: "Evento Flying Donkeys",
+		  server: "Server Flying Donkeys"
+		},
   {
     name: "JATF",
     id: "609e54e597d66d5d7ba5605cdde4840b0218a70d2118bcc89b735094d6ff62ba@group.calendar.google.com",
