@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
   res.setHeader('X-Content-Type-Options', 'nosniff');
 	
-  const CACHE_KEY = "dcs-news-cache";
+  const CACHE_KEY = "dcs-news-cache-v2";
 
   try {
     const response = await fetch(
