@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
   res.setHeader('X-Content-Type-Options', 'nosniff');
 	
-  const CACHE_KEY = "dcs-news-cache";
+  const CACHE_KEY = "dcs-news-cache-v2";
 
   try {
     const response = await fetch(
@@ -80,28 +80,29 @@ export default async function handler(req, res) {
               ?.trim() || "DCS Newsletter";
 
           const dateMatch =
-			pageHtml.match(/<time[^>]*datetime="([^"]+)"/i) ||
-			pageHtml.match(/datetime="([^"]+)"/i) ||
-			pageHtml.match(/(\d{1,2}\s+[A-Za-z]+\s+\d{4})/i) ||
-			pageHtml.match(/([A-Za-z]+\s+\d{1,2},\s+\d{4})/i);
+    pageHtml.match(/<time[^>]*datetime=["']([^"']+)["']/i) ||
+    pageHtml.match(
+        /<meta[^>]*(?:property|name)=["'](?:article:published_time|datePublished|date)["'][^>]*content=["']([^"']+)["']/i
+    ) ||
+    pageHtml.match(
+        /<meta[^>]*content=["']([^"']+)["'][^>]*(?:property|name)=["'](?:article:published_time|datePublished|date)["']/i
+    );
 
-			let releaseDate = "Data non disponibile";
+let releaseDate = "Data non disponibile";
 
-			if (dateMatch?.[1]) {
-				const rawDate = dateMatch[1];
+if (dateMatch?.[1]) {
+    const rawDate = dateMatch[1].trim();
+    const parsedDate = new Date(rawDate);
 
-				const parsedDate = new Date(rawDate);
-
-				if (!Number.isNaN(parsedDate.getTime())) {
-					releaseDate = parsedDate.toLocaleDateString("it-IT", {
-					day: "2-digit",
-					month: "long",
-					year: "numeric"
-				});
-			} else {
-			releaseDate = rawDate;
-			}
-		}
+    if (!Number.isNaN(parsedDate.getTime())) {
+        releaseDate = parsedDate.toLocaleDateString("it-IT", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+            timeZone: "Europe/Rome"
+        });
+    }
+}
 
           const cleanText = pageHtml
             .replace(/<script[\s\S]*?<\/script>/gi, "")
