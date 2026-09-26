@@ -482,45 +482,80 @@ initGalleryWhenVisible();
   }
 
   // Roster dropdown: al click apre pilota.html?nome=NOME
-  const openRoster = document.getElementById('openRoster');
-  const rosterMenu = document.getElementById('rosterMenu');
-  const pilotList = document.getElementById('pilotList');
 
-  if (openRoster && rosterMenu && pilotList) {
-    openRoster.addEventListener('click', function () {
-		rosterMenu.hidden = !rosterMenu.hidden;
-	});
+	const openRoster = document.getElementById('openRoster');
+const rosterMenu = document.getElementById('rosterMenu');
+const pilotList = document.getElementById('pilotList');
 
-		document.addEventListener('click', function (e) {
-		const clickedInsideRoster =
-			openRoster.contains(e.target) || rosterMenu.contains(e.target);
+if (openRoster && rosterMenu && pilotList) {
 
-		if (!clickedInsideRoster) {
-			rosterMenu.hidden = true;
-	}
-	});
+  let rosterLoaded = false;
+  let rosterLoading = false;
 
-    loadSheet(statsSheetUrl)
-      .then(rows => {
-        pilotList.innerHTML = '';
+  async function loadRosterOnce() {
+    if (rosterLoaded || rosterLoading) return;
 
-        rows.slice(1).forEach(row => {
-          const pilotName = row[0];
-          if (!pilotName) return;
+    rosterLoading = true;
 
-         const link = document.createElement('a');
-		link.className = 'pilot-item';
-		link.textContent = pilotName;
-		link.href = './pilota.html?nome=' + encodeURIComponent(pilotName.trim());
+    pilotList.innerHTML =
+      '<p class="muted small">Caricamento piloti...</p>';
 
-		pilotList.appendChild(link);
-		});
-      })
-      .catch(error => {
-        pilotList.innerHTML =
-		  `<p class="muted small">${escapeHTML(error.message)}</p>`;
+    try {
+      const rows = await loadSheet(statsSheetUrl);
+
+      pilotList.innerHTML = '';
+
+      rows.slice(1).forEach(row => {
+        const pilotName = row[0];
+
+        if (!pilotName) return;
+
+        const link = document.createElement('a');
+
+        link.className = 'pilot-item';
+        link.textContent = pilotName;
+        link.href =
+          './pilota.html?nome=' +
+          encodeURIComponent(pilotName.trim());
+
+        pilotList.appendChild(link);
       });
+
+      rosterLoaded = true;
+
+    } catch (error) {
+
+      pilotList.innerHTML =
+        `<p class="muted small">${escapeHTML(error.message)}</p>`;
+
+    } finally {
+
+      rosterLoading = false;
+    }
   }
+
+  openRoster.addEventListener('click', function () {
+
+    rosterMenu.hidden = !rosterMenu.hidden;
+
+    if (!rosterMenu.hidden) {
+      loadRosterOnce();
+    }
+
+  });
+
+  document.addEventListener('click', function (e) {
+
+    const clickedInsideRoster =
+      openRoster.contains(e.target) ||
+      rosterMenu.contains(e.target);
+
+    if (!clickedInsideRoster) {
+      rosterMenu.hidden = true;
+    }
+
+  });
+}
 
   // Pagina dettaglio pilota
   const pilotNameTitle = document.getElementById('pilotNameTitle');
