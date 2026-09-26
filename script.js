@@ -324,23 +324,77 @@ ${message}`
     copyright.textContent = `© ${new Date().getFullYear()} Flying Donkeys Virtual Squadron`;
   }
 
-  // Slideshow
-  const slides = document.querySelectorAll('.slide');
-  let currentSlide = 0;
+  // Slideshow automatico
+async function initGallery() {
+  const container = document.querySelector('.slideshow-container');
 
-  function showSlide(index) {
+  if (!container) return;
+
+  function startSlideshow() {
+    const slides = container.querySelectorAll('.slide');
+
     if (!slides.length) return;
-    slides.forEach(slide => slide.classList.remove('active-slide'));
-    slides[index].classList.add('active-slide');
+
+    let currentSlide = 0;
+
+    slides.forEach((slide, index) => {
+      slide.classList.toggle('active-slide', index === 0);
+    });
+
+    if (slides.length > 1) {
+      setInterval(() => {
+        slides[currentSlide].classList.remove('active-slide');
+
+        currentSlide = (currentSlide + 1) % slides.length;
+
+        slides[currentSlide].classList.add('active-slide');
+      }, 4000);
+    }
   }
 
-  if (slides.length) {
-    setInterval(() => {
-      currentSlide++;
-      if (currentSlide >= slides.length) currentSlide = 0;
-      showSlide(currentSlide);
-    }, 4000);
+  try {
+    const response = await fetch('/api/gallery');
+
+    if (!response.ok) {
+      throw new Error(`Gallery API error: ${response.status}`);
+    }
+
+    const images = await response.json();
+
+    if (!Array.isArray(images) || !images.length) {
+      throw new Error('Gallery vuota');
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    images.forEach((image, index) => {
+      const img = document.createElement('img');
+
+      img.src = image.src;
+      img.alt = image.alt || 'Flying Donkeys Gallery';
+      img.className = index === 0
+        ? 'slide active-slide'
+        : 'slide';
+
+      img.loading = 'lazy';
+      img.decoding = 'async';
+
+      fragment.appendChild(img);
+    });
+
+    container.replaceChildren(fragment);
+
+    startSlideshow();
+
+  } catch (error) {
+    console.error('Errore caricamento galleria:', error);
+
+    // Se l'API non funziona, usa le immagini già presenti nell'HTML
+    startSlideshow();
   }
+}
+
+initGallery();
 
   // Google Sheets CSV
   const statsSheetUrl =
