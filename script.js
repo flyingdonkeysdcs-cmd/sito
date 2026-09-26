@@ -1465,6 +1465,31 @@ async function loadDcsNews() {
   }
 }
 
-loadDcsNews();
+function initDcsNewsWhenVisible() {
+  const section = document.getElementById('dcs-news');
+
+  if (!section) return;
+
+  if (!('IntersectionObserver' in window)) {
+    loadDcsNews();
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!entries[0].isIntersecting) return;
+
+      observer.disconnect();
+      loadDcsNews();
+    },
+    {
+      rootMargin: '700px 0px'
+    }
+  );
+
+  observer.observe(section);
+}
+
+initDcsNewsWhenVisible();
 
 });
