@@ -26,7 +26,15 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="style.css?v=102">
-   <link rel="stylesheet" href="mission-log.css?v=1">
+   <link
+	  rel="preload"
+	  href="mission-log.css?v=1"
+	  as="style"
+  onload="this.onload=null;this.rel='stylesheet'">
+
+	<noscript>
+	  <link rel="stylesheet" href="mission-log.css?v=1">
+	</noscript>
    <link rel="stylesheet" href="event-preview.css?v=1">
   <link rel="canonical" href="https://www.flyingdonkeysvirtualsquadron.it/">
   <script type="application/ld+json">
