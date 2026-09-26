@@ -394,7 +394,32 @@ async function initGallery() {
   }
 }
 
-initGallery();
+function initGalleryWhenVisible() {
+  const container = document.querySelector('.slideshow-container');
+
+  if (!container) return;
+
+  if (!('IntersectionObserver' in window)) {
+    initGallery();
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!entries[0].isIntersecting) return;
+
+      observer.disconnect();
+      initGallery();
+    },
+    {
+      rootMargin: '600px 0px'
+    }
+  );
+
+  observer.observe(container);
+}
+
+initGalleryWhenVisible();
 
   // Google Sheets CSV
   const statsSheetUrl =
