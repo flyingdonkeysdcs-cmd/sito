@@ -728,6 +728,9 @@ body::before{
   transition:0.25s ease;
 
   backdrop-filter:blur(4px);
+
+  text-decoration:none;
+  color:var(--text);
 }
 
 .aircraft-card:hover{
@@ -753,10 +756,6 @@ body::before{
 
 .aircraft-card h3{
   margin-bottom:10px;
-}
-.aircraft-card{
-  text-decoration:none;
-  color:var(--text);
 }
 .aircraft-card p{
   color:var(--muted);
@@ -832,6 +831,7 @@ body::before{
   transition:0.25s ease;
 
   backdrop-filter:blur(4px);
+  overflow:hidden;
 }
 
 .social-card:hover{
@@ -854,9 +854,6 @@ body::before{
   display:block;
 }
 
-.social-card{
-  overflow:hidden;
-}
 .social-card span{
   font-weight:600;
 }
@@ -1111,12 +1108,6 @@ textarea{
 /* Header mobile rules: consolidated in final header block below. */
 
 /* Responsive */
-.header-actions{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
 .roster-dropdown{
   position:relative;
 }
@@ -1776,18 +1767,6 @@ textarea{
     right:12px;
   }
 }
-.card-description{
-  color:var(--muted);
-  font-size:0.9rem;
-  margin:8px 0 14px;
-  line-height:1.5;
-}
-
-.hero-card .card-meta{
-  color:var(--accent-1);
-  font-weight:700;
-}
-
 .next-events-mini{
   margin-top:18px;
   padding-top:14px;
