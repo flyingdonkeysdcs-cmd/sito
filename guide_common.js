@@ -84,7 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // Roster
+  // =========================================================
+  // ROSTER DESKTOP + MOBILE
+  // =========================================================
+
   const openRoster =
     document.getElementById('openRoster');
 
@@ -95,71 +98,165 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pilotList');
 
 
-  if (openRoster && rosterMenu && pilotList) {
+  const openMobileRoster =
+    document.getElementById('openMobileRoster');
 
-    let rosterLoaded = false;
-    let rosterLoading = false;
+  const mobileRosterMenu =
+    document.getElementById('mobileRosterMenu');
+
+  const mobilePilotList =
+    document.getElementById('mobilePilotList');
 
 
-    async function loadRosterOnce() {
+  /*
+   * Una sola richiesta al Google Sheet.
+   * Desktop e mobile condividono gli stessi dati.
+   */
+  let rosterRowsPromise = null;
 
-      if (rosterLoaded || rosterLoading) return;
 
-      rosterLoading = true;
+  function getRosterRows() {
 
-      pilotList.textContent = 'Caricamento piloti...';
+    if (!rosterRowsPromise) {
 
-      try {
+      rosterRowsPromise =
+        loadSheet(statsSheetUrl)
+          .catch(error => {
 
-        const rows =
-          await loadSheet(statsSheetUrl);
+            rosterRowsPromise = null;
 
-        pilotList.replaceChildren();
-
-        rows.slice(1).forEach(row => {
-
-          const pilotName = row[0];
-
-          if (!pilotName) return;
-
-          const link =
-            document.createElement('a');
-
-          link.className = 'pilot-item';
-          link.textContent = pilotName;
-
-          link.href =
-            './pilota.html?nome=' +
-            encodeURIComponent(
-              pilotName.trim()
-            );
-
-          pilotList.appendChild(link);
-        });
-
-        rosterLoaded = true;
-
-      } catch (error) {
-
-        pilotList.textContent =
-          error.message;
-
-      } finally {
-
-        rosterLoading = false;
-      }
+            throw error;
+          });
     }
+
+    return rosterRowsPromise;
+  }
+
+
+  function renderRoster(
+    container,
+    rows
+  ) {
+
+    if (!container) return;
+
+    container.replaceChildren();
+
+    let pilotsAdded = 0;
+
+
+    rows.slice(1).forEach(row => {
+
+      const pilotName =
+        String(row[0] || '').trim();
+
+      if (!pilotName) return;
+
+
+      const link =
+        document.createElement('a');
+
+      link.className =
+        'pilot-item';
+
+      link.textContent =
+        pilotName;
+
+      link.href =
+        './pilota.html?nome=' +
+        encodeURIComponent(pilotName);
+
+
+      container.appendChild(link);
+
+      pilotsAdded++;
+    });
+
+
+    if (!pilotsAdded) {
+
+      container.textContent =
+        'Nessun pilota disponibile.';
+    }
+  }
+
+
+  async function loadRosterInto(
+    container
+  ) {
+
+    if (!container) return;
+
+    if (
+      container.dataset.loaded ===
+      'true'
+    ) {
+      return;
+    }
+
+
+    container.textContent =
+      'Caricamento piloti...';
+
+
+    try {
+
+      const rows =
+        await getRosterRows();
+
+      renderRoster(
+        container,
+        rows
+      );
+
+      container.dataset.loaded =
+        'true';
+
+    } catch (error) {
+
+      container.textContent =
+        error.message;
+    }
+  }
+
+
+  // -------------------------
+  // ROSTER DESKTOP
+  // -------------------------
+
+  if (
+    openRoster &&
+    rosterMenu &&
+    pilotList
+  ) {
+
+    openRoster.setAttribute(
+      'aria-expanded',
+      'false'
+    );
 
 
     openRoster.addEventListener(
       'click',
       function () {
 
-        rosterMenu.hidden =
-          !rosterMenu.hidden;
+        const willOpen =
+          rosterMenu.hidden;
 
-        if (!rosterMenu.hidden) {
-          loadRosterOnce();
+        rosterMenu.hidden =
+          !willOpen;
+
+        openRoster.setAttribute(
+          'aria-expanded',
+          String(willOpen)
+        );
+
+
+        if (willOpen) {
+
+          loadRosterInto(
+            pilotList
+          );
         }
       }
     );
@@ -170,14 +267,78 @@ document.addEventListener('DOMContentLoaded', () => {
       function (event) {
 
         const clickedInsideRoster =
-          openRoster.contains(event.target) ||
-          rosterMenu.contains(event.target);
+          openRoster.contains(
+            event.target
+          ) ||
+          rosterMenu.contains(
+            event.target
+          );
+
 
         if (!clickedInsideRoster) {
-          rosterMenu.hidden = true;
+
+          rosterMenu.hidden =
+            true;
+
+          openRoster.setAttribute(
+            'aria-expanded',
+            'false'
+          );
         }
       }
     );
   }
 
+
+  // -------------------------
+  // ROSTER MOBILE
+  // -------------------------
+
+  if (
+    openMobileRoster &&
+    mobileRosterMenu &&
+    mobilePilotList
+  ) {
+
+    openMobileRoster.setAttribute(
+      'aria-expanded',
+      'false'
+    );
+
+
+    openMobileRoster.addEventListener(
+      'click',
+      function (event) {
+
+        event.preventDefault();
+
+        const willOpen =
+          mobileRosterMenu.hidden;
+
+
+        mobileRosterMenu.hidden =
+          !willOpen;
+
+
+        openMobileRoster.classList.toggle(
+          'is-open',
+          willOpen
+        );
+
+
+        openMobileRoster.setAttribute(
+          'aria-expanded',
+          String(willOpen)
+        );
+
+
+        if (willOpen) {
+
+          loadRosterInto(
+            mobilePilotList
+          );
+        }
+      }
+    );
+  }
 });
