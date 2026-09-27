@@ -95,7 +95,32 @@ container.querySelectorAll('.mission-preview-card').forEach(card => {
   }
 }
 
-loadHomeMissionPreview();
+function initHomeMissionPreviewWhenVisible() {
+  const section = document.getElementById('mission-preview');
+
+  if (!section) return;
+
+  if (!('IntersectionObserver' in window)) {
+    loadHomeMissionPreview();
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!entries[0].isIntersecting) return;
+
+      observer.disconnect();
+      loadHomeMissionPreview();
+    },
+    {
+      rootMargin: '400px 0px'
+    }
+  );
+
+  observer.observe(section);
+}
+
+initHomeMissionPreviewWhenVisible();
 
 function escapeHTML(value) {
   return String(value || '')

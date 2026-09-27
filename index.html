@@ -19,12 +19,22 @@
 	<meta name="twitter:description" content="Squadriglia virtuale italiana dedicata a DCS World, operazioni mil-sim cooperative, addestramento strutturato e teamwork tattico.">
   <title>Squadriglia Virtuale Italiana DCS World | Flying Donkeys Virtual Squadron</title>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+ <!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- CSS -->
   <link rel="stylesheet" href="style.css?v=102">
-   <link rel="stylesheet" href="mission-log.css?v=1">
+   <link
+	  rel="preload"
+	  href="mission-log.css?v=1"
+	  as="style"
+  onload="this.onload=null;this.rel='stylesheet'">
+
+	<noscript>
+	  <link rel="stylesheet" href="mission-log.css?v=1">
+	</noscript>
    <link rel="stylesheet" href="event-preview.css?v=1">
   <link rel="canonical" href="https://www.flyingdonkeysvirtualsquadron.it/">
   <script type="application/ld+json">
@@ -33,7 +43,7 @@
   "@type":"Organization",
   "name":"Flying Donkeys Virtual Squadron",
   "url":"https://www.flyingdonkeysvirtualsquadron.it/",
-  "logo":"https://www.flyingdonkeysvirtualsquadron.it/images/logo.png",
+  "logo":"https://www.flyingdonkeysvirtualsquadron.it/images/logos/logo.webp",
   "sameAs":[
     "https://www.facebook.com/flyingdonkeysDCS",
     "https://instagram.com/flyingdonkeysdcs",
@@ -41,8 +51,8 @@
   ]
 }
 </script>
-<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
-<link rel="apple-touch-icon" href="/images/favicon.png">
+<link rel="icon"  type="image/png"  sizes="32x32"  href="/images/logos/favicon-32.png">
+<link rel="apple-touch-icon"    sizes="180x180"    href="/images/logos/apple-touch-icon.png">
 </head>
 
 <body>
@@ -51,7 +61,7 @@
   <header class="site-header">
 		<div class="header-inner container">
 			<a class="brand" href="#hero" aria-label="Flying Donkeys Home">
-				<img src="images/logo.png" alt="Flying Donkeys Logo" class="logo">
+				<img src="images/logos/logo.webp" alt="Flying Donkeys Logo" class="logo">
 				<span class="brand-text">Flying Donkeys</span>
 				</a>
 		</div>		
@@ -118,15 +128,31 @@
     <!-- Hero -->
    <section class="hero" id="hero">
 
-  <video class="hero-bg-video" autoplay muted loop playsinline>
-    <source src="videos/hero.mp4" type="video/mp4">
-  </video>
+  <video
+  class="hero-bg-video"
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="metadata"
+  poster="images/mobile-hero.webp">
+
+  <source
+    src="videos/Hero-optimized.mp4?v=3"
+    type="video/mp4"
+    media="(min-width: 769px)">
+</video>
       <div class="hero-inner">
 
         <div class="hero-left">
 
           <div class="hero-logo">
-            <img src="images/logo.png" alt="Logo Squadron" class="hero-main-logo">
+            <img
+			  src="images/logos/logo.webp"
+			  alt="Logo Squadron"
+			  class="hero-main-logo"
+			  fetchpriority="high"
+			  decoding="async">
           </div>
 
           <h1 class="hero-title">
@@ -398,7 +424,7 @@
      href="https://www.digitalcombatsimulator.com/en/products/planes/viper/"
      target="_blank">
 
-    <img src="images/f16.png" alt="F-16C">
+    <img src="images/f16.png" alt="F-16C" loading="lazy" decoding="async">
 
     <h3>F-16C Viper</h3>
 
@@ -412,7 +438,7 @@
      href="https://www.digitalcombatsimulator.com/en/products/planes/hornet/"
      target="_blank">
 
-    <img src="images/fa18.png" alt="F/A-18C">
+    <img src="images/fa18.png" alt="F/A-18C" loading="lazy" decoding="async">
 
     <h3>F/A-18C Hornet</h3>
 
@@ -504,19 +530,7 @@
         Immagini delle operazioni recenti
       </p>
 
-      <div class="slideshow-container">
-
-        <img src="images/2.png" class="slide active-slide" alt="Screenshot Squadron">
-
-        <img src="images/3.png" class="slide" alt="Screenshot Squadron">
-
-        <img src="images/4.png" class="slide" alt="Screenshot Squadron">
-
-        <img src="images/5.png" class="slide" alt="Screenshot Squadron">
-		
-		<img src="images/6.jpg" class="slide" alt="Screenshot Squadron">
-
-      </div>
+      <div class="slideshow-container"></div>
 
     </section>
 
@@ -540,6 +554,7 @@
          <iframe
 		width="100%"
 		height="500"
+		loading="lazy"	 
 		src="https://www.youtube.com/embed/QgSkWMfRWqc"
 		title="Flying Donkeys Video"
 		frameborder="0"
@@ -571,7 +586,7 @@
        href="https://www.facebook.com/flyingdonkeysDCS"
        target="_blank">
 
-      <img src="images/facebook.png" alt="Facebook">
+      <img src="images/facebook.png" alt="Facebook" loading="lazy" decoding="async">
       <span>Facebook</span>
 
     </a>
@@ -580,7 +595,7 @@
        href="https://instagram.com/flyingdonkeysdcs"
        target="_blank">
 
-      <img src="images/instagram.png" alt="Instagram">
+      <img src="images/instagram.png" alt="Instagram" loading="lazy" decoding="async">
       <span>Instagram</span>
 
     </a>
@@ -589,7 +604,7 @@
        href="https://www.tiktok.com/@flyingdonkeysdcs"
        target="_blank">
 
-      <img src="images/tiktok.png" alt="TikTok">
+      <img src="images/tiktok.png" alt="TikTok" loading="lazy" decoding="async">
       <span>TikTok</span>
 
     </a>
@@ -598,7 +613,7 @@
        href="https://youtube.com/@flyingdonkeysdcs443"
        target="_blank">
 
-      <img src="images/youtube.png" alt="YouTube">
+      <img src="images/youtube.png" alt="YouTube" loading="lazy" decoding="async">
       <span>YouTube</span>
 
     </a>
@@ -710,7 +725,12 @@
     <div class="footer-card footer-brand-card unified-card">
 
       <div class="footer-brand">
-        <img src="images/logo.png" alt="Flying Donkeys Logo" class="footer-logo">
+        <img
+		  src="images/logos/logo.webp"
+		  alt="Flying Donkeys Logo"
+		  class="footer-logo"
+		  loading="lazy"
+		  decoding="async">
 
         <div>
           <h3>Flying Donkeys</h3>
@@ -831,10 +851,11 @@
 
   </div>
 
-  <!-- JS -->
-  <script src="script.js?v=100"></script>
-  <script src="mobile.js?v=1"></script>
-  <script src="home-mission-preview.js?v=1"></script>
+  <!-- JS --> 
+	 <script src="mobile.js?v=1"></script>
+	 <script src="guide_common.js?v=1"></script>
+	<script src="home.js?v=1"></script>
+	<script src="home-mission-preview.js?v=1"></script>
   
   <div class="mission-modal-backdrop" id="homeMissionModal" hidden aria-hidden="true">
   <div class="mission-modal" role="dialog" aria-modal="true">
