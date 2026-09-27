@@ -1,7 +1,5 @@
 :root{
-  --bg:#0f1113;
   --panel:#16181a;
-  --charcoal:#0b0d0f;
 
   --muted:#9aa0a6;
   --text:#e6e9eb;
@@ -254,14 +252,6 @@ body::before{
   }
 }
 
-@media(max-width:640px){
-
-  .hero-video{
-    object-position:center center;
-    opacity:0.34;
-  }
-
-}
 .hero::before{
   content:"";
   position:absolute;
@@ -810,10 +800,6 @@ body::before{
   border-color:rgba(0,217,255,0.25);
 }
 
-.ops-icon{
-  font-size:30px;
-}
-
 /* Social */
 
 .socials-grid{
@@ -970,34 +956,6 @@ body::before{
   border:1px solid rgba(255,255,255,0.04);
 
   backdrop-filter:blur(4px);
-}
-
-/* Schedule */
-
-.schedule-table{
-  margin-top:25px;
-
-  border-radius:14px;
-
-  overflow:hidden;
-
-  border:1px solid rgba(255,255,255,0.05);
-}
-
-.schedule-row{
-  display:grid;
-
-  grid-template-columns:1fr 1fr 2fr;
-
-  padding:15px;
-
-  background:rgba(255,255,255,0.015);
-}
-
-.schedule-row.header{
-  background:rgba(0,217,255,0.08);
-
-  font-weight:700;
 }
 
 /* Footer */
@@ -1245,11 +1203,6 @@ textarea{
     grid-template-columns:1fr;
   }
 
-  .footer-inner{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
   .slideshow-container{
     height:300px;
   }
@@ -1288,14 +1241,6 @@ textarea{
   backdrop-filter:blur(5px);
 }
 
-.pilot-logo{
-  width:110px;
-  height:110px;
-  object-fit:contain;
-
-  filter:drop-shadow(0 0 18px rgba(0,217,255,0.25));
-}
-
 .pilot-stats-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -1321,42 +1266,6 @@ textarea{
   display:block;
   font-size:1.35rem;
   color:var(--text);
-}
-
-.medals-grid{
-  display:flex;
-  flex-wrap:wrap;
-  gap:14px;
-  margin-top:24px;
-}
-
-.medal-card{
-  min-width:130px;
-  background:rgba(22,24,26,0.9);
-  padding:14px;
-  border-radius:var(--radius);
-  border:1px solid rgba(255,255,255,0.05);
-  text-align:center;
-}
-
-.medal-card img{
-  max-width:100px;
-  max-height:42px;
-  object-fit:contain;
-  display:block;
-  margin:0 auto 8px;
-}
-
-.medal-card span{
-  display:block;
-  color:var(--muted);
-  font-size:0.8rem;
-}
-
-.medal-text strong{
-  display:block;
-  margin-bottom:6px;
-  color:var(--accent-1);
 }
 
 .small{
@@ -1628,24 +1537,6 @@ textarea{
 .hero-link:hover{
   color:var(--accent-1);
 }
-.pilot-page-header{
-  display:flex !important;
-  justify-content:center !important;
-  align-items:center !important;
-  padding:14px 20px !important;
-}
-
-.pilot-page-header .pilot-home-btn{
-  margin:0 auto !important;
-}
-.pilot-header-wrapper{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:14px 20px;
-}
-
 /* Raduni */
 .raduni-hero{
   padding-top:80px;
@@ -1903,42 +1794,6 @@ textarea{
   border-top:1px solid rgba(255,255,255,0.08);
 }
 
-.next-events-title{
-  color:var(--muted);
-  font-size:0.8rem;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:0.08em;
-  margin-bottom:10px;
-}
-
-.next-event-row{
-  display:flex;
-  justify-content:space-between;
-  gap:14px;
-  padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,0.05);
-}
-
-.next-event-row strong{
-  display:block;
-  color:var(--text);
-  font-size:0.9rem;
-}
-
-.next-event-row span{
-  display:block;
-  color:var(--accent-1);
-  font-size:0.78rem;
-  margin-top:2px;
-}
-
-.next-event-row small{
-  color:var(--muted);
-  font-size:0.78rem;
-  text-align:right;
-  min-width:120px;
-}
 .program-events-list{
   display:grid;
   gap:16px;
@@ -2581,46 +2436,6 @@ body.has-pilot-page-bg::before{
   overflow:hidden;
   border-radius:16px;
   border:1px solid rgba(0,217,255,0.22);
-}
-
-.pilot-map-panel{
-  padding:24px;
-}
-
-.pilot-map-panel h3{
-  margin-top:10px;
-}
-
-.pilot-map-list{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  margin-top:18px;
-}
-
-.pilot-map-item{
-  padding:12px 14px;
-  border-radius:12px;
-  background:rgba(0,217,255,0.07);
-  border:1px solid rgba(0,217,255,0.16);
-  transition:0.2s ease;
-}
-
-.pilot-map-item:hover{
-  transform:translateY(-2px);
-  border-color:rgba(0,217,255,0.35);
-  box-shadow:0 0 18px rgba(0,217,255,0.12);
-}
-
-.pilot-map-item strong{
-  display:block;
-  color:var(--accent-1);
-  margin-bottom:4px;
-}
-
-.pilot-map-item span{
-  color:var(--muted);
-  font-size:0.9rem;
 }
 
 .fd-map-marker{
@@ -3559,17 +3374,6 @@ section[id]{
   transform:translateY(-3px);
   border-color:rgba(0,217,255,0.35);
   box-shadow:0 0 22px rgba(0,217,255,0.16);
-}
-
-.dcs-news-card .news-date,
-.news-date{
-  display:inline-flex;
-  color:var(--accent-1);
-  font-weight:800;
-  font-size:0.78rem;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  margin-bottom:12px;
 }
 
 .dcs-news-card h3{
@@ -4706,22 +4510,6 @@ section[id]{
   }
 
 
-  /* Prossimi eventi dentro hero */
-
-  .next-event-row {
-    flex-direction: column;
-
-    gap: 4px;
-    padding: 10px 0;
-  }
-
-  .next-event-row small {
-    min-width: 0;
-
-    text-align: left;
-
-    font-size: 0.74rem;
-  }
 }
 
 
