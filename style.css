@@ -4578,3 +4578,163 @@ section[id]{
     min-height: 100px;
   }
 }
+/* ==========================================================
+   MOBILE OPTIMIZATION PASS 2C
+   Programma Completo + DCS News
+========================================================== */
+
+@media (max-width: 768px) {
+
+  /* Programma completo */
+
+  .program-events-list {
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .program-event-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    padding: 17px;
+
+    border-radius: 14px;
+  }
+
+  .program-event-card h3 {
+    margin: 3px 0 7px;
+
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .program-event-card p {
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .program-event-meta {
+    width: 100%;
+    min-width: 0;
+
+    text-align: left;
+
+    padding-top: 10px;
+
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .program-event-meta span,
+  .program-event-meta strong {
+    font-size: 0.82rem;
+  }
+
+  .program-event-meta .btn {
+    width: 100%;
+    min-height: 46px;
+
+    margin-top: 4px;
+  }
+
+
+  /* DCS News */
+
+  .dcs-news-grid {
+    max-width: none;
+
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .dcs-news-card {
+    padding: 17px;
+    border-radius: 14px;
+  }
+
+  .dcs-news-card .muted.small {
+    margin-bottom: 7px;
+
+    font-size: 0.7rem;
+    line-height: 1.35;
+
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+
+    color: var(--accent-1);
+  }
+
+  .dcs-news-card h3 {
+    margin: 0 0 9px;
+
+    font-size: 1rem;
+    line-height: 1.35;
+
+    text-wrap: balance;
+  }
+
+  .dcs-news-card p {
+    margin-bottom: 14px;
+
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  /*
+   * Evita newsletter molto lunghe
+   * direttamente nella home.
+   */
+  .dcs-news-card div > p:last-child {
+    display: -webkit-box;
+
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+  }
+
+  .dcs-news-card .program-event-meta {
+    padding-top: 12px;
+  }
+
+  .dcs-news-card .btn,
+  .dcs-news-card .btn-primary,
+  .dcs-news-card .btn-ghost {
+    width: 100%;
+    min-height: 46px;
+
+    margin-top: 0;
+  }
+
+
+  /* Prossimi eventi dentro hero */
+
+  .next-event-row {
+    flex-direction: column;
+
+    gap: 4px;
+    padding: 10px 0;
+  }
+
+  .next-event-row small {
+    min-width: 0;
+
+    text-align: left;
+
+    font-size: 0.74rem;
+  }
+}
+
+
+/* Smartphone piccoli */
+
+@media (max-width: 420px) {
+
+  .program-event-card,
+  .dcs-news-card {
+    padding: 15px;
+  }
+
+  .dcs-news-card div > p:last-child {
+    -webkit-line-clamp: 3;
+  }
+}
