@@ -3037,7 +3037,7 @@ section[id]{
   box-shadow:0 0 24px rgba(0,217,255,0.42) !important;
 }
 
-@media (max-width: 640px) {
+@media(max-width:640px){
 
   #about,
   #why-join,
@@ -3550,7 +3550,7 @@ section[id]{
    MOBILE OPTIMIZATION
    ========================================================== */
 
-@media (max-width:768px){
+@media(max-width:768px){
 
   .hero-proof-points span{
     font-size:0.68rem;
@@ -3576,11 +3576,7 @@ section[id]{
     line-height:1.45;
   }
 
-}
-
-@media (max-width:768px){
-
-  .hero-card,
+.hero-card,
   .why-card,
   .operate-card,
   .mission-card{
@@ -3822,7 +3818,7 @@ section[id]{
   pointer-events:none !important;
 }
 
-@media (max-width:900px){
+@media(max-width:900px){
   .site-header .desktop-menu{
     display:none !important;
   }
@@ -3859,15 +3855,13 @@ section[id]{
     pointer-events:auto !important;
     flex-direction:column !important;
   }
-}
+
 /* ==========================================================
    MOBILE OPTIMIZATION PASS 1
    Header + Home Hero
 ========================================================== */
 
-@media (max-width: 900px) {
-
-  /* HEADER */
+/* HEADER */
 
   .site-header .header-inner {
     gap: 10px;
@@ -3924,7 +3918,7 @@ section[id]{
 
 /* HOME HERO TABLET / MOBILE */
 
-@media (max-width: 768px) {
+@media(max-width:768px){
 
   /*
    * Nessun video hero su mobile.
@@ -4081,7 +4075,7 @@ section[id]{
 
 /* TELEFONI PICCOLI */
 
-@media (max-width: 420px) {
+@media(max-width:420px){
 
   .site-header .logo {
     width: 36px;
@@ -4117,7 +4111,7 @@ section[id]{
  * gli hover desktop non devono restare "incollati"
  * dopo un tap.
  */
-@media (hover: none) and (pointer: coarse) {
+@media(hover:none) and (pointer:coarse){
 
   .btn:hover,
   .unified-card:hover,
@@ -4139,7 +4133,7 @@ section[id]{
    Home sections + cards + spacing
 ========================================================== */
 
-@media (max-width: 768px) {
+@media(max-width:768px){
 
   /* Spaziatura generale home */
 
@@ -4324,7 +4318,7 @@ section[id]{
 
 /* Smartphone stretti */
 
-@media (max-width: 420px) {
+@media(max-width:420px){
 
   #about,
   #mission-preview,
@@ -4366,7 +4360,7 @@ section[id]{
    Programma Completo + DCS News
 ========================================================== */
 
-@media (max-width: 768px) {
+@media(max-width:768px){
 
   /* Programma completo */
 
@@ -4494,7 +4488,7 @@ section[id]{
 
 /* Smartphone piccoli */
 
-@media (max-width: 420px) {
+@media(max-width:420px){
 
   .program-event-card,
   .dcs-news-card {
@@ -4510,7 +4504,7 @@ section[id]{
    Pilot Profile + Stats + Medals
 ========================================================== */
 
-@media (max-width: 768px) {
+@media(max-width:768px){
 
   /* Pagina pilota */
 
@@ -4761,7 +4755,7 @@ section[id]{
 
 /* Telefoni molto stretti */
 
-@media (max-width: 380px) {
+@media(max-width:380px){
 
   .pilot-stats-grid {
     gap: 8px;
@@ -4783,7 +4777,7 @@ section[id]{
    MOBILE ROSTER / MEDAGLIERE
 ========================================================== */
 
-@media (max-width: 900px) {
+@media(max-width:900px){
 
   .mobile-roster-dropdown {
     width: 100%;
@@ -4935,7 +4929,7 @@ section[id]{
 
 /* telefoni molto stretti */
 
-@media (max-width: 380px) {
+@media(max-width:380px){
 
   .mobile-roster-menu .pilot-list {
     grid-template-columns: 1fr;
