@@ -15,16 +15,41 @@ if (mobileMenuToggle && mobileMenu) {
 
   function closeMobileMenu() {
 
-    mobileMenu.classList.remove('is-open');
+  mobileMenu.classList.remove('is-open');
 
-    mobileMenuToggle.classList.remove('is-open');
+  mobileMenuToggle.classList.remove('is-open');
 
-    mobileMenuToggle.setAttribute(
+  mobileMenuToggle.setAttribute(
+    'aria-expanded',
+    'false'
+  );
+
+
+  // Chiude anche il roster mobile
+  const mobileRosterMenu =
+    document.getElementById('mobileRosterMenu');
+
+  const openMobileRoster =
+    document.getElementById('openMobileRoster');
+
+
+  if (mobileRosterMenu) {
+    mobileRosterMenu.hidden = true;
+  }
+
+  if (openMobileRoster) {
+
+    openMobileRoster.classList.remove(
+      'is-open'
+    );
+
+    openMobileRoster.setAttribute(
       'aria-expanded',
       'false'
     );
-
   }
+
+}
 
   mobileMenuToggle.addEventListener(
     'click',
@@ -53,7 +78,7 @@ if (mobileMenuToggle && mobileMenu) {
   // chiude menu cliccando i link nav
 
   mobileMenu
-    .querySelectorAll('.header-nav a')
+    .querySelectorAll('.mobile-nav a')
     .forEach(function(link){
 
       link.addEventListener(
