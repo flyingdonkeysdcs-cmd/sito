@@ -5023,49 +5023,50 @@ section[id]{
   }
 
   .mobile-roster-toggle {
-    width: 100%;
-    min-height: 48px;
+  position: relative;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  width: 100%;
+  min-height: 48px;
 
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    padding: 12px 16px;
+  padding: 12px 44px;
 
-    border-radius: 10px;
+  border-radius: 10px;
 
-    border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.05);
 
-    background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.03);
 
-    color: var(--text);
+  color: var(--text);
 
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    text-align: left;
+  text-align: center;
 
-    touch-action: manipulation;
-  }
+  touch-action: manipulation;
+}
 
   .mobile-roster-toggle:active {
     background: rgba(255,255,255,0.07);
   }
 
   .mobile-roster-chevron {
-    flex-shrink: 0;
+  position: absolute;
+  right: 16px;
 
-    color: var(--accent-1);
+  color: var(--accent-1);
 
-    font-size: 1rem;
+  font-size: 1rem;
 
-    transition: transform 0.2s ease;
-  }
+  transition: transform 0.2s ease;
+}
 
   .mobile-roster-toggle.is-open
   .mobile-roster-chevron {
