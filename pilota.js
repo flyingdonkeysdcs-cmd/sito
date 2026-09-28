@@ -1218,16 +1218,6 @@ const visibleWings =
       rule =>
         safeAssetUrl(rule.img)
     );
-    console.log('=== WINGS DEBUG ===');
-console.log('Livello Pilota:', valStat('Livello Pilota'));
-
-console.log(
-  'Wings rules:',
-  rules.filter(
-    rule =>
-      rule.tipo.includes('WINGS')
-  )
-);
 
 console.log(
   'Pilot wings:',
@@ -1312,20 +1302,6 @@ const visibleBadges =
       rule =>
         safeAssetUrl(rule.img)
     );
-
-
-console.log('=== BADGE DEBUG ===');
-console.log('Pilot:', pilotRow[0]);
-console.log('Qualification badges:', qualificationBadges);
-console.log('Visible badges:', visibleBadges);
-
-console.log(
-  'Badge rules:',
-  rules.filter(
-    rule =>
-      rule.tipo.includes('BADGE')
-  )
-);
 
 
 function renderBadge(rule) {
