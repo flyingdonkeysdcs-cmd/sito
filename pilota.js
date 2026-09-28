@@ -217,6 +217,11 @@ const pilotUniformLapel =
     'pilotUniformLapel'
   );
 
+  const pilotUniformAscot =
+  document.getElementById(
+    'pilotUniformAscot'
+  );
+  
   const params =
     new URLSearchParams(
       window.location.search
@@ -450,7 +455,18 @@ if (pilotUniformLapel) {
       .trim()
       .toUpperCase();
 
+const pilotName =
+  String(pilotRow[0] || '')
+    .trim()
+    .toUpperCase();
 
+
+if (pilotUniformAscot) {
+
+  pilotUniformAscot.hidden =
+    pilotName !== 'POLONIO';
+}
+    
   /* Uniform selection */
 
   const isNavyPilot =
