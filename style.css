@@ -4994,24 +4994,25 @@ section[id]{
      Middle layer
      ======================================================== */
 
-  .pilot-uniform-medals .pilot-medals-grid {
-    position: absolute;
+ .pilot-uniform-medals .pilot-medals-grid {
+  position: absolute;
 
-    bottom: 370px;
-    left: calc(50% + 115px);
+  /* Il rack è ancorato al bordo superiore del taschino */
+  bottom: 370px;
 
-    transform: translateX(-50%);
+  left: calc(50% + 115px);
 
-    /* 3 ribbons × 38px */
-    width: 114px;
+  transform: translateX(-50%);
 
-    display: flex;
-    flex-direction: column;
+  width: 114px;
 
-    align-items: flex-end;
+  display: flex;
+  flex-direction: column;
 
-    z-index: 2;
-  }
+  align-items: center;
+
+  z-index: 2;
+}
 
 
   /* ========================================================
