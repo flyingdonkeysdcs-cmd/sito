@@ -1182,6 +1182,48 @@ const visibleBadges =
     );
 
 
+function renderBadge(rule) {
+
+  const imageUrl =
+    safeAssetUrl(
+      rule.img
+    );
+
+  const extraImageUrl =
+    safeAssetUrl(
+      rule.immagineDettaglio
+    );
+
+
+  return `
+    <div class="qualification-badge-slot">
+      <img
+        src="${escapeHTML(imageUrl)}"
+        alt="${escapeHTML(rule.med || '')}"
+        class="ribbon-clickable qualification-badge"
+        data-title="${escapeHTML(rule.titolo || rule.med || '')}"
+        data-description="${escapeHTML(rule.descrizione || '')}"
+        data-image="${escapeHTML(imageUrl)}"
+        data-extra="${escapeHTML(extraImageUrl)}"
+        loading="lazy"
+        decoding="async">
+    </div>
+  `;
+}
+
+
+if (pilotBadges) {
+
+  pilotBadges.innerHTML =
+    visibleBadges
+      .map(renderBadge)
+      .join('');
+
+  pilotBadges.hidden =
+    visibleBadges.length === 0;
+}
+
+
 function renderRibbon(rule) {
 
   const imageUrl =
