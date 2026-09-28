@@ -1012,182 +1012,65 @@ function renderRibbon(rule) {
 
 if (visibleMedals.length) {
 
-  const total = visibleMedals.length;
   const rows = [];
 
-  /*
-   * Rack capacities from TOP to BOTTOM:
-   *
-   * first row  = max 2
-   * second row = max 2
-   * other rows = max 3
-   *
-   * The rack is anchored from the bottom in CSS,
-   * so the last row always remains on the pocket edge.
-   */
+  const total =
+    visibleMedals.length;
 
-  let rowCounts = [];
-
-
-  /*
-   * Find the smallest rack capable of holding
-   * all assigned ribbons.
-   */
-
-  if (total <= 2) {
-
-    rowCounts = [total];
-
-  } else if (total <= 4) {
-
-    /*
-     * 3 -> 1 + 2
-     * 4 -> 2 + 2
-     */
-
-    rowCounts = [
-      total - 2,
-      2
-    ];
-
-  } else {
-
-    /*
-     * From 5 ribbons onward:
-     * first two rows can hold 2 each,
-     * subsequent rows can hold 3.
-     */
-
-    let rowNumber = 3;
-
-    while (
-      4 + ((rowNumber - 2) * 3) < total
-    ) {
-      rowNumber++;
-    }
-
-
-    const lowerRows =
-      rowNumber - 2;
-
-    const lowerCapacity =
-      lowerRows * 3;
-
-    const upperCount =
-      total - lowerCapacity;
-
-
-    /*
-     * Distribute the remaining ribbons
-     * over the first two rows.
-     *
-     * Examples:
-     *
-     * 5  -> 2 / 3
-     * 6  -> 1 / 2 / 3
-     * 7  -> 2 / 2 / 3
-     * 8  -> 2 / 3 / 3
-     * 9  -> 1 / 2 / 3 / 3
-     * 10 -> 2 / 2 / 3 / 3
-     */
-
-    if (upperCount <= 0) {
-
-      /*
-       * We need one fewer lower row,
-       * so ribbons remain in the upper area.
-       */
-
-      const adjustedLowerRows =
-        lowerRows - 1;
-
-      const adjustedUpperCount =
-        total -
-        (adjustedLowerRows * 3);
-
-
-      if (adjustedUpperCount <= 2) {
-
-        rowCounts.push(
-          adjustedUpperCount
-        );
-
-      } else {
-
-        rowCounts.push(
-          adjustedUpperCount - 2,
-          2
-        );
-      }
-
-
-      for (
-        let i = 0;
-        i < adjustedLowerRows;
-        i++
-      ) {
-        rowCounts.push(3);
-      }
-
-    } else {
-
-      if (upperCount <= 2) {
-
-        rowCounts.push(
-          upperCount
-        );
-
-      } else {
-
-        rowCounts.push(
-          upperCount - 2,
-          2
-        );
-      }
-
-
-      for (
-        let i = 0;
-        i < lowerRows;
-        i++
-      ) {
-        rowCounts.push(3);
-      }
-    }
-  }
-
+  const remainder =
+    total % 3;
 
   let index = 0;
 
 
-  rowCounts.forEach(
-    (count, rowIndex) => {
+  function addRow(count) {
 
-      if (count <= 0) {
-        return;
-      }
-
-
-      const row =
-        visibleMedals.slice(
-          index,
-          index + count
-        );
-
-
-      rows.push(`
-        <div
-          class="ribbon-row ribbon-count-${count}"
-          data-ribbon-row="${rowIndex + 1}"
-        >
-          ${row.map(renderRibbon).join('')}
-        </div>
-      `);
-
-
-      index += count;
+    if (count <= 0) {
+      return;
     }
-  );
+
+    const row =
+      visibleMedals.slice(
+        index,
+        index + count
+      );
+
+    rows.push(`
+      <div class="ribbon-row ribbon-count-${count}">
+        ${row.map(renderRibbon).join('')}
+      </div>
+    `);
+
+    index += count;
+  }
+
+
+  /*
+   * L'eventuale riga incompleta viene
+   * sempre posizionata in alto.
+   *
+   * 7  -> 1 + 3 + 3
+   * 8  -> 2 + 3 + 3
+   * 9  -> 3 + 3 + 3
+   * 10 -> 1 + 3 + 3 + 3
+   * 11 -> 2 + 3 + 3 + 3
+   */
+
+  if (remainder > 0) {
+    addRow(remainder);
+  }
+
+
+  /*
+   * Tutte le altre righe sono complete.
+   */
+
+  while (
+    index <
+    visibleMedals.length
+  ) {
+    addRow(3);
+  }
 
 
   pilotMedals.innerHTML =
