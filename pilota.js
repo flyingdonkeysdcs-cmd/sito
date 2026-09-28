@@ -197,7 +197,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById(
       'pilotMedals'
     );
-
+   const pilotBadges =
+  document.getElementById(
+    'pilotBadges'
+  );
   const pilotProfileImage =
     document.getElementById(
       'pilotProfileImage'
