@@ -4992,16 +4992,13 @@ section[id]{
 
   transform: translateX(-50%);
 
-  width: 225px;
+  width: 120px;
 
-  display: grid;
-  grid-template-columns: repeat(4, 30px);
+  display: flex;
+  flex-wrap: wrap;
 
-  column-gap: 0;
-  row-gap: 0;
-
-  justify-content: center;
-  align-items: start;
+  justify-content: flex-end;
+  align-content: flex-start;
 
   z-index: 2;
 }
@@ -5010,7 +5007,7 @@ section[id]{
   /* Ribbon dimensions on uniform */
 
   .pilot-uniform-medals .ribbon-slot {
-    width: 30px;
+    width: 50px;
     height: auto;
 
     display: flex;
