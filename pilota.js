@@ -1122,11 +1122,60 @@ if (pilotUniformAscot) {
   // HTML NASTRINI
   // ==========================================
 
+/*
+ * Separazione tra:
+ *
+ * - nastrini / medaglie normali
+ * - qualification badge
+ *
+ * I badge sono identificati nel foglio
+ * RegoleMedaglie tramite tipo TESTO_BADGE.
+ */
+
+const ribbonMedals =
+  medals.filter(
+    rule =>
+      !rule.tipo.includes('BADGE')
+  );
+
+
+const qualificationBadges =
+  medals.filter(
+    rule =>
+      rule.tipo.includes('BADGE')
+  );
+
+
+/*
+ * Nastrini visibili sulla divisa.
+ *
+ * Il limite di 20 riguarda solamente
+ * i nastrini e NON i qualification badge.
+ */
+
 const visibleMedals =
-  medals
+  ribbonMedals
     .slice(0, 20)
-    .filter(rule =>
-      safeAssetUrl(rule.img)
+    .filter(
+      rule =>
+        safeAssetUrl(rule.img)
+    );
+
+
+/*
+ * Qualification badge.
+ *
+ * Per ora vengono solamente raccolti.
+ * Nel pass successivo verranno renderizzati
+ * sotto al rack dei nastrini.
+ */
+
+const visibleBadges =
+  qualificationBadges
+    .slice(0, 3)
+    .filter(
+      rule =>
+        safeAssetUrl(rule.img)
     );
 
 
