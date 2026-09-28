@@ -442,43 +442,69 @@ if (pilotUniformLapel) {
 
 
   async function loadPilotVisuals(
-    pilotRow
-  ) {
+  pilotRow
+) {
 
-    const aircraft =
-      String(pilotRow[3] || '')
-        .trim()
-        .toUpperCase();
+  const aircraft =
+    String(pilotRow[3] || '')
+      .trim()
+      .toUpperCase();
 
 
-    if (pilotAircraftLogo) {
+  /* Uniform selection */
 
-      let logoUrl = '';
+  const isNavyPilot =
+    aircraft === 'F/A-18C';
 
-      if (aircraft === 'F-16C') {
-        logoUrl =
-          'images/logo-f16.png';
-      }
 
-      if (
-        aircraft === 'F/A-18C'
-      ) {
-        logoUrl =
-          'images/logo-fa18.png';
-      }
+  if (pilotUniformBody) {
 
-      if (logoUrl) {
+    pilotUniformBody.src =
+      isNavyPilot
+        ? 'images/donkey_body_navy.webp'
+        : 'images/donkey_body.webp';
+  }
 
-        pilotAircraftLogo.src =
-          logoUrl;
 
-        pilotAircraftLogo.hidden =
-          false;
-      }
+  if (pilotUniformLapel) {
+
+    pilotUniformLapel.src =
+      isNavyPilot
+        ? 'images/donkey_rever_navy.webp'
+        : 'images/donkey_rever.webp';
+  }
+
+
+  /* Aircraft logo */
+
+  if (pilotAircraftLogo) {
+
+    let logoUrl = '';
+
+    if (aircraft === 'F-16C') {
+      logoUrl =
+        'images/logo-f16.png';
     }
 
+    if (
+      aircraft === 'F/A-18C'
+    ) {
+      logoUrl =
+        'images/logo-fa18.png';
+    }
 
-    try {
+    if (logoUrl) {
+
+      pilotAircraftLogo.src =
+        logoUrl;
+
+      pilotAircraftLogo.hidden =
+        false;
+    }
+  }
+
+
+  try {
 
       const photoRows =
         await loadSheet(
