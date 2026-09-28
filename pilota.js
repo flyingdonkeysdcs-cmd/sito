@@ -1163,7 +1163,18 @@ const visibleMedals =
       rule =>
         safeAssetUrl(rule.img)
     );
+console.log('=== BADGE DEBUG ===');
+console.log('Pilot:', pilotRow[0]);
+console.log('Qualification badges:', qualificationBadges);
+console.log('Visible badges:', visibleBadges);
 
+console.log(
+  'Badge rules:',
+  rules.filter(
+    rule =>
+      rule.tipo.includes('BADGE')
+  )
+);
 
 /*
  * Qualification badge.
