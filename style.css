@@ -4942,6 +4942,10 @@ section[id]{
 
 @media (min-width: 641px) {
 
+  /* ========================================================
+     UNIFORM CONTAINER
+     ======================================================== */
+
   .pilot-uniform-medals {
     position: relative;
 
@@ -4958,7 +4962,10 @@ section[id]{
   }
 
 
-  /* Uniform body */
+  /* ========================================================
+     UNIFORM BODY
+     Base layer
+     ======================================================== */
 
   .pilot-uniform-body {
     position: absolute;
@@ -4973,8 +4980,9 @@ section[id]{
     max-width: none;
 
     object-fit: contain;
-
     display: block;
+
+    z-index: 1;
 
     pointer-events: none;
     user-select: none;
@@ -4983,6 +4991,7 @@ section[id]{
 
   /* ========================================================
      RIBBON RACK
+     Middle layer
      ======================================================== */
 
   .pilot-uniform-medals .pilot-medals-grid {
@@ -4993,7 +5002,8 @@ section[id]{
 
     transform: translateX(-50%);
 
-    width: 150px;
+    /* 3 ribbons × 38px */
+    width: 114px;
 
     display: flex;
     flex-direction: column;
@@ -5004,10 +5014,13 @@ section[id]{
   }
 
 
-  /* Each physical row */
+  /* ========================================================
+     INDIVIDUAL RIBBON ROW
+     All rows are aligned to the right
+     ======================================================== */
 
   .pilot-uniform-medals .ribbon-row {
-    width: 150px;
+    width: 114px;
 
     display: flex;
 
@@ -5022,36 +5035,14 @@ section[id]{
 
 
   /* ========================================================
-     LAPEL CLEARANCE
-
-     First row is moved toward the outside of the jacket.
-     Second row gets a smaller displacement.
-     From the third row down the rack uses full width.
-     ======================================================== */
-
-
-  /* ========================================================
-     INCOMPLETE TOP ROW
-     ======================================================== */
-
-  .pilot-uniform-medals .ribbon-row-top.ribbon-count-1 {
-    padding-right: 0;
-  }
-
-  .pilot-uniform-medals .ribbon-row-top.ribbon-count-2 {
-    padding-right: 0;
-  }
-
-
-  /* ========================================================
-     RIBBONS
+     RIBBON SLOT
      ======================================================== */
 
   .pilot-uniform-medals .ribbon-slot {
-    width: 50px;
+    width: 38px;
     height: auto;
 
-    flex: 0 0 50px;
+    flex: 0 0 38px;
 
     display: flex;
     align-items: center;
@@ -5061,8 +5052,12 @@ section[id]{
   }
 
 
+  /* ========================================================
+     RIBBON IMAGE
+     ======================================================== */
+
   .pilot-uniform-medals .ribbon-slot img {
-    width: 50px;
+    width: 38px;
     height: auto;
 
     display: block;
@@ -5077,33 +5072,44 @@ section[id]{
     position: relative;
     z-index: 3;
   }
+
+
+  /* ========================================================
+     UNIFORM LAPEL
+     Foreground layer
+
+     Same size and position as donkey_body.webp.
+     This allows the lapel to physically cover ribbons.
+     ======================================================== */
+
   .pilot-uniform-lapel {
-	  position: absolute;
+    position: absolute;
 
- 	 left: 50%;
-	  top: 0;
+    left: 50%;
+    top: 0;
 
- 	 transform: translateX(-50%);
+    transform: translateX(-50%);
 
-	  height: 860px;
-	  width: auto;
-	  max-width: none;
+    height: 860px;
+    width: auto;
+    max-width: none;
 
-	  object-fit: contain;
-	  display: block;
+    object-fit: contain;
+    display: block;
 
-	  z-index: 3;
+    z-index: 3;
 
- 	 pointer-events: none;
-	  user-select: none;
-	}
+    pointer-events: none;
+    user-select: none;
+  }
+
 }
 
 
 /* ==========================================================
    MOBILE
-   Keep the existing ribbon presentation.
-   Uniform is intentionally hidden.
+   Keep original ribbon presentation.
+   Uniform body and lapel are hidden.
    ========================================================== */
 
 @media (max-width: 640px) {
@@ -5113,6 +5119,7 @@ section[id]{
     margin-top: 24px;
   }
 
+
   .pilot-uniform-body,
   .pilot-uniform-lapel {
     display: none;
@@ -5120,9 +5127,9 @@ section[id]{
 
 
   /*
-   * JS now creates ribbon-row wrappers.
-   * On mobile we neutralise them so the existing mobile
-   * ribbon grid continues to behave as before.
+   * JS creates ribbon-row wrappers.
+   * display: contents makes those wrappers transparent
+   * to the existing mobile grid.
    */
 
   .pilot-medals-grid .ribbon-row {
