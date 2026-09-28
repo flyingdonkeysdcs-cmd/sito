@@ -5002,7 +5002,11 @@ section[id]{
 
   z-index: 2;
 }
-
+.pilot-uniform-medals
+.pilot-medals-grid
+.ribbon-slot:first-child {
+  margin-left: 60px;
+}
 
   /* Ribbon dimensions on uniform */
 
@@ -5019,7 +5023,7 @@ section[id]{
 
 
   .pilot-uniform-medals .ribbon-slot img {
-    width: 30px;
+    width: 50px;
     height: auto;
 
     display: block;
