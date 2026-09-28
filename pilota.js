@@ -1122,48 +1122,189 @@ if (pilotUniformAscot) {
   // HTML NASTRINI
   // ==========================================
 
-  const medalsHtml =
-    medals
-      .slice(0, 20)
-      .map(rule => {
-
-        const imageUrl =
-          safeAssetUrl(
-            rule.img
-          );
-
-        const extraImageUrl =
-          safeAssetUrl(
-            rule.immagineDettaglio
-          );
+const visibleMedals =
+  medals
+    .slice(0, 20)
+    .filter(rule =>
+      safeAssetUrl(rule.img)
+    );
 
 
-        if (!imageUrl) {
-          return '';
-        }
+function renderRibbon(rule) {
+
+  const imageUrl =
+    safeAssetUrl(
+      rule.img
+    );
+
+  const extraImageUrl =
+    safeAssetUrl(
+      rule.immagineDettaglio
+    );
 
 
-        return `
-          <div class="ribbon-slot">
-            <img
-              src="${escapeHTML(imageUrl)}"
-              alt="${escapeHTML(rule.med || '')}"
-              class="ribbon-clickable"
-              data-title="${escapeHTML(rule.titolo || rule.med || '')}"
-              data-description="${escapeHTML(rule.descrizione || '')}"
-              data-image="${escapeHTML(imageUrl)}"
-              data-extra="${escapeHTML(extraImageUrl)}"
-              loading="lazy"
-              decoding="async">
-          </div>
-        `;
-      })
-      .join('');
+  return `
+    <div class="ribbon-slot">
+      <img
+        src="${escapeHTML(imageUrl)}"
+        alt="${escapeHTML(rule.med || '')}"
+        class="ribbon-clickable"
+        data-title="${escapeHTML(rule.titolo || rule.med || '')}"
+        data-description="${escapeHTML(rule.descrizione || '')}"
+        data-image="${escapeHTML(imageUrl)}"
+        data-extra="${escapeHTML(extraImageUrl)}"
+        loading="lazy"
+        decoding="async">
+    </div>
+  `;
+}
+
+
+if (visibleMedals.length) {
+
+  const rows = [];
+
+  const total =
+    visibleMedals.length;
+
+
+  /*
+   * RIGHE 1-5 DAL BASSO
+   * massimo 3 nastrini.
+   *
+   * Riga incompleta centrata.
+   *
+   * Dalla sesta riga in su:
+   * massimo 2 nastrini,
+   * allineati a destra.
+   */
+
+  const LOWER_ROWS = 5;
+
+  const LOWER_CAPACITY =
+    LOWER_ROWS * 3;
+
+  let rowCounts = [];
+
+
+  if (total <= LOWER_CAPACITY) {
+
+    const remainder =
+      total % 3;
+
+    const fullRows =
+      Math.floor(
+        total / 3
+      );
+
+
+    if (remainder > 0) {
+
+      rowCounts.push(
+        remainder
+      );
+    }
+
+
+    for (
+      let i = 0;
+      i < fullRows;
+      i++
+    ) {
+
+      rowCounts.push(3);
+    }
+
+  } else {
+
+    const upperCount =
+      total -
+      LOWER_CAPACITY;
+
+    const upperRemainder =
+      upperCount % 2;
+
+    const upperFullRows =
+      Math.floor(
+        upperCount / 2
+      );
+
+
+    if (upperRemainder > 0) {
+
+      rowCounts.push(1);
+    }
+
+
+    for (
+      let i = 0;
+      i < upperFullRows;
+      i++
+    ) {
+
+      rowCounts.push(2);
+    }
+
+
+    for (
+      let i = 0;
+      i < LOWER_ROWS;
+      i++
+    ) {
+
+      rowCounts.push(3);
+    }
+  }
+
+
+  let index = 0;
+
+
+  rowCounts.forEach(
+    (count, rowIndex) => {
+
+      const row =
+        visibleMedals.slice(
+          index,
+          index + count
+        );
+
+
+      const rowsBelow =
+        rowCounts.length -
+        rowIndex -
+        1;
+
+
+      const isUpperArea =
+        rowsBelow >= 5;
+
+
+      const alignmentClass =
+        isUpperArea
+          ? 'ribbon-row-right'
+          : 'ribbon-row-center';
+
+
+      rows.push(`
+        <div class="ribbon-row ribbon-count-${count} ${alignmentClass}">
+          ${row.map(renderRibbon).join('')}
+        </div>
+      `);
+
+
+      index += count;
+    }
+  );
 
 
   pilotMedals.innerHTML =
-    medalsHtml ||
-    '<p class="muted">Nessun nastrino assegnato.</p>';
+    rows.join('');
+
+} else {
+
+  pilotMedals.innerHTML = '';
+}
 
 
   // ==========================================
