@@ -5029,14 +5029,6 @@ section[id]{
      From the third row down the rack uses full width.
      ======================================================== */
 
-  .pilot-uniform-medals .ribbon-row:nth-child(1) {
-    transform: translateX(20px);
-  }
-
-  .pilot-uniform-medals .ribbon-row:nth-child(2) {
-    transform: translateX(10px);
-  }
-
 
   /* ========================================================
      INCOMPLETE TOP ROW
@@ -5085,7 +5077,26 @@ section[id]{
     position: relative;
     z-index: 3;
   }
+  .pilot-uniform-lapel {
+	  position: absolute;
 
+ 	 left: 50%;
+	  top: 0;
+
+ 	 transform: translateX(-50%);
+
+	  height: 860px;
+	  width: auto;
+	  max-width: none;
+
+	  object-fit: contain;
+	  display: block;
+
+	  z-index: 3;
+
+ 	 pointer-events: none;
+	  user-select: none;
+	}
 }
 
 
@@ -5102,7 +5113,8 @@ section[id]{
     margin-top: 24px;
   }
 
-  .pilot-uniform-body {
+  .pilot-uniform-body,
+  .pilot-uniform-lapel {
     display: none;
   }
 
