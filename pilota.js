@@ -1084,12 +1084,6 @@ if (visibleMedals.length) {
 
   pilotMedals.innerHTML = '';
 }
-
-} *//else {
-
-*//  pilotMedals.innerHTML =    '<p class="muted">Nessun nastrino assegnato.</p>';}
-
-
     const ribbonModal =
       document.getElementById(
         'ribbonModal'
