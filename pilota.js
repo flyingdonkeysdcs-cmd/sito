@@ -1188,7 +1188,8 @@ const pilotAircraftQualifications = [
 const ribbonMedals =
   medals.filter(
     rule =>
-      !rule.tipo.includes('BADGE')
+      !rule.tipo.includes('BADGE') &&
+      !rule.tipo.includes('WINGS')
   );
 
 
@@ -1197,6 +1198,22 @@ const qualificationBadges =
     rule =>
       rule.tipo.includes('BADGE')
   );
+
+
+const pilotWings =
+  medals.filter(
+    rule =>
+      rule.tipo.includes('WINGS')
+  );
+
+
+const visibleWings =
+  pilotWings
+    .slice(0, 1)
+    .filter(
+      rule =>
+        safeAssetUrl(rule.img)
+    );
 
 
 /*
