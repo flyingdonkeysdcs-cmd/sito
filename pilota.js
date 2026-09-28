@@ -972,48 +972,117 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    const medalsHtml =
-      medals
-        .slice(0, 20)
-        .map(rule => {
-
-          const imageUrl =
-            safeAssetUrl(
-              rule.img
-            );
-
-          const extraImageUrl =
-            safeAssetUrl(
-              rule.immagineDettaglio
-            );
+   const visibleMedals =
+  medals
+    .slice(0, 20)
+    .filter(rule =>
+      safeAssetUrl(rule.img)
+    );
 
 
-          if (!imageUrl) {
-            return '';
-          }
+function renderRibbon(rule) {
+
+  const imageUrl =
+    safeAssetUrl(
+      rule.img
+    );
+
+  const extraImageUrl =
+    safeAssetUrl(
+      rule.immagineDettaglio
+    );
 
 
-          return `
-            <div class="ribbon-slot">
-              <img
-                src="${escapeHTML(imageUrl)}"
-                alt="${escapeHTML(rule.med || '')}"
-                class="ribbon-clickable"
-                data-title="${escapeHTML(rule.titolo || rule.med || '')}"
-                data-description="${escapeHTML(rule.descrizione || '')}"
-                data-image="${escapeHTML(imageUrl)}"
-                data-extra="${escapeHTML(extraImageUrl)}"
-                loading="lazy"
-                decoding="async">
-            </div>
-          `;
-        })
-        .join('');
+  return `
+    <div class="ribbon-slot">
+      <img
+        src="${escapeHTML(imageUrl)}"
+        alt="${escapeHTML(rule.med || '')}"
+        class="ribbon-clickable"
+        data-title="${escapeHTML(rule.titolo || rule.med || '')}"
+        data-description="${escapeHTML(rule.descrizione || '')}"
+        data-image="${escapeHTML(imageUrl)}"
+        data-extra="${escapeHTML(extraImageUrl)}"
+        loading="lazy"
+        decoding="async">
+    </div>
+  `;
+}
 
 
-    pilotMedals.innerHTML =
-      medalsHtml ||
-      '<p class="muted">Nessun nastrino assegnato.</p>';
+if (visibleMedals.length) {
+
+  /*
+   * Costruzione del rack.
+   *
+   * Le righe complete contengono 3 nastrini.
+   * L'eventuale riga incompleta viene messa IN ALTO.
+   */
+
+  const remainder =
+    visibleMedals.length % 3;
+
+  let index = 0;
+
+  const rows = [];
+
+
+  /* Riga superiore incompleta */
+
+  if (remainder > 0) {
+
+    const firstRow =
+      visibleMedals.slice(
+        0,
+        remainder
+      );
+
+    rows.push(
+      `
+        <div class="ribbon-row ribbon-row-top ribbon-count-${remainder}">
+          ${firstRow.map(renderRibbon).join('')}
+        </div>
+      `
+    );
+
+    index =
+      remainder;
+  }
+
+
+  /* Tutte le altre righe complete */
+
+  while (
+    index <
+    visibleMedals.length
+  ) {
+
+    const row =
+      visibleMedals.slice(
+        index,
+        index + 3
+      );
+
+    rows.push(
+      `
+        <div class="ribbon-row ribbon-count-${row.length}">
+          ${row.map(renderRibbon).join('')}
+        </div>
+      `
+    );
+
+    index += 3;
+  }
+
+
+  pilotMedals.innerHTML =
+    rows.join('');
+
+} else {
+
+  pilotMedals.innerHTML =
+    '<p class="muted">Nessun nastrino assegnato.</p>';
+}
 
 
     const ribbonModal =
