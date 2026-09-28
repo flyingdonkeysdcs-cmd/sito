@@ -1218,7 +1218,49 @@ const visibleWings =
       rule =>
         safeAssetUrl(rule.img)
     );
+if (pilotWingsElement) {
 
+  if (visibleWings.length) {
+
+    const wing =
+      visibleWings[0];
+
+    const imageUrl =
+      safeAssetUrl(
+        wing.img
+      );
+
+    const extraImageUrl =
+      safeAssetUrl(
+        wing.immagineDettaglio
+      );
+
+
+    pilotWingsElement.innerHTML = `
+      <img
+        src="${escapeHTML(imageUrl)}"
+        alt="${escapeHTML(wing.med || '')}"
+        class="ribbon-clickable pilot-wings-image"
+        data-title="${escapeHTML(wing.titolo || wing.med || '')}"
+        data-description="${escapeHTML(wing.descrizione || '')}"
+        data-image="${escapeHTML(imageUrl)}"
+        data-extra="${escapeHTML(extraImageUrl)}"
+        loading="lazy"
+        decoding="async">
+    `;
+
+    pilotWingsElement.hidden =
+      false;
+
+  } else {
+
+    pilotWingsElement.innerHTML =
+      '';
+
+    pilotWingsElement.hidden =
+      true;
+  }
+}
 
 /*
  * Nastrini visibili sulla divisa.
