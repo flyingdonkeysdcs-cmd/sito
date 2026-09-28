@@ -4946,7 +4946,7 @@ section[id]{
     position: relative;
 
     width: min(100%, 900px);
-    height: 760px;
+    height: 860px;
 
     margin: 30px auto 0;
 
@@ -4968,7 +4968,7 @@ section[id]{
 
     transform: translateX(-50%);
 
-    height: 760px;
+    height: 860px;
     width: auto;
 
     max-width: none;
@@ -4995,7 +4995,7 @@ section[id]{
   width: 225px;
 
   display: grid;
-  grid-template-columns: repeat(3, 30px);
+  grid-template-columns: repeat(4, 30px);
 
   column-gap: 0;
   row-gap: 0;
