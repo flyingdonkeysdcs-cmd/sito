@@ -207,8 +207,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById(
       'pilotAircraftLogo'
     );
+const pilotUniformBody =
+  document.getElementById(
+    'pilotUniformBody'
+  );
 
+const pilotUniformLapel =
+  document.getElementById(
+    'pilotUniformLapel'
+  );
 
+  const pilotUniformAscot =
+  document.getElementById(
+    'pilotUniformAscot'
+  );
+  
   const params =
     new URLSearchParams(
       window.location.search
@@ -359,7 +372,26 @@ document.addEventListener('DOMContentLoaded', () => {
             )
               .trim()
               .toUpperCase();
+          const isNavyPilot =
+  aircraft === 'F/A-18C';
 
+
+if (pilotUniformBody) {
+
+  pilotUniformBody.src =
+    isNavyPilot
+      ? 'images/donkey_body_navy.webp'
+      : 'images/donkey_body.webp';
+}
+
+
+if (pilotUniformLapel) {
+
+  pilotUniformLapel.src =
+    isNavyPilot
+      ? 'images/donkey_rever_navy.webp'
+      : 'images/donkey_rever.webp';
+}
           let title =
             'Reparto';
 
@@ -415,43 +447,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   async function loadPilotVisuals(
-    pilotRow
-  ) {
+  pilotRow
+) {
 
-    const aircraft =
-      String(pilotRow[3] || '')
-        .trim()
-        .toUpperCase();
+  const aircraft =
+    String(pilotRow[3] || '')
+      .trim()
+      .toUpperCase();
+
+const pilotName =
+  String(pilotRow[0] || '')
+    .trim()
+    .toUpperCase();
 
 
-    if (pilotAircraftLogo) {
+if (pilotUniformAscot) {
 
-      let logoUrl = '';
+  pilotUniformAscot.hidden =
+    pilotName !== 'POLONIO';
+}
+    
+  /* Uniform selection */
 
-      if (aircraft === 'F-16C') {
-        logoUrl =
-          'images/logo-f16.png';
-      }
+  const isNavyPilot =
+    aircraft === 'F/A-18C';
 
-      if (
-        aircraft === 'F/A-18C'
-      ) {
-        logoUrl =
-          'images/logo-fa18.png';
-      }
 
-      if (logoUrl) {
+  if (pilotUniformBody) {
 
-        pilotAircraftLogo.src =
-          logoUrl;
+    pilotUniformBody.src =
+      isNavyPilot
+        ? 'images/donkey_body_navy.webp'
+        : 'images/donkey_body.webp';
+  }
 
-        pilotAircraftLogo.hidden =
-          false;
-      }
+
+  if (pilotUniformLapel) {
+
+    pilotUniformLapel.src =
+      isNavyPilot
+        ? 'images/donkey_rever_navy.webp'
+        : 'images/donkey_rever.webp';
+  }
+
+
+  /* Aircraft logo */
+
+  if (pilotAircraftLogo) {
+
+    let logoUrl = '';
+
+    if (aircraft === 'F-16C') {
+      logoUrl =
+        'images/logo-f16.png';
     }
 
+    if (
+      aircraft === 'F/A-18C'
+    ) {
+      logoUrl =
+        'images/logo-fa18.png';
+    }
 
-    try {
+    if (logoUrl) {
+
+      pilotAircraftLogo.src =
+        logoUrl;
+
+      pilotAircraftLogo.hidden =
+        false;
+    }
+  }
+
+
+  try {
 
       const photoRows =
         await loadSheet(
@@ -652,230 +721,312 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   function renderMedals(
-    statsRows,
-    rulesRows,
-    pilotRow
+  statsRows,
+  rulesRows,
+  pilotRow
+) {
+
+  if (!pilotMedals) return;
+
+
+  const headers =
+    statsRows[0] || [];
+
+
+  // Legge una statistica usando il NOME
+  // dell'intestazione, non la lettera Excel.
+  function valStat(
+    headerName,
+    row = pilotRow
   ) {
 
-    if (!pilotMedals) return;
+    return getCellByHeader(
+      headers,
+      row,
+      headerName
+    );
+  }
 
 
-    function colIndex(letter) {
+  function hasStat(headerName) {
 
-      let result = 0;
-
-      for (
-        let i = 0;
-        i < letter.length;
-        i++
-      ) {
-
-        result =
-          result * 26 +
-          letter.charCodeAt(i) -
-          64;
-      }
-
-      return result - 1;
-    }
+    return headers.some(
+      header =>
+        normalize(header) ===
+        normalize(headerName)
+    );
+  }
 
 
-    function valCol(letter) {
+  function toNumber(value) {
 
-      return (
-        pilotRow[
-          colIndex(letter)
-        ] || ''
-      );
-    }
-
-
-    function toNumber(value) {
-
-      const number =
-        Number(
-          String(value || '')
-            .replace(',', '.')
-        );
-
-      return isNaN(number)
-        ? 0
-        : number;
-    }
-
-
-    function isTrue(value) {
-
-      return [
-        'TRUE',
-        'VERO'
-      ].includes(
+    const number =
+      Number(
         String(value || '')
-          .trim()
-          .toUpperCase()
+          .replace(',', '.')
+      );
+
+    return isNaN(number)
+      ? 0
+      : number;
+  }
+
+
+  function isTrue(value) {
+
+    return [
+      'TRUE',
+      'VERO'
+    ].includes(
+      String(value || '')
+        .trim()
+        .toUpperCase()
+    );
+  }
+
+
+  const rules =
+    rulesRows
+      .slice(1)
+      .map(row => ({
+
+        med:
+          String(row[0] || '')
+            .trim(),
+
+        statistica:
+          String(row[1] || '')
+            .trim(),
+
+        tipo:
+          String(row[2] || '')
+            .trim()
+            .toUpperCase(),
+
+        valore:
+          String(row[3] || '')
+            .trim(),
+
+        img:
+          String(row[5] || '')
+            .trim(),
+
+        descrizione:
+          String(row[6] || '')
+            .trim(),
+
+        immagineDettaglio:
+          String(row[7] || '')
+            .trim(),
+
+        titolo:
+          String(row[8] || '')
+            .trim()
+      }));
+
+
+  // Utile per accorgersi subito se nel foglio
+  // RegoleMedaglie c'è un nome non corrispondente
+  // alle intestazioni di Statistiche.
+  const missingStats =
+    [
+      ...new Set(
+        rules
+          .map(
+            rule =>
+              rule.statistica
+          )
+          .filter(
+            statistica =>
+              statistica &&
+              !hasStat(statistica)
+          )
+      )
+    ];
+
+
+  if (missingStats.length) {
+
+    console.warn(
+      'Statistiche medaglie non trovate:',
+      missingStats
+    );
+  }
+
+
+  const medals = [];
+
+
+  // FCR Veterano:
+  // FCR + almeno 4 anni di attività.
+  const isVet =
+    normalize(
+      valStat(
+        'Livello Pilota'
+      )
+    ) === 'fcr' &&
+
+    toNumber(
+      valStat(
+        'Anni di Attività'
+      )
+    ) >= 4;
+
+
+  // ==========================================
+  // BOOL + TESTO
+  // ==========================================
+
+  rules.forEach(rule => {
+
+    if (
+      !rule.med ||
+      !rule.img ||
+      !rule.statistica
+    ) {
+      return;
+    }
+
+
+    // Queste vengono gestite separatamente.
+    if (
+      [
+        'FCR_VET',
+        'ASTRA',
+        'ASTRA_MAJ'
+      ].includes(rule.med)
+    ) {
+      return;
+    }
+
+
+    if (
+      !rule.tipo.includes('BOOL') &&
+      !rule.tipo.includes('TESTO')
+    ) {
+      return;
+    }
+
+
+    // Se è veterano non mostrare anche
+    // il normale nastrino FCR.
+    if (
+      rule.med === 'FCR' &&
+      isVet
+    ) {
+      return;
+    }
+
+
+    const dato =
+      valStat(
+        rule.statistica
+      );
+
+
+    if (
+      rule.tipo.includes('BOOL') &&
+      isTrue(dato)
+    ) {
+
+      medals.push(rule);
+    }
+
+
+    if (
+      rule.tipo.includes('TESTO') &&
+      normalize(dato) ===
+        normalize(rule.valore)
+    ) {
+
+      medals.push(rule);
+    }
+  });
+
+
+  // ==========================================
+  // FCR VETERANO
+  // ==========================================
+
+  if (isVet) {
+
+    const fcrVet =
+      rules.find(
+        rule =>
+          rule.med ===
+          'FCR_VET'
+      );
+
+
+    if (
+      fcrVet &&
+      fcrVet.img
+    ) {
+
+      medals.unshift(
+        fcrVet
       );
     }
+  }
 
 
-    const rules =
-      rulesRows
-        .slice(1)
-        .map(row => ({
+  // ==========================================
+  // MEDAGLIE NUMERICHE
+  // ==========================================
+  //
+  // Non esiste più la lista:
+  //
+  // H, J, U, V, W...
+  //
+  // Leggiamo automaticamente tutte le
+  // statistiche NUM definite in RegoleMedaglie.
 
-          med:
-            String(row[0] || '')
-              .trim(),
-
-          col:
-            String(row[1] || '')
-              .trim()
-              .toUpperCase(),
-
-          tipo:
-            String(row[2] || '')
-              .trim()
-              .toUpperCase(),
-
-          valore:
-            String(row[3] || '')
-              .trim(),
-
-          img:
-            String(row[5] || '')
-              .trim(),
-
-          descrizione:
-            String(row[6] || '')
-              .trim(),
-
-          immagineDettaglio:
-            String(row[7] || '')
-              .trim(),
-
-          titolo:
-            String(row[8] || '')
-              .trim()
-        }));
-
-
-    const medals = [];
-
-
-    const isVet =
-      String(
-        valCol('C')
+  const numericStats =
+    [
+      ...new Set(
+        rules
+          .filter(
+            rule =>
+              rule.statistica &&
+              rule.tipo.includes('NUM')
+          )
+          .map(
+            rule =>
+              rule.statistica
+          )
       )
-        .trim()
-        .toUpperCase() ===
-        'FCR' &&
-
-      toNumber(
-        valCol('H')
-      ) >= 4;
+    ];
 
 
-    rules.forEach(rule => {
-
-      if (
-        !rule.med ||
-        !rule.img
-      ) {
-        return;
-      }
-
-
-      if (
-        [
-          'FCR_VET',
-          'ASTRA',
-          'ASTRA_MAJ'
-        ].includes(rule.med)
-      ) {
-        return;
-      }
-
-
-      if (
-        !rule.tipo.includes('BOOL') &&
-        !rule.tipo.includes('TESTO')
-      ) {
-        return;
-      }
-
-
-      if (
-        rule.med === 'FCR' &&
-        isVet
-      ) {
-        return;
-      }
-
-
-      const dato =
-        valCol(rule.col);
-
-
-      if (
-        rule.tipo.includes('BOOL') &&
-        isTrue(dato)
-      ) {
-        medals.push(rule);
-      }
-
-
-      if (
-        rule.tipo.includes('TESTO') &&
-        String(dato) ===
-        String(rule.valore)
-      ) {
-        medals.push(rule);
-      }
-    });
-
-
-    if (isVet) {
-
-      const fcrVet =
-        rules.find(
-          rule =>
-            rule.med ===
-            'FCR_VET'
-        );
-
-      if (
-        fcrVet &&
-        fcrVet.img
-      ) {
-        medals.unshift(
-          fcrVet
-        );
-      }
-    }
-
-
-    function addBestNumMedal(
-      columnLetter
-    ) {
+  numericStats.forEach(
+    statistica => {
 
       const value =
         toNumber(
-          valCol(columnLetter)
+          valStat(
+            statistica
+          )
         );
 
 
       const candidates =
         rules
-          .filter(rule =>
+          .filter(
+            rule =>
 
-            rule.col ===
-              columnLetter &&
+              normalize(
+                rule.statistica
+              ) ===
+                normalize(
+                  statistica
+                ) &&
 
-            rule.tipo
-              .includes('NUM') &&
+              rule.tipo
+                .includes('NUM') &&
 
-            toNumber(
-              rule.valore
-            ) <= value
+              toNumber(
+                rule.valore
+              ) <= value
           )
           .sort(
             (a, b) =>
@@ -884,6 +1035,8 @@ document.addEventListener('DOMContentLoaded', () => {
           );
 
 
+      // Prende solamente il livello più alto
+      // raggiunto per quella statistica.
       if (
         candidates[0] &&
         candidates[0].img
@@ -894,245 +1047,386 @@ document.addEventListener('DOMContentLoaded', () => {
         );
       }
     }
+  );
 
 
-    [
-      'J',
-      'H',
-      'U',
-      'V',
-      'W',
-      'X',
-      'Y',
-      'Z',
-      'AA',
-      'AB',
-      'AC',
-      'AD',
-      'AE'
-    ].forEach(
-      addBestNumMedal
+  // ==========================================
+  // PER ASPERA AD ASTRA
+  // ==========================================
+
+  const astraStat =
+    'Record Altitudine di Squadriglia';
+
+
+  const astraValue =
+    toNumber(
+      valStat(
+        astraStat
+      )
     );
 
 
-    const astraValue =
-      toNumber(
-        valCol('T')
-      );
-
-
-    const allAstraValues =
-      statsRows
-        .slice(1)
-        .map(
-          row =>
-            toNumber(
-              row[
-                colIndex('T')
-              ]
+  const allAstraValues =
+    statsRows
+      .slice(1)
+      .map(
+        row =>
+          toNumber(
+            valStat(
+              astraStat,
+              row
             )
-        )
-        .filter(
-          value => value > 0
-        );
-
-
-    const maxAstraValue =
-      allAstraValues.length
-        ? Math.max(
-            ...allAstraValues
           )
-        : 0;
-
-
-    if (astraValue >= 65000) {
-
-      const astraRule =
-        rules.find(
-          rule =>
-            rule.med ===
-            (
-              astraValue ===
-              maxAstraValue
-                ? 'ASTRA_MAJ'
-                : 'ASTRA'
-            )
-        );
-
-
-      if (
-        astraRule &&
-        astraRule.img
-      ) {
-
-        medals.push(
-          astraRule
-        );
-      }
-    }
-
-
-    const medalsHtml =
-      medals
-        .slice(0, 20)
-        .map(rule => {
-
-          const imageUrl =
-            safeAssetUrl(
-              rule.img
-            );
-
-          const extraImageUrl =
-            safeAssetUrl(
-              rule.immagineDettaglio
-            );
-
-
-          if (!imageUrl) {
-            return '';
-          }
-
-
-          return `
-            <div class="ribbon-slot">
-              <img
-                src="${escapeHTML(imageUrl)}"
-                alt="${escapeHTML(rule.med || '')}"
-                class="ribbon-clickable"
-                data-title="${escapeHTML(rule.titolo || rule.med || '')}"
-                data-description="${escapeHTML(rule.descrizione || '')}"
-                data-image="${escapeHTML(imageUrl)}"
-                data-extra="${escapeHTML(extraImageUrl)}"
-                loading="lazy"
-                decoding="async">
-            </div>
-          `;
-        })
-        .join('');
-
-
-    pilotMedals.innerHTML =
-      medalsHtml ||
-      '<p class="muted">Nessun nastrino assegnato.</p>';
-
-
-    const ribbonModal =
-      document.getElementById(
-        'ribbonModal'
-      );
-
-    const ribbonModalImage =
-      document.getElementById(
-        'ribbonModalImage'
-      );
-
-    const ribbonModalTitle =
-      document.getElementById(
-        'ribbonModalTitle'
-      );
-
-    const ribbonModalDescription =
-      document.getElementById(
-        'ribbonModalDescription'
-      );
-
-    const ribbonModalExtraImage =
-      document.getElementById(
-        'ribbonModalExtraImage'
-      );
-
-    const closeRibbonModal =
-      document.getElementById(
-        'closeRibbonModal'
-      );
-
-
-    document
-      .querySelectorAll(
-        '.ribbon-clickable'
       )
-      .forEach(ribbon => {
-
-        ribbon.addEventListener(
-          'click',
-          () => {
-
-            if (
-              !ribbonModal ||
-              !ribbonModalImage ||
-              !ribbonModalTitle ||
-              !ribbonModalDescription ||
-              !ribbonModalExtraImage
-            ) {
-              return;
-            }
+      .filter(
+        value => value > 0
+      );
 
 
-            ribbonModalImage.src =
-              ribbon.dataset.image || '';
-
-            ribbonModalTitle.textContent =
-              ribbon.dataset.title || '';
-
-            ribbonModalDescription.textContent =
-              ribbon.dataset.description || '';
+  const maxAstraValue =
+    allAstraValues.length
+      ? Math.max(
+          ...allAstraValues
+        )
+      : 0;
 
 
-            if (
-              ribbon.dataset.extra
-            ) {
+  if (astraValue >= 65000) {
 
-              ribbonModalExtraImage.src =
-                ribbon.dataset.extra;
-
-              ribbonModalExtraImage.style.display =
-                'block';
-
-            } else {
-
-              ribbonModalExtraImage.src =
-                '';
-
-              ribbonModalExtraImage.style.display =
-                'none';
-            }
-
-
-            ribbonModal.hidden =
-              false;
-          }
-        );
-      });
+    const astraRule =
+      rules.find(
+        rule =>
+          rule.med ===
+          (
+            astraValue ===
+            maxAstraValue
+              ? 'ASTRA_MAJ'
+              : 'ASTRA'
+          )
+      );
 
 
     if (
-      closeRibbonModal &&
-      ribbonModal
+      astraRule &&
+      astraRule.img
     ) {
 
-      closeRibbonModal.onclick =
-        () => {
-
-          ribbonModal.hidden =
-            true;
-        };
-
-
-      ribbonModal.onclick =
-        event => {
-
-          if (
-            event.target ===
-            ribbonModal
-          ) {
-
-            ribbonModal.hidden =
-              true;
-          }
-        };
+      medals.push(
+        astraRule
+      );
     }
   }
 
+
+  // ==========================================
+  // HTML NASTRINI
+  // ==========================================
+
+const visibleMedals =
+  medals
+    .slice(0, 20)
+    .filter(rule =>
+      safeAssetUrl(rule.img)
+    );
+
+
+function renderRibbon(rule) {
+
+  const imageUrl =
+    safeAssetUrl(
+      rule.img
+    );
+
+  const extraImageUrl =
+    safeAssetUrl(
+      rule.immagineDettaglio
+    );
+
+
+  return `
+    <div class="ribbon-slot">
+      <img
+        src="${escapeHTML(imageUrl)}"
+        alt="${escapeHTML(rule.med || '')}"
+        class="ribbon-clickable"
+        data-title="${escapeHTML(rule.titolo || rule.med || '')}"
+        data-description="${escapeHTML(rule.descrizione || '')}"
+        data-image="${escapeHTML(imageUrl)}"
+        data-extra="${escapeHTML(extraImageUrl)}"
+        loading="lazy"
+        decoding="async">
+    </div>
+  `;
+}
+
+
+if (visibleMedals.length) {
+
+  const rows = [];
+
+  const total =
+    visibleMedals.length;
+
+
+  /*
+   * RIGHE 1-5 DAL BASSO
+   * massimo 3 nastrini.
+   *
+   * Riga incompleta centrata.
+   *
+   * Dalla sesta riga in su:
+   * massimo 2 nastrini,
+   * allineati a destra.
+   */
+
+  const LOWER_ROWS = 5;
+
+  const LOWER_CAPACITY =
+    LOWER_ROWS * 3;
+
+  let rowCounts = [];
+
+
+  if (total <= LOWER_CAPACITY) {
+
+    const remainder =
+      total % 3;
+
+    const fullRows =
+      Math.floor(
+        total / 3
+      );
+
+
+    if (remainder > 0) {
+
+      rowCounts.push(
+        remainder
+      );
+    }
+
+
+    for (
+      let i = 0;
+      i < fullRows;
+      i++
+    ) {
+
+      rowCounts.push(3);
+    }
+
+  } else {
+
+    const upperCount =
+      total -
+      LOWER_CAPACITY;
+
+    const upperRemainder =
+      upperCount % 2;
+
+    const upperFullRows =
+      Math.floor(
+        upperCount / 2
+      );
+
+
+    if (upperRemainder > 0) {
+
+      rowCounts.push(1);
+    }
+
+
+    for (
+      let i = 0;
+      i < upperFullRows;
+      i++
+    ) {
+
+      rowCounts.push(2);
+    }
+
+
+    for (
+      let i = 0;
+      i < LOWER_ROWS;
+      i++
+    ) {
+
+      rowCounts.push(3);
+    }
+  }
+
+
+  let index = 0;
+
+
+  rowCounts.forEach(
+    (count, rowIndex) => {
+
+      const row =
+        visibleMedals.slice(
+          index,
+          index + count
+        );
+
+
+      const rowsBelow =
+        rowCounts.length -
+        rowIndex -
+        1;
+
+
+      const isUpperArea =
+        rowsBelow >= 5;
+
+
+      const alignmentClass =
+        isUpperArea
+          ? 'ribbon-row-right'
+          : 'ribbon-row-center';
+
+
+      rows.push(`
+        <div class="ribbon-row ribbon-count-${count} ${alignmentClass}">
+          ${row.map(renderRibbon).join('')}
+        </div>
+      `);
+
+
+      index += count;
+    }
+  );
+
+
+  pilotMedals.innerHTML =
+    rows.join('');
+
+} else {
+
+  pilotMedals.innerHTML = '';
+}
+
+
+  // ==========================================
+  // POPUP NASTRINI
+  // ==========================================
+
+  const ribbonModal =
+    document.getElementById(
+      'ribbonModal'
+    );
+
+  const ribbonModalImage =
+    document.getElementById(
+      'ribbonModalImage'
+    );
+
+  const ribbonModalTitle =
+    document.getElementById(
+      'ribbonModalTitle'
+    );
+
+  const ribbonModalDescription =
+    document.getElementById(
+      'ribbonModalDescription'
+    );
+
+  const ribbonModalExtraImage =
+    document.getElementById(
+      'ribbonModalExtraImage'
+    );
+
+  const closeRibbonModal =
+    document.getElementById(
+      'closeRibbonModal'
+    );
+
+
+  document
+    .querySelectorAll(
+      '.ribbon-clickable'
+    )
+    .forEach(ribbon => {
+
+      ribbon.addEventListener(
+        'click',
+        () => {
+
+          if (
+            !ribbonModal ||
+            !ribbonModalImage ||
+            !ribbonModalTitle ||
+            !ribbonModalDescription ||
+            !ribbonModalExtraImage
+          ) {
+            return;
+          }
+
+
+          ribbonModalImage.src =
+            ribbon.dataset.image || '';
+
+          ribbonModalTitle.textContent =
+            ribbon.dataset.title || '';
+
+          ribbonModalDescription.textContent =
+            ribbon.dataset.description || '';
+
+
+          if (
+            ribbon.dataset.extra
+          ) {
+
+            ribbonModalExtraImage.src =
+              ribbon.dataset.extra;
+
+            ribbonModalExtraImage.style.display =
+              'block';
+
+          } else {
+
+            ribbonModalExtraImage.src =
+              '';
+
+            ribbonModalExtraImage.style.display =
+              'none';
+          }
+
+
+          ribbonModal.hidden =
+            false;
+        }
+      );
+    });
+
+
+  if (
+    closeRibbonModal &&
+    ribbonModal
+  ) {
+
+    closeRibbonModal.onclick =
+      () => {
+
+        ribbonModal.hidden =
+          true;
+      };
+
+
+    ribbonModal.onclick =
+      event => {
+
+        if (
+          event.target ===
+          ribbonModal
+        ) {
+
+          ribbonModal.hidden =
+            true;
+        }
+      };
+  }
+}
 
   async function initPilotPage() {
 

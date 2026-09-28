@@ -4935,3 +4935,238 @@ section[id]{
     grid-template-columns: 1fr;
   }
 }
+/* ==========================================================
+   PILOT UNIFORM MEDALS
+   Desktop presentation of pilot ribbons
+   ========================================================== */
+
+@media (min-width: 641px) {
+
+  /* ========================================================
+     UNIFORM CONTAINER
+     ======================================================== */
+
+  .pilot-uniform-medals {
+    position: relative;
+
+    width: min(100%, 900px);
+    height: 860px;
+
+    margin: 30px auto 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    overflow: hidden;
+  }
+
+
+  /* ========================================================
+     UNIFORM BODY
+     Base layer
+     ======================================================== */
+
+  .pilot-uniform-body {
+    position: absolute;
+
+    left: 50%;
+    top: 0;
+
+    transform: translateX(-50%);
+
+    height: 860px;
+    width: auto;
+    max-width: none;
+
+    object-fit: contain;
+    display: block;
+
+    z-index: 1;
+
+    pointer-events: none;
+    user-select: none;
+  }
+
+	.pilot-uniform-ascot {
+  position: absolute;
+
+  left: 50%;
+  top: 0;
+
+  transform: translateX(-50%);
+
+  height: 860px;
+  width: auto;
+  max-width: none;
+
+  object-fit: contain;
+  display: block;
+
+  z-index: 3;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+.pilot-uniform-ascot[hidden] {
+  display: none;
+}
+
+  /* ========================================================
+     RIBBON RACK
+     Middle layer
+     ======================================================== */
+
+ .pilot-uniform-medals .pilot-medals-grid {
+  position: absolute;
+
+  /* Il rack è ancorato al bordo superiore del taschino */
+  bottom: 600px;
+
+  left: calc(50% + 115px);
+
+  transform: translateX(-50%);
+
+  width: 114px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  z-index: 2;
+}
+
+
+  /* ========================================================
+     INDIVIDUAL RIBBON ROW
+     All rows are aligned to the right
+     ======================================================== */
+
+ .pilot-uniform-medals .ribbon-row {
+  width: 114px;
+
+  display: flex;
+  align-items: center;
+
+  margin: 0;
+  padding: 0;
+
+  line-height: 0;
+}
+.pilot-uniform-medals .ribbon-row-center {
+  justify-content: center;
+}
+
+
+/* Dalla sesta riga in su: zona bavero */
+
+.pilot-uniform-medals .ribbon-row-right {
+  justify-content: flex-end;
+}
+
+  /* ========================================================
+     RIBBON SLOT
+     ======================================================== */
+
+  .pilot-uniform-medals .ribbon-slot {
+    width: 38px;
+    height: auto;
+
+    flex: 0 0 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 0;
+  }
+
+
+  /* ========================================================
+     RIBBON IMAGE
+     ======================================================== */
+
+  .pilot-uniform-medals .ribbon-slot img {
+    width: 38px;
+    height: auto;
+
+    display: block;
+
+    object-fit: contain;
+  }
+
+
+  /* Keep ribbons interactive */
+
+  .pilot-uniform-medals .ribbon-clickable {
+    position: relative;
+    z-index: 3;
+  }
+
+
+  /* ========================================================
+     UNIFORM LAPEL
+     Foreground layer
+
+     Same size and position as donkey_body.webp.
+     This allows the lapel to physically cover ribbons.
+     ======================================================== */
+
+  .pilot-uniform-lapel {
+    position: absolute;
+
+    left: 50%;
+    top: 0;
+
+    transform: translateX(-50%);
+
+    height: 860px;
+    width: auto;
+    max-width: none;
+
+    object-fit: contain;
+    display: block;
+
+    z-index: 4;
+
+    pointer-events: none;
+    user-select: none;
+  }
+
+}
+
+
+/* ==========================================================
+   MOBILE
+   Keep original ribbon presentation.
+   Uniform body and lapel are hidden.
+   ========================================================== */
+
+@media (max-width: 640px) {
+
+  .pilot-uniform-medals {
+    width: 100%;
+    margin-top: 24px;
+  }
+
+
+  .pilot-uniform-body,
+	.pilot-uniform-lapel,
+	.pilot-uniform-ascot {
+	  display: none;
+	}
+
+
+  /*
+   * JS creates ribbon-row wrappers.
+   * display: contents makes those wrappers transparent
+   * to the existing mobile grid.
+   */
+
+  .pilot-medals-grid .ribbon-row {
+    display: contents;
+  }
+
+}
