@@ -1218,6 +1218,26 @@ const visibleWings =
       rule =>
         safeAssetUrl(rule.img)
     );
+    console.log('=== WINGS DEBUG ===');
+console.log('Livello Pilota:', valStat('Livello Pilota'));
+
+console.log(
+  'Wings rules:',
+  rules.filter(
+    rule =>
+      rule.tipo.includes('WINGS')
+  )
+);
+
+console.log(
+  'Pilot wings:',
+  pilotWings
+);
+
+console.log(
+  'Visible wings:',
+  visibleWings
+);
 if (pilotWingsElement) {
 
   if (visibleWings.length) {
