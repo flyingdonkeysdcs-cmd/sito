@@ -5020,18 +5020,18 @@ section[id]{
      ======================================================== */
 
   .pilot-uniform-medals .ribbon-row {
-    width: 114px;
+  width: 114px;
 
-    display: flex;
+  display: flex;
 
-    justify-content: flex-end;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 
-    line-height: 0;
-  }
+  line-height: 0;
+}
 
 
   /* ========================================================
