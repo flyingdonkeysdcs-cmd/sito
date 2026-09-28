@@ -4935,3 +4935,136 @@ section[id]{
     grid-template-columns: 1fr;
   }
 }
+/* ==========================================================
+   PILOT UNIFORM MEDALS
+   Desktop presentation of pilot ribbons
+   ========================================================== */
+
+@media (min-width: 641px) {
+
+  .pilot-uniform-medals {
+    position: relative;
+
+    width: min(100%, 900px);
+    height: 760px;
+
+    margin: 30px auto 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    overflow: hidden;
+  }
+
+
+  /* Uniform body */
+
+  .pilot-uniform-body {
+    position: absolute;
+
+    left: 50%;
+    top: 0;
+
+    transform: translateX(-50%);
+
+    height: 760px;
+    width: auto;
+
+    max-width: none;
+
+    object-fit: contain;
+
+    display: block;
+
+    pointer-events: none;
+    user-select: none;
+  }
+
+
+  /* Ribbon rack over the uniform */
+
+  .pilot-uniform-medals .pilot-medals-grid {
+    position: absolute;
+
+    /*
+      PASS 1:
+      approximate chest position.
+      These values will be calibrated
+      after checking the Vercel preview.
+    */
+
+    top: 230px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 400px;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(4, 100px);
+
+    column-gap: 0;
+    row-gap: 0;
+
+    justify-content: center;
+    align-items: start;
+
+    z-index: 2;
+  }
+
+
+  /* Ribbon dimensions on uniform */
+
+  .pilot-uniform-medals .ribbon-slot {
+    width: 100px;
+    height: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 0;
+  }
+
+
+  .pilot-uniform-medals .ribbon-slot img {
+    width: 100px;
+    height: auto;
+
+    display: block;
+
+    object-fit: contain;
+  }
+
+
+  /* Keep ribbons interactive */
+
+  .pilot-uniform-medals .ribbon-clickable {
+    position: relative;
+    z-index: 3;
+  }
+
+}
+
+
+/* ==========================================================
+   MOBILE
+   Keep the existing ribbon presentation.
+   Uniform is intentionally hidden.
+   ========================================================== */
+
+@media (max-width: 640px) {
+
+  .pilot-uniform-medals {
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  .pilot-uniform-body {
+    display: none;
+  }
+
+}
