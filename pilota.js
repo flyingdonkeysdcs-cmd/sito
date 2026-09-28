@@ -207,7 +207,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById(
       'pilotAircraftLogo'
     );
+const pilotUniformBody =
+  document.getElementById(
+    'pilotUniformBody'
+  );
 
+const pilotUniformLapel =
+  document.getElementById(
+    'pilotUniformLapel'
+  );
 
   const params =
     new URLSearchParams(
@@ -359,7 +367,26 @@ document.addEventListener('DOMContentLoaded', () => {
             )
               .trim()
               .toUpperCase();
+          const isNavyPilot =
+  aircraft === 'F/A-18C';
 
+
+if (pilotUniformBody) {
+
+  pilotUniformBody.src =
+    isNavyPilot
+      ? 'images/donkey_body_navy.webp'
+      : 'images/donkey_body.webp';
+}
+
+
+if (pilotUniformLapel) {
+
+  pilotUniformLapel.src =
+    isNavyPilot
+      ? 'images/donkey_rever_navy.webp'
+      : 'images/donkey_rever.webp';
+}
           let title =
             'Reparto';
 
