@@ -4988,23 +4988,22 @@ section[id]{
     position: absolute;
 
     /*
-      PASS 1:
-      approximate chest position.
-      These values will be calibrated
-      after checking the Vercel preview.
+      Petto sinistro del portatore.
+      Nell'immagine corrisponde al lato destro
+      visto dall'osservatore.
     */
 
-    top: 230px;
-    left: 50%;
+    top: 215px;
+    left: calc(50% + 105px);
 
     transform: translateX(-50%);
 
-    width: 400px;
+    width: 300px;
 
     display: grid;
 
     grid-template-columns:
-      repeat(4, 100px);
+      repeat(4, 75px);
 
     column-gap: 0;
     row-gap: 0;
@@ -5019,7 +5018,7 @@ section[id]{
   /* Ribbon dimensions on uniform */
 
   .pilot-uniform-medals .ribbon-slot {
-    width: 100px;
+    width: 75px;
     height: auto;
 
     display: flex;
@@ -5031,7 +5030,7 @@ section[id]{
 
 
   .pilot-uniform-medals .ribbon-slot img {
-    width: 100px;
+    width: 75px;
     height: auto;
 
     display: block;
@@ -5062,6 +5061,7 @@ section[id]{
     width: 100%;
     margin-top: 24px;
   }
+
 
   .pilot-uniform-body {
     display: none;
