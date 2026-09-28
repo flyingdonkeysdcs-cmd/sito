@@ -4985,34 +4985,26 @@ section[id]{
   /* Ribbon rack over the uniform */
 
   .pilot-uniform-medals .pilot-medals-grid {
-    position: absolute;
+  position: absolute;
 
-    /*
-      Petto sinistro del portatore.
-      Nell'immagine corrisponde al lato destro
-      visto dall'osservatore.
-    */
+  top: 205px;
+  left: calc(50% + 125px);
 
-    top: 205px;
-	left: calc(50% + 155px);
+  transform: translateX(-50%);
 
-    transform: translateX(-50%);
+  width: 225px;
 
-    width: 300px;
+  display: grid;
+  grid-template-columns: repeat(3, 75px);
 
-    display: grid;
+  column-gap: 0;
+  row-gap: 0;
 
-    grid-template-columns:
-      repeat(4, 75px);
+  justify-content: center;
+  align-items: start;
 
-    column-gap: 0;
-    row-gap: 0;
-
-    justify-content: center;
-    align-items: start;
-
-    z-index: 2;
-  }
+  z-index: 2;
+}
 
 
   /* Ribbon dimensions on uniform */
