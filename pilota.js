@@ -1009,7 +1009,6 @@ function renderRibbon(rule) {
   `;
 }
 
-
 if (visibleMedals.length) {
 
   const rows = [];
@@ -1017,60 +1016,164 @@ if (visibleMedals.length) {
   const total =
     visibleMedals.length;
 
-  const remainder =
-    total % 3;
+  /*
+   * REGOLE RACK
+   *
+   * Righe 1-5 dal basso:
+   *   massimo 3 ribbon.
+   *   Riga incompleta centrata.
+   *
+   * Dalla riga 6 in su:
+   *   massimo 2 ribbon.
+   *   Riga incompleta allineata a destra.
+   *
+   * Il rack rimane ancorato dal basso
+   * al bordo superiore del taschino.
+   */
+
+  const LOWER_ROWS = 5;
+  const LOWER_CAPACITY = LOWER_ROWS * 3;
+
+  let rowCounts = [];
+
+
+  if (total <= LOWER_CAPACITY) {
+
+    /*
+     * Rack normale da 3.
+     *
+     * Esempi:
+     * 7  -> 1 / 3 / 3
+     * 8  -> 2 / 3 / 3
+     * 14 -> 2 / 3 / 3 / 3 / 3
+     * 15 -> 3 / 3 / 3 / 3 / 3
+     */
+
+    const remainder =
+      total % 3;
+
+    const fullRows =
+      Math.floor(total / 3);
+
+
+    if (remainder > 0) {
+      rowCounts.push(remainder);
+    }
+
+
+    for (
+      let i = 0;
+      i < fullRows;
+      i++
+    ) {
+      rowCounts.push(3);
+    }
+
+  } else {
+
+    /*
+     * Oltre 15 ribbon:
+     *
+     * le 5 righe inferiori rimangono
+     * complete da 3.
+     *
+     * Tutto ciò che eccede viene
+     * distribuito sopra in righe
+     * da massimo 2.
+     */
+
+    const upperCount =
+      total - LOWER_CAPACITY;
+
+    const upperRemainder =
+      upperCount % 2;
+
+    const upperFullRows =
+      Math.floor(upperCount / 2);
+
+
+    /*
+     * Eventuale riga singola
+     * sempre in cima.
+     */
+
+    if (upperRemainder > 0) {
+      rowCounts.push(1);
+    }
+
+
+    for (
+      let i = 0;
+      i < upperFullRows;
+      i++
+    ) {
+      rowCounts.push(2);
+    }
+
+
+    /*
+     * Le 5 righe inferiori.
+     */
+
+    for (
+      let i = 0;
+      i < LOWER_ROWS;
+      i++
+    ) {
+      rowCounts.push(3);
+    }
+  }
+
 
   let index = 0;
 
 
-  function addRow(count) {
+  rowCounts.forEach(
+    (count, rowIndex) => {
 
-    if (count <= 0) {
-      return;
+      const row =
+        visibleMedals.slice(
+          index,
+          index + count
+        );
+
+
+      /*
+       * Calcoliamo quante righe ci sono
+       * sotto questa.
+       */
+
+      const rowsBelow =
+        rowCounts.length -
+        rowIndex -
+        1;
+
+
+      /*
+       * Le prime 5 righe DAL BASSO
+       * sono la zona normale.
+       */
+
+      const isUpperArea =
+        rowsBelow >= 5;
+
+
+      const alignmentClass =
+        isUpperArea
+          ? 'ribbon-row-right'
+          : 'ribbon-row-center';
+
+
+      rows.push(`
+        <div class="ribbon-row ribbon-count-${count} ${alignmentClass}">
+          ${row.map(renderRibbon).join('')}
+        </div>
+      `);
+
+
+      index += count;
     }
-
-    const row =
-      visibleMedals.slice(
-        index,
-        index + count
-      );
-
-    rows.push(`
-      <div class="ribbon-row ribbon-count-${count}">
-        ${row.map(renderRibbon).join('')}
-      </div>
-    `);
-
-    index += count;
-  }
-
-
-  /*
-   * L'eventuale riga incompleta viene
-   * sempre posizionata in alto.
-   *
-   * 7  -> 1 + 3 + 3
-   * 8  -> 2 + 3 + 3
-   * 9  -> 3 + 3 + 3
-   * 10 -> 1 + 3 + 3 + 3
-   * 11 -> 2 + 3 + 3 + 3
-   */
-
-  if (remainder > 0) {
-    addRow(remainder);
-  }
-
-
-  /*
-   * Tutte le altre righe sono complete.
-   */
-
-  while (
-    index <
-    visibleMedals.length
-  ) {
-    addRow(3);
-  }
+  );
 
 
   pilotMedals.innerHTML =
@@ -1080,6 +1183,7 @@ if (visibleMedals.length) {
 
   pilotMedals.innerHTML = '';
 }
+
     const ribbonModal =
       document.getElementById(
         'ribbonModal'
