@@ -5020,12 +5020,10 @@ section[id]{
      All rows are aligned to the right
      ======================================================== */
 
-  .pilot-uniform-medals .ribbon-row {
+ .pilot-uniform-medals .ribbon-row {
   width: 114px;
 
   display: flex;
-
-  justify-content: flex-end;
   align-items: center;
 
   margin: 0;
@@ -5033,7 +5031,16 @@ section[id]{
 
   line-height: 0;
 }
+.pilot-uniform-medals .ribbon-row-center {
+  justify-content: center;
+}
 
+
+/* Dalla sesta riga in su: zona bavero */
+
+.pilot-uniform-medals .ribbon-row-right {
+  justify-content: flex-end;
+}
 
   /* ========================================================
      RIBBON SLOT
