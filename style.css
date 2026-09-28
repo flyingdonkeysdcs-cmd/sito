@@ -4995,7 +4995,7 @@ section[id]{
   width: 225px;
 
   display: grid;
-  grid-template-columns: repeat(3, 50px);
+  grid-template-columns: repeat(3, 30px);
 
   column-gap: 0;
   row-gap: 0;
@@ -5010,7 +5010,7 @@ section[id]{
   /* Ribbon dimensions on uniform */
 
   .pilot-uniform-medals .ribbon-slot {
-    width: 50px;
+    width: 30px;
     height: auto;
 
     display: flex;
@@ -5022,7 +5022,7 @@ section[id]{
 
 
   .pilot-uniform-medals .ribbon-slot img {
-    width: 50px;
+    width: 30px;
     height: auto;
 
     display: block;
