@@ -5010,7 +5010,7 @@ section[id]{
   /* Ribbon dimensions on uniform */
 
   .pilot-uniform-medals .ribbon-slot {
-    width: 75px;
+    width: 50px;
     height: auto;
 
     display: flex;
@@ -5022,7 +5022,7 @@ section[id]{
 
 
   .pilot-uniform-medals .ribbon-slot img {
-    width: 75px;
+    width: 50px;
     height: auto;
 
     display: block;
