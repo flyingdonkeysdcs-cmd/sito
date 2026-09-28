@@ -4941,7 +4941,40 @@ section[id]{
    ========================================================== */
 
 @media (min-width: 641px) {
+  /* ========================================================
+   PILOT WINGS
+   ======================================================== */
 
+.pilot-uniform-medals .pilot-wings {
+  position: absolute;
+
+  /* Petto destro del pilota */
+  left: calc(50% - 115px);
+  bottom: 610px;
+
+  transform: translateX(-50%);
+
+  width: 114px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 2;
+  line-height: 0;
+}
+
+.pilot-uniform-medals .pilot-wings-image {
+  width: auto !important;
+  height: 32px !important;
+
+  max-width: 100px !important;
+  max-height: 32px !important;
+
+  display: block;
+  object-fit: contain;
+}
   /* ========================================================
      UNIFORM CONTAINER
      ======================================================== */
