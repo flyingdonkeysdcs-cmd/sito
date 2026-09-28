@@ -4941,7 +4941,40 @@ section[id]{
    ========================================================== */
 
 @media (min-width: 641px) {
+  /* ========================================================
+   PILOT WINGS
+   ======================================================== */
 
+.pilot-uniform-medals .pilot-wings {
+  position: absolute;
+
+  /* Petto destro del pilota */
+  left: calc(50% - 115px);
+  bottom: 610px;
+
+  transform: translateX(-50%);
+
+  width: 114px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 2;
+  line-height: 0;
+}
+
+.pilot-uniform-medals .pilot-wings-image {
+  width: auto !important;
+  height: 32px !important;
+
+  max-width: 100px !important;
+  max-height: 32px !important;
+
+  display: block;
+  object-fit: contain;
+}
   /* ========================================================
      UNIFORM CONTAINER
      ======================================================== */
@@ -4961,6 +4994,57 @@ section[id]{
     overflow: hidden;
   }
 
+
+  /* ========================================================
+     QUALIFICATION BADGES
+     ======================================================== */
+
+  .pilot-uniform-medals .pilot-qualification-badges {
+    position: absolute;
+
+    left: calc(50% + 115px);
+    bottom: 500px;
+
+    transform: translateX(-50%);
+
+    width: 114px;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+
+    gap: 2px;
+
+    z-index: 2;
+  }
+
+
+  .pilot-uniform-medals .qualification-badge-slot {
+    width: 52px;
+    height: 30px;
+
+    flex: 0 0 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 0;
+  }
+
+
+  .pilot-uniform-medals .qualification-badge-slot img.qualification-badge {
+    width: auto !important;
+    height: 28px !important;
+
+    max-width: 50px !important;
+    max-height: 28px !important;
+
+    display: block;
+
+    object-fit: contain;
+  }
 
   /* ========================================================
      UNIFORM BODY
@@ -5146,27 +5230,20 @@ section[id]{
 
 @media (max-width: 640px) {
 
+  .pilot-uniform-body,
+  .pilot-uniform-lapel,
+  .pilot-uniform-ascot,
+  .pilot-qualification-badges,
+  .pilot-wings {
+    display: none !important;
+  }
+
   .pilot-uniform-medals {
     width: 100%;
     margin-top: 24px;
   }
 
-
-  .pilot-uniform-body,
-	.pilot-uniform-lapel,
-	.pilot-uniform-ascot {
-	  display: none;
-	}
-
-
-  /*
-   * JS creates ribbon-row wrappers.
-   * display: contents makes those wrappers transparent
-   * to the existing mobile grid.
-   */
-
   .pilot-medals-grid .ribbon-row {
     display: contents;
   }
-
 }
