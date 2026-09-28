@@ -4997,7 +4997,7 @@ section[id]{
   .pilot-uniform-medals .pilot-medals-grid {
     position: absolute;
 
-    top: 230px;
+    bottom: 370px;
     left: calc(50% + 115px);
 
     transform: translateX(-50%);
