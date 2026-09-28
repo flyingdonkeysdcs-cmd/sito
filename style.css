@@ -4988,6 +4988,30 @@ section[id]{
     user-select: none;
   }
 
+	.pilot-uniform-ascot {
+  position: absolute;
+
+  left: 50%;
+  top: 0;
+
+  transform: translateX(-50%);
+
+  height: 860px;
+  width: auto;
+  max-width: none;
+
+  object-fit: contain;
+  display: block;
+
+  z-index: 3;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+.pilot-uniform-ascot[hidden] {
+  display: none;
+}
 
   /* ========================================================
      RIBBON RACK
@@ -5105,7 +5129,7 @@ section[id]{
     object-fit: contain;
     display: block;
 
-    z-index: 3;
+    z-index: 4;
 
     pointer-events: none;
     user-select: none;
@@ -5129,9 +5153,10 @@ section[id]{
 
 
   .pilot-uniform-body,
-  .pilot-uniform-lapel {
-    display: none;
-  }
+	.pilot-uniform-lapel,
+	.pilot-uniform-ascot {
+	  display: none;
+	}
 
 
   /*
