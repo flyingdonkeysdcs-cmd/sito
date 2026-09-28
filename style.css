@@ -4998,7 +4998,7 @@ section[id]{
   position: absolute;
 
   /* Il rack è ancorato al bordo superiore del taschino */
-  bottom: 595px;
+  bottom: 600px;
 
   left: calc(50% + 115px);
 
