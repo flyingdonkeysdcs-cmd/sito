@@ -1012,82 +1012,10 @@ function renderRibbon(rule) {
 
 if (visibleMedals.length) {
 
-  const total =
-    visibleMedals.length;
-
   const rows = [];
 
-  /*
-   * Rack geometry:
-   *
-   * Row 1: max 2
-   * Row 2: max 2
-   * Row 3+: max 3
-   *
-   * We calculate the lower full rows first,
-   * so an incomplete row never ends up at
-   * the bottom of the rack.
-   */
-
-  let topCount;
-  let secondCount;
-  let remaining;
-
-
-  if (total <= 2) {
-
-    topCount = total;
-    secondCount = 0;
-    remaining = 0;
-
-  } else if (total <= 4) {
-
-    /*
-     * Examples:
-     * 3 = 1 + 2
-     * 4 = 2 + 2
-     */
-
-    topCount =
-      total - 2;
-
-    secondCount = 2;
-    remaining = 0;
-
-  } else {
-
-    /*
-     * Reserve the first two rows.
-     *
-     * We want everything below them
-     * to be made of complete rows of 3.
-     */
-
-    const remainder =
-      (total - 4) % 3;
-
-    if (remainder === 0) {
-
-      topCount = 2;
-      secondCount = 2;
-
-    } else if (remainder === 1) {
-
-      topCount = 1;
-      secondCount = 1;
-
-    } else {
-
-      topCount = 1;
-      secondCount = 2;
-    }
-
-    remaining =
-      total -
-      topCount -
-      secondCount;
-  }
-
+  const remainder =
+    visibleMedals.length % 3;
 
   let index = 0;
 
@@ -1096,10 +1024,6 @@ if (visibleMedals.length) {
     count,
     extraClass = ''
   ) {
-
-    if (count <= 0) {
-      return;
-    }
 
     const row =
       visibleMedals.slice(
@@ -1117,20 +1041,27 @@ if (visibleMedals.length) {
   }
 
 
-  /* Upper area beneath the lapel */
+  /*
+   * Incomplete row always goes on top.
+   *
+   * 1 ribbon  -> centred
+   * 2 ribbons -> centred
+   * 3 ribbons -> full row
+   */
 
-  addRow(
-    topCount,
-    'ribbon-row-top'
-  );
+  if (remainder > 0) {
 
-  addRow(
-    secondCount,
-    'ribbon-row-second'
-  );
+    addRow(
+      remainder,
+      'ribbon-row-top'
+    );
+  }
 
 
-  /* Full lower rows */
+  /*
+   * All remaining rows contain
+   * exactly three ribbons.
+   */
 
   while (
     index <
@@ -1146,9 +1077,17 @@ if (visibleMedals.length) {
 
 } else {
 
-  pilotMedals.innerHTML =
-    '<p class="muted">Nessun nastrino assegnato.</p>';
+  /*
+   * No ribbons:
+   * leave the uniform completely clean.
+   */
+
+  pilotMedals.innerHTML = '';
 }
+
+} *//else {
+
+*//  pilotMedals.innerHTML =    '<p class="muted">Nessun nastrino assegnato.</p>';}
 
 
     const ribbonModal =
