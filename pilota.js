@@ -1012,66 +1012,132 @@ function renderRibbon(rule) {
 
 if (visibleMedals.length) {
 
-  /*
-   * Costruzione del rack.
-   *
-   * Le righe complete contengono 3 nastrini.
-   * L'eventuale riga incompleta viene messa IN ALTO.
-   */
-
-  const remainder =
-    visibleMedals.length % 3;
-
-  let index = 0;
+  const total =
+    visibleMedals.length;
 
   const rows = [];
 
+  /*
+   * Rack geometry:
+   *
+   * Row 1: max 2
+   * Row 2: max 2
+   * Row 3+: max 3
+   *
+   * We calculate the lower full rows first,
+   * so an incomplete row never ends up at
+   * the bottom of the rack.
+   */
 
-  /* Riga superiore incompleta */
+  let topCount;
+  let secondCount;
+  let remaining;
 
-  if (remainder > 0) {
 
-    const firstRow =
-      visibleMedals.slice(
-        0,
-        remainder
-      );
+  if (total <= 2) {
 
-    rows.push(
-      `
-        <div class="ribbon-row ribbon-row-top ribbon-count-${remainder}">
-          ${firstRow.map(renderRibbon).join('')}
-        </div>
-      `
-    );
+    topCount = total;
+    secondCount = 0;
+    remaining = 0;
 
-    index =
-      remainder;
+  } else if (total <= 4) {
+
+    /*
+     * Examples:
+     * 3 = 1 + 2
+     * 4 = 2 + 2
+     */
+
+    topCount =
+      total - 2;
+
+    secondCount = 2;
+    remaining = 0;
+
+  } else {
+
+    /*
+     * Reserve the first two rows.
+     *
+     * We want everything below them
+     * to be made of complete rows of 3.
+     */
+
+    const remainder =
+      (total - 4) % 3;
+
+    if (remainder === 0) {
+
+      topCount = 2;
+      secondCount = 2;
+
+    } else if (remainder === 1) {
+
+      topCount = 1;
+      secondCount = 1;
+
+    } else {
+
+      topCount = 1;
+      secondCount = 2;
+    }
+
+    remaining =
+      total -
+      topCount -
+      secondCount;
   }
 
 
-  /* Tutte le altre righe complete */
+  let index = 0;
+
+
+  function addRow(
+    count,
+    extraClass = ''
+  ) {
+
+    if (count <= 0) {
+      return;
+    }
+
+    const row =
+      visibleMedals.slice(
+        index,
+        index + count
+      );
+
+    rows.push(`
+      <div class="ribbon-row ribbon-count-${count} ${extraClass}">
+        ${row.map(renderRibbon).join('')}
+      </div>
+    `);
+
+    index += count;
+  }
+
+
+  /* Upper area beneath the lapel */
+
+  addRow(
+    topCount,
+    'ribbon-row-top'
+  );
+
+  addRow(
+    secondCount,
+    'ribbon-row-second'
+  );
+
+
+  /* Full lower rows */
 
   while (
     index <
     visibleMedals.length
   ) {
 
-    const row =
-      visibleMedals.slice(
-        index,
-        index + 3
-      );
-
-    rows.push(
-      `
-        <div class="ribbon-row ribbon-count-${row.length}">
-          ${row.map(renderRibbon).join('')}
-        </div>
-      `
-    );
-
-    index += 3;
+    addRow(3);
   }
 
 
