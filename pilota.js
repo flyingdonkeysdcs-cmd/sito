@@ -832,20 +832,24 @@ if (pilotUniformAscot) {
   // RegoleMedaglie c'è un nome non corrispondente
   // alle intestazioni di Statistiche.
   const missingStats =
-    [
-      ...new Set(
-        rules
-          .map(
-            rule =>
-              rule.statistica
-          )
-          .filter(
-            statistica =>
-              statistica &&
-              !hasStat(statistica)
-          )
-      )
-    ];
+  [
+    ...new Set(
+      rules
+        .filter(
+          rule =>
+            !rule.tipo.includes('BADGE')
+        )
+        .map(
+          rule =>
+            rule.statistica
+        )
+        .filter(
+          statistica =>
+            statistica &&
+            !hasStat(statistica)
+        )
+    )
+  ];
 
 
   if (missingStats.length) {
@@ -879,7 +883,22 @@ if (pilotUniformAscot) {
   // ==========================================
   // BOOL + TESTO
   // ==========================================
+  /*
+ * Abilitazioni velivoli.
+ *
+ * I qualification badge vengono assegnati
+ * confrontando il valore della regola con
+ * Aereo Principale, Aereo Secondario e Aereo WW2.
+ */
 
+const pilotAircraftQualifications = [
+  valStat('Aereo Principale'),
+  valStat('Aereo Secondario'),
+  valStat('Aereo WW2')
+]
+  .map(value => String(value || '').trim())
+  .filter(Boolean);
+    
   rules.forEach(rule => {
 
     if (
@@ -937,13 +956,44 @@ if (pilotUniformAscot) {
 
 
     if (
-      rule.tipo.includes('TESTO') &&
-      normalize(dato) ===
-        normalize(rule.valore)
-    ) {
+  rule.tipo.includes('TESTO')
+) {
 
+  /*
+   * Qualification badge:
+   * cerca il velivolo nelle tre abilitazioni
+   * del pilota.
+   */
+
+  if (
+    rule.tipo.includes('BADGE')
+  ) {
+
+    const hasQualification =
+      pilotAircraftQualifications.some(
+        aircraft =>
+          normalize(aircraft) ===
+          normalize(rule.valore)
+      );
+
+
+    if (hasQualification) {
       medals.push(rule);
     }
+
+  /*
+   * Normali regole TESTO:
+   * mantengono il comportamento originale.
+   */
+
+  } else if (
+    normalize(dato) ===
+    normalize(rule.valore)
+  ) {
+
+    medals.push(rule);
+  }
+}
   });
 
 
