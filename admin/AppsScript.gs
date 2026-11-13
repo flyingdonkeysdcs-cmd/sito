@@ -255,19 +255,25 @@ function savePilotPhoto(payload) {
     }
   }
 
-  const rowArray = [
-    payload.key || '',
+  if (targetRow === -1) {
+    throw new Error(
+      'Pilota "' + payload.key + '" non trovato in FotoPiloti. La colonna ' +
+      'Pilota qui e\' generata automaticamente da una formula collegata al ' +
+      'Roster (Statistiche): aggiungi prima il pilota nel Roster, poi la riga ' +
+      'comparira\' qui automaticamente e potrai aggiungere foto/coordinate.'
+    );
+  }
+
+  /* Scrive SOLO le colonne B,C,D (FotoProfilo, FotoHeader, coordinate).
+     La colonna A (Pilota) e' generata da una formula che rispecchia il
+     foglio Statistiche: scriverci sopra direttamente rompe l'intervallo
+     "versato" dalla formula per TUTTE le righe sottostanti. */
+  sheet.getRange(targetRow, 2, 1, 3).setValues([[
     v.fotoProfilo || '',
     v.fotoHeader || '',
     v.coordinate || ''
-  ];
+  ]]);
 
-  if (targetRow === -1) {
-    sheet.appendRow(rowArray);
-    return { created: true };
-  }
-
-  sheet.getRange(targetRow, 1, 1, 4).setValues([rowArray]);
   return { created: false };
 }
 

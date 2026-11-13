@@ -371,21 +371,26 @@
   const modalTitle = document.getElementById('modalTitle');
   const modalBody = document.getElementById('modalBody');
   let modalOnSave = null;
+  let modalCloseOnBackdrop = true;
 
-  function openModal(title, bodyHtml, onSave) {
+  function openModal(title, bodyHtml, onSave, options) {
     modalTitle.textContent = title;
     modalBody.innerHTML = bodyHtml;
     modalOnSave = onSave;
+    modalCloseOnBackdrop = !(options && options.disableBackdropClose);
     modalBackdrop.hidden = false;
   }
 
   function closeModal() {
     modalBackdrop.hidden = true;
     modalOnSave = null;
+    modalCloseOnBackdrop = true;
   }
 
   document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
-  modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
+  modalBackdrop.addEventListener('click', e => {
+    if (e.target === modalBackdrop && modalCloseOnBackdrop) closeModal();
+  });
 
   document.getElementById('modalSaveBtn').addEventListener('click', async () => {
     if (!modalOnSave) return;
@@ -666,6 +671,14 @@
     }
   }
 
+  function imagePresenceIcon(value) {
+    const present = String(value || '').trim() !== '';
+    const title = present ? 'Immagine presente' : 'Nessuna immagine';
+    const fill = present ? 'var(--accent)' : 'transparent';
+    const stroke = present ? 'var(--accent)' : 'var(--muted)';
+    return `<span title="${title}" style="display:inline-block; width:14px; height:14px; border-radius:50%; background:${fill}; border:2px solid ${stroke};"></span>`;
+  }
+
   function renderPhotosTable() {
     const table = document.getElementById('photosTable');
     table.innerHTML = `
@@ -673,8 +686,8 @@
       ${photoRows.map(row => `
         <tr>
           <td>${escapeHtml(row.pilota)}</td>
-          <td class="small muted">${escapeHtml(row.fotoProfilo)}</td>
-          <td class="small muted">${escapeHtml(row.fotoHeader)}</td>
+          <td>${imagePresenceIcon(row.fotoProfilo)}</td>
+          <td>${imagePresenceIcon(row.fotoHeader)}</td>
           <td>${escapeHtml(row.coordinate)}</td>
           <td><button class="btn-ghost" data-edit-photo="${escapeHtml(row.pilota)}">Modifica</button></td>
         </tr>
@@ -957,6 +970,9 @@
   function openEventEditor(id, calName) {
     const existing = id ? calendarEvents.find(e => e.id === id && e.calendarName === calName) : null;
 
+    const defaultStart = existing ? formatDateTimeLocal(existing.start) : formatDateTimeLocal(new Date().toISOString());
+    const defaultEnd = existing ? formatDateTimeLocal(existing.end) : defaultStart;
+
     const html = `
       <label>Calendario</label>
       <select id="ev_cal" style="width:100%;" ${existing ? 'disabled' : ''}>
@@ -967,8 +983,8 @@
       <label>Descrizione</label>
       <textarea id="ev_desc">${escapeHtml(existing ? existing.description : '')}</textarea>
       <div class="field-grid">
-        <div><label>Inizio</label><input type="datetime-local" id="ev_start" value="${existing ? formatDateTimeLocal(existing.start) : ''}" style="width:100%;"></div>
-        <div><label>Fine</label><input type="datetime-local" id="ev_end" value="${existing ? formatDateTimeLocal(existing.end) : ''}" style="width:100%;"></div>
+        <div><label>Inizio</label><input type="datetime-local" id="ev_start" value="${defaultStart}" style="width:100%;"></div>
+        <div><label>Fine</label><input type="datetime-local" id="ev_end" value="${defaultEnd}" style="width:100%;"></div>
       </div>
     `;
 
@@ -983,7 +999,7 @@
       });
 
       await loadCalendar();
-    });
+    }, { disableBackdropClose: true });
   }
 
   document.getElementById('calendarAddBtn').addEventListener('click', () => openEventEditor(null, null));
@@ -1001,8 +1017,11 @@
   let attendanceActivityCols = [];
 
   function computeAttendanceColumns() {
+    const startIndex = rosterHeaders.findIndex(h => h.trim().toLowerCase().startsWith('raduni di squadriglia'));
+
     attendanceActivityCols = rosterHeaders.filter((header, idx) => {
       if (idx === 0) return false;
+      if (startIndex !== -1 && idx < startIndex) return false;
       if (header.trim().toLowerCase() === 'ultima attività') return false;
       if (rosterBooleanCols.has(header)) return false;
 
