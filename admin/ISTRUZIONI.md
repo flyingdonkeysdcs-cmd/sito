@@ -30,7 +30,32 @@ fare una volta sola, circa 10 minuti.
 Questa password **non va mai scritta nel codice** e non finisce mai
 su GitHub: resta solo dentro al tuo foglio Google.
 
-## 3. Pubblica lo script come "app web"
+## 3. Token GitHub (serve per caricare foto, nastrini e screenshot)
+
+Per far funzionare i pulsanti "carica immagine" (foto piloti, nastrini
+medaglie, galleria), lo script deve poter scrivere sul repository
+GitHub del sito.
+
+1. Vai su GitHub → icona del tuo profilo → **Settings**.
+2. In fondo al menu a sinistra: **Developer settings**.
+3. **Personal access tokens → Fine-grained tokens → Generate new token**.
+4. Dai un nome (es. "Portale Admin Flying Donkeys"), scegli una scadenza.
+5. **Repository access** → "Only select repositories" → seleziona il
+   repository `sito`.
+6. **Permissions → Repository permissions → Contents** → imposta
+   **Read and write**.
+7. Genera il token e copialo (comincia con `github_pat_...`): GitHub lo
+   mostra una sola volta.
+8. Torna nell'editor di Apps Script → **Impostazioni del progetto →
+   Proprietà dello script → Aggiungi proprietà dello script**.
+9. Nome proprietà: `GITHUB_TOKEN`
+   Valore: il token appena copiato.
+10. Salva.
+
+Anche questo token **non va mai scritto nel codice** e non finisce mai
+su GitHub: resta solo nelle Proprietà dello script.
+
+## 4. Pubblica lo script come "app web"
 
 1. In alto a destra nell'editor di Apps Script: **Esegui la distribuzione → Nuova distribuzione**.
 2. Tipo: **App web**.
@@ -50,21 +75,21 @@ su GitHub: resta solo dentro al tuo foglio Google.
    `https://script.google.com/macros/s/..../exec`): ti servirà al
    passo successivo.
 
-## 4. Apri il portale e configuralo
+## 5. Apri il portale e configuralo
 
 1. Apri `admin/index.html` (una volta pubblicato sul sito, sarà
    all'indirizzo `https://www.flyingdonkeysvirtualsquadron.it/admin/`).
 2. Inserisci la password impostata al passaggio 2.
 3. Alla prima apertura ti chiederà l'URL dell'app web: incolla
-   quello copiato al passaggio 3.7. Resta salvato in questo browser,
+   quello copiato al passaggio 4.7. Resta salvato in questo browser,
    non dovrai reinserirlo ogni volta (ma su un altro computer/browser
    sì, una volta sola).
 
-## 5. Da ricordare
+## 6. Da ricordare
 
 - **Se modifichi di nuovo `AppsScript.gs`** (in futuro, con il mio
   aiuto o da solo), dopo averlo incollato nell'editor dovrai rifare
-  il passaggio 3 come **"Gestisci distribuzioni" → modifica
+  il passaggio 4 come **"Gestisci distribuzioni" → modifica
   (icona matita) → Nuova versione → Distribuisci**, altrimenti le
   modifiche non hanno effetto (l'URL resta lo stesso, non serve
   riconfigurare il portale).
@@ -76,4 +101,10 @@ su GitHub: resta solo dentro al tuo foglio Google.
   agli admin.
 - Ogni admin che userà il portale deve solo conoscere: l'indirizzo
   `admin/index.html`, la password, e (la prima volta sul proprio
-  browser) l'URL dell'app web del passaggio 3.7.
+  browser) l'URL dell'app web del passaggio 4.7.
+- **Caricamento immagini (foto, nastrini, galleria)**: funziona solo
+  se hai completato il passaggio 3 (token GitHub). Senza quel token
+  i pulsanti "carica immagine" daranno un errore, ma puoi comunque
+  continuare a scrivere un percorso/URL manualmente negli stessi campi.
+- Dopo aver caricato un'immagine, il sito mostra la nuova versione
+  dopo il deploy automatico di Vercel (di solito 1-2 minuti).

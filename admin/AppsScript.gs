@@ -84,6 +84,10 @@ function routeAction(action, payload) {
     case 'saveEvent':            return saveEvent(payload);
     case 'deleteEvent':          return deleteEvent(payload);
 
+    case 'uploadImage':          return uploadImageToGithub(payload);
+
+    case 'recordAttendance':     return recordAttendance(payload);
+
     default:
       throw new Error('Azione sconosciuta: ' + action);
   }
@@ -459,4 +463,117 @@ function deleteEvent(payload) {
   event.deleteEvent();
 
   return { deleted: true };
+}
+
+
+/* ----------------------------------------------------------
+   PRESENZE (incrementa un contatore attività + "Ultima attività")
+   ---------------------------------------------------------- */
+
+function recordAttendance(payload) {
+  const activityColumn = payload.activityColumn;
+  const date = payload.date; // stringa gg/mm/aaaa, già formattata dal portale
+  const pilots = payload.pilots || [];
+
+  if (!activityColumn) throw new Error('Tipo di attività non specificato.');
+  if (!pilots.length) throw new Error('Nessun pilota selezionato.');
+
+  const sheet = getSheet(SHEET_NAMES.roster);
+  const values = sheet.getDataRange().getValues();
+  const headers = values[0].map(h => String(h || '').trim());
+
+  const activityIndex = headers.indexOf(activityColumn);
+  if (activityIndex === -1) throw new Error('Colonna attività sconosciuta: ' + activityColumn);
+
+  const lastActivityIndex = headers.findIndex(h => h.trim().toLowerCase() === 'ultima attività');
+
+  const updated = [];
+  const notFound = [];
+
+  pilots.forEach(pilotName => {
+    const rowIndex = values.findIndex((row, i) =>
+      i > 0 && String(row[0]).trim().toLowerCase() === String(pilotName).trim().toLowerCase()
+    );
+
+    if (rowIndex === -1) {
+      notFound.push(pilotName);
+      return;
+    }
+
+    const currentValue = Number(String(values[rowIndex][activityIndex] || '0').trim()) || 0;
+    sheet.getRange(rowIndex + 1, activityIndex + 1).setValue(currentValue + 1);
+
+    if (lastActivityIndex !== -1) {
+      sheet.getRange(rowIndex + 1, lastActivityIndex + 1).setValue(date);
+    }
+
+    updated.push(pilotName);
+  });
+
+  return { updated, notFound };
+}
+
+
+/* ----------------------------------------------------------
+   UPLOAD IMMAGINI SU GITHUB
+   Committa un file direttamente sul branch main del repo del
+   sito, cosi' l'immagine e' subito disponibile all'URL finale
+   dopo il deploy automatico di Vercel.
+   ---------------------------------------------------------- */
+
+const GITHUB_OWNER = 'flyingdonkeysdcs-cmd';
+const GITHUB_REPO = 'sito';
+const GITHUB_BRANCH = 'main';
+
+function uploadImageToGithub(payload) {
+  const path = payload.path; // es. "images/pilots/nomepilota_profilo.webp"
+  const base64Data = payload.base64; // senza prefisso "data:...;base64,"
+
+  if (!path) throw new Error('Percorso del file non specificato.');
+  if (!base64Data) throw new Error('Nessun file ricevuto.');
+
+  const token = PropertiesService.getScriptProperties().getProperty('GITHUB_TOKEN');
+  if (!token) throw new Error('GITHUB_TOKEN non configurato nelle Proprietà dello script.');
+
+  const apiUrl = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + path;
+  const headers = {
+    Authorization: 'Bearer ' + token,
+    Accept: 'application/vnd.github+json'
+  };
+
+  let sha = null;
+  const getResponse = UrlFetchApp.fetch(apiUrl + '?ref=' + GITHUB_BRANCH, {
+    method: 'get',
+    headers: headers,
+    muteHttpExceptions: true
+  });
+
+  if (getResponse.getResponseCode() === 200) {
+    sha = JSON.parse(getResponse.getContentText()).sha;
+  }
+
+  const putBody = {
+    message: 'Portale admin: aggiorna ' + path,
+    content: base64Data,
+    branch: GITHUB_BRANCH
+  };
+  if (sha) putBody.sha = sha;
+
+  const putResponse = UrlFetchApp.fetch(apiUrl, {
+    method: 'put',
+    headers: headers,
+    contentType: 'application/json',
+    payload: JSON.stringify(putBody),
+    muteHttpExceptions: true
+  });
+
+  const code = putResponse.getResponseCode();
+  if (code !== 200 && code !== 201) {
+    throw new Error('Errore GitHub (' + code + '): ' + putResponse.getContentText());
+  }
+
+  return {
+    path: path,
+    url: 'https://www.flyingdonkeysvirtualsquadron.it/' + path
+  };
 }

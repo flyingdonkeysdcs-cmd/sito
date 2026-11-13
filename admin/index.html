@@ -153,6 +153,8 @@
       <button class="tab-btn" data-tab="medals">Regole Medaglie</button>
       <button class="tab-btn" data-tab="missions">Mission Log</button>
       <button class="tab-btn" data-tab="calendar">Calendario</button>
+      <button class="tab-btn" data-tab="attendance">Presenze</button>
+      <button class="tab-btn" data-tab="gallery">Galleria</button>
     </nav>
 
     <!-- ROSTER -->
@@ -203,6 +205,30 @@
         <span class="status" id="calendarStatus"></span>
       </div>
       <div class="table-wrap"><table id="calendarTable"></table></div>
+    </section>
+
+    <!-- PRESENZE -->
+    <section class="panel" id="panel-attendance">
+      <div class="toolbar">
+        <label for="attendanceDate" class="small muted">Data</label>
+        <input type="date" id="attendanceDate">
+        <label for="attendanceActivity" class="small muted">Tipo attività</label>
+        <select id="attendanceActivity" style="min-width:220px;"></select>
+        <span class="status" id="attendanceStatus"></span>
+      </div>
+      <div id="attendancePilots" class="table-wrap"></div>
+      <div class="toolbar" style="margin-top:12px;">
+        <button class="btn-primary" id="attendanceSaveBtn">Registra presenze</button>
+      </div>
+    </section>
+
+    <!-- GALLERIA -->
+    <section class="panel" id="panel-gallery">
+      <p class="muted">Carica uno o più screenshot: vengono convertiti in WebP e aggiunti alla galleria della home. Il sito si aggiorna in 1-2 minuti.</p>
+      <div class="toolbar">
+        <input type="file" id="galleryFileInput" accept="image/*" multiple>
+        <span class="status" id="galleryStatus"></span>
+      </div>
     </section>
 
   </div>
@@ -384,6 +410,95 @@
   }
 
 
+  /* ----------------------------------------------------------
+     UPLOAD IMMAGINI SU GITHUB
+     Ridimensiona/convert in WebP lato browser (nessuna libreria
+     server: Apps Script non ha un encoder WebP) e committa il
+     file via Apps Script -> GitHub Contents API. Il campo testo
+     memorizza il percorso relativo (es. "images/pilots/x.webp"),
+     la stessa convenzione gia' usata dal sito.
+     ---------------------------------------------------------- */
+
+  function slugify(text) {
+    return String(text || '')
+      .trim().toLowerCase()
+      .replace(/[àá]/g, 'a').replace(/[èé]/g, 'e').replace(/[ìí]/g, 'i')
+      .replace(/[òó]/g, 'o').replace(/[ùú]/g, 'u')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  function resizeImageToWebp(file, maxDim, quality) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+            else { width = Math.round(width * maxDim / height); height = maxDim; }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(blob => {
+            if (!blob) { reject(new Error('Conversione immagine fallita.')); return; }
+            const fr2 = new FileReader();
+            fr2.onload = () => resolve(fr2.result.split(',')[1]);
+            fr2.onerror = () => reject(new Error('Lettura immagine fallita.'));
+            fr2.readAsDataURL(blob);
+          }, 'image/webp', quality);
+        };
+        img.onerror = () => reject(new Error('File immagine non valido.'));
+        img.src = reader.result;
+      };
+      reader.onerror = () => reject(new Error('Lettura file fallita.'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function imageUploadFieldHtml(id, label, currentValue) {
+    return `
+      <label>${escapeHtml(label)}</label>
+      <input type="text" id="${id}" value="${escapeHtml(currentValue)}" style="width:100%;">
+      <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
+        <input type="file" id="${id}_file" accept="image/*" style="flex:1;">
+        <span id="${id}_status" class="small muted"></span>
+      </div>`;
+  }
+
+  function wireImageUpload(id, pathBuilder, maxDim, quality) {
+    const fileInput = document.getElementById(id + '_file');
+    const statusEl = document.getElementById(id + '_status');
+    const textInput = document.getElementById(id);
+
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      statusEl.textContent = 'Caricamento...';
+      try {
+        const path = pathBuilder();
+        if (!path) throw new Error('Specifica prima il nome/codice qui sopra.');
+
+        const base64 = await resizeImageToWebp(file, maxDim, quality);
+        const result = await callApi('uploadImage', { path, base64 });
+
+        textInput.value = result.path;
+        statusEl.textContent = 'Caricata (il sito si aggiorna in 1-2 minuti)';
+      } catch (error) {
+        statusEl.textContent = 'Errore: ' + error.message;
+      } finally {
+        fileInput.value = '';
+      }
+    });
+  }
+
+
   /* ============================================================
      ROSTER (dinamico: le colonne arrivano dal foglio Statistiche)
      ============================================================ */
@@ -391,6 +506,10 @@
   let rosterHeaders = [];
   let rosterRows = [];
   let rosterBooleanCols = new Set();
+  let rosterDropdownOptions = {};
+
+  const ROSTER_DROPDOWN_COLS = ['Livello Pilota', 'Aereo Principale', 'Aereo Secondario', 'Aereo WW2'];
+  const ROSTER_ALTRO = '__altro__';
 
   async function loadRoster() {
     setStatus('rosterStatus', 'Caricamento...', '');
@@ -408,7 +527,19 @@
         })
       );
 
+      rosterDropdownOptions = {};
+      ROSTER_DROPDOWN_COLS.forEach(header => {
+        if (!rosterHeaders.includes(header)) return;
+        const values = new Set(
+          rosterRows
+            .map(r => String(r[header] ?? '').trim())
+            .filter(v => v !== '')
+        );
+        rosterDropdownOptions[header] = Array.from(values).sort((a, b) => a.localeCompare(b));
+      });
+
       renderRosterTable();
+      renderAttendanceForm();
       setStatus('rosterStatus', `${rosterRows.length} piloti`, 'ok');
     } catch (error) {
       setStatus('rosterStatus', 'Errore: ' + error.message, 'err');
@@ -444,11 +575,39 @@
         </div>`;
     }
 
+    if (rosterDropdownOptions[header]) {
+      const currentValue = String(value ?? '').trim();
+      const options = rosterDropdownOptions[header];
+      const isKnown = currentValue === '' || options.includes(currentValue);
+      const optionsHtml = options.map(opt =>
+        `<option value="${escapeHtml(opt)}" ${opt === currentValue ? 'selected' : ''}>${escapeHtml(opt)}</option>`
+      ).join('');
+
+      return `
+        <div>
+          <label for="rf_${cssId(header)}">${escapeHtml(header)}</label>
+          <select id="rf_${cssId(header)}" style="width:100%;" onchange="toggleRosterAltro('${cssId(header)}')">
+            <option value="">-</option>
+            ${optionsHtml}
+            <option value="${ROSTER_ALTRO}" ${!isKnown ? 'selected' : ''}>Altro...</option>
+          </select>
+          <input type="text" id="rf_${cssId(header)}_altro" value="${escapeHtml(isKnown ? '' : currentValue)}"
+            placeholder="Nuovo valore" style="width:100%; margin-top:6px; ${isKnown ? 'display:none;' : ''}">
+        </div>`;
+    }
+
     return `
       <div>
         <label for="rf_${cssId(header)}">${escapeHtml(header)}</label>
         <input type="text" id="rf_${cssId(header)}" value="${escapeHtml(value)}" style="width:100%;">
       </div>`;
+  }
+
+  function toggleRosterAltro(id) {
+    const select = document.getElementById('rf_' + id);
+    const altro = document.getElementById('rf_' + id + '_altro');
+    if (!select || !altro) return;
+    altro.style.display = select.value === ROSTER_ALTRO ? '' : 'none';
   }
 
   function cssId(text) {
@@ -468,7 +627,15 @@
       const values = {};
       rosterHeaders.forEach(h => {
         const el = document.getElementById('rf_' + cssId(h));
-        values[h] = rosterBooleanCols.has(h) ? (el.checked ? 'TRUE' : 'FALSE') : el.value;
+        if (rosterBooleanCols.has(h)) {
+          values[h] = el.checked ? 'TRUE' : 'FALSE';
+        } else if (rosterDropdownOptions[h]) {
+          values[h] = el.value === ROSTER_ALTRO
+            ? document.getElementById('rf_' + cssId(h) + '_altro').value
+            : el.value;
+        } else {
+          values[h] = el.value;
+        }
       });
 
       const newKey = values[rosterHeaders[0]];
@@ -525,10 +692,8 @@
     const html = `
       <label>Nome pilota (deve combaciare con il roster)</label>
       <input type="text" id="pf_pilota" value="${escapeHtml(existing ? existing.pilota : '')}" style="width:100%;" ${existing ? 'disabled' : ''}>
-      <label>URL foto profilo</label>
-      <input type="text" id="pf_profilo" value="${escapeHtml(existing ? existing.fotoProfilo : '')}" style="width:100%;">
-      <label>URL foto header (sfondo pagina pilota)</label>
-      <input type="text" id="pf_header" value="${escapeHtml(existing ? existing.fotoHeader : '')}" style="width:100%;">
+      ${imageUploadFieldHtml('pf_profilo', 'Foto profilo (percorso o carica un file)', existing ? existing.fotoProfilo : '')}
+      ${imageUploadFieldHtml('pf_header', 'Foto header, sfondo pagina pilota (percorso o carica un file)', existing ? existing.fotoHeader : '')}
       <label>Coordinate mappa (lat,lng — es. 44.64,10.88)</label>
       <input type="text" id="pf_coord" value="${escapeHtml(existing ? existing.coordinate : '')}" style="width:100%;">
     `;
@@ -547,6 +712,10 @@
 
       await loadPhotos();
     });
+
+    const photoSlug = () => slugify(existing ? existing.pilota : document.getElementById('pf_pilota').value);
+    wireImageUpload('pf_profilo', () => photoSlug() ? `images/pilots/${photoSlug()}_profilo.webp` : '', 900, 0.8);
+    wireImageUpload('pf_header', () => photoSlug() ? `images/pilots/${photoSlug()}_header.webp` : '', 1600, 0.8);
   }
 
   document.getElementById('photosAddBtn').addEventListener('click', () => openPhotoEditor(null));
@@ -608,14 +777,12 @@
       </select>
       <label>Valore / Soglia (es. TRUE, oppure un numero, oppure un testo da confrontare)</label>
       <input type="text" id="mf_valore" value="${escapeHtml(existing ? existing.valore : '')}" style="width:100%;">
-      <label>URL immagine nastrino</label>
-      <input type="text" id="mf_img" value="${escapeHtml(existing ? existing.immagineNastrino : '')}" style="width:100%;">
+      ${imageUploadFieldHtml('mf_img', 'Immagine nastrino (percorso o carica un file)', existing ? existing.immagineNastrino : '')}
       <label>Titolo (mostrato nel popup)</label>
       <input type="text" id="mf_titolo" value="${escapeHtml(existing ? existing.titolo : '')}" style="width:100%;">
       <label>Descrizione (mostrata nel popup)</label>
       <textarea id="mf_desc">${escapeHtml(existing ? existing.descrizione : '')}</textarea>
-      <label>URL immagine di dettaglio (opzionale, mostrata nel popup)</label>
-      <input type="text" id="mf_imgdett" value="${escapeHtml(existing ? existing.immagineDettaglio : '')}" style="width:100%;">
+      ${imageUploadFieldHtml('mf_imgdett', 'Immagine di dettaglio, opzionale (percorso o carica un file)', existing ? existing.immagineDettaglio : '')}
     `;
 
     openModal(existing ? `Modifica ${escapeHtml(key)}` : 'Nuova medaglia', html, async () => {
@@ -636,6 +803,10 @@
 
       await loadMedalRules();
     });
+
+    const medalSlug = () => slugify(existing ? existing.medaglia : document.getElementById('mf_code').value);
+    wireImageUpload('mf_img', () => medalSlug() ? `images/ribbons/${medalSlug()}.webp` : '', 400, 0.82);
+    wireImageUpload('mf_imgdett', () => medalSlug() ? `images/medals/${medalSlug()}.webp` : '', 1100, 0.8);
   }
 
   document.getElementById('medalsAddBtn').addEventListener('click', () => openMedalEditor(null));
@@ -817,6 +988,128 @@
 
   document.getElementById('calendarAddBtn').addEventListener('click', () => openEventEditor(null, null));
   document.getElementById('calendarReloadBtn').addEventListener('click', loadCalendar);
+
+
+  /* ============================================================
+     PRESENZE
+     Segna i piloti presenti a un'attività: incrementa di 1 la
+     colonna del tipo di attività scelto e aggiorna "Ultima
+     attività". Nessuno storico separato: i contatori del Roster
+     sono l'unica fonte.
+     ============================================================ */
+
+  let attendanceActivityCols = [];
+
+  function computeAttendanceColumns() {
+    attendanceActivityCols = rosterHeaders.filter((header, idx) => {
+      if (idx === 0) return false;
+      if (header.trim().toLowerCase() === 'ultima attività') return false;
+      if (rosterBooleanCols.has(header)) return false;
+
+      const values = rosterRows
+        .map(r => String(r[header] ?? '').trim())
+        .filter(v => v !== '');
+
+      return values.length > 0 && values.every(v => /^\d+$/.test(v));
+    });
+  }
+
+  function renderAttendanceForm() {
+    computeAttendanceColumns();
+
+    const activitySelect = document.getElementById('attendanceActivity');
+    activitySelect.innerHTML = attendanceActivityCols
+      .map(h => `<option value="${escapeHtml(h)}">${escapeHtml(h)}</option>`)
+      .join('') || '<option value="">Nessun tipo di attività trovato</option>';
+
+    const dateInput = document.getElementById('attendanceDate');
+    if (!dateInput.value) {
+      dateInput.value = new Date().toISOString().slice(0, 10);
+    }
+
+    const container = document.getElementById('attendancePilots');
+    container.innerHTML = `
+      <table>
+        <tr><th></th><th>Pilota</th></tr>
+        ${rosterRows.map(row => {
+          const name = row[rosterHeaders[0]];
+          return `
+            <tr>
+              <td><input type="checkbox" class="attendance-pilot" value="${escapeHtml(name)}"></td>
+              <td>${escapeHtml(name)}</td>
+            </tr>`;
+        }).join('')}
+      </table>`;
+  }
+
+  document.getElementById('attendanceSaveBtn').addEventListener('click', async () => {
+    const activityColumn = document.getElementById('attendanceActivity').value;
+    const dateValue = document.getElementById('attendanceDate').value; // aaaa-mm-gg
+    const pilots = Array.from(document.querySelectorAll('.attendance-pilot:checked')).map(el => el.value);
+
+    if (!activityColumn) { setStatus('attendanceStatus', 'Nessun tipo di attività disponibile.', 'err'); return; }
+    if (!dateValue) { setStatus('attendanceStatus', 'Seleziona una data.', 'err'); return; }
+    if (!pilots.length) { setStatus('attendanceStatus', 'Seleziona almeno un pilota.', 'err'); return; }
+
+    const [y, m, d] = dateValue.split('-');
+    const formattedDate = `${d}/${m}/${y}`;
+
+    const btn = document.getElementById('attendanceSaveBtn');
+    btn.disabled = true;
+    setStatus('attendanceStatus', 'Salvataggio...', '');
+
+    try {
+      const result = await callApi('recordAttendance', { activityColumn, date: formattedDate, pilots });
+
+      let msg = `Aggiornati ${result.updated.length} piloti.`;
+      if (result.notFound.length) msg += ` Non trovati: ${result.notFound.join(', ')}.`;
+
+      setStatus('attendanceStatus', msg, result.notFound.length ? 'err' : 'ok');
+      await loadRoster();
+    } catch (error) {
+      setStatus('attendanceStatus', 'Errore: ' + error.message, 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+
+  /* ============================================================
+     GALLERIA (screenshot della home)
+     Nessuna riga nel foglio da aggiornare: la home elenca semplicemente
+     i file presenti in images/gallery/.
+     ============================================================ */
+
+  document.getElementById('galleryFileInput').addEventListener('change', async () => {
+    const input = document.getElementById('galleryFileInput');
+    const files = Array.from(input.files);
+    if (!files.length) return;
+
+    const errors = [];
+    let done = 0;
+    setStatus('galleryStatus', `Caricamento 0/${files.length}...`, '');
+
+    for (const file of files) {
+      try {
+        const base64 = await resizeImageToWebp(file, 1600, 0.82);
+        const path = `images/gallery/gallery-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
+        await callApi('uploadImage', { path, base64 });
+      } catch (error) {
+        errors.push(`${file.name}: ${error.message}`);
+      }
+
+      done++;
+      setStatus('galleryStatus', `Caricamento ${done}/${files.length}...`, '');
+    }
+
+    input.value = '';
+
+    setStatus(
+      'galleryStatus',
+      errors.length ? `Fatto con errori — ${errors.join('; ')}` : `${files.length} immagini caricate (il sito si aggiorna in 1-2 minuti).`,
+      errors.length ? 'err' : 'ok'
+    );
+  });
 
 })();
 </script>
