@@ -3052,6 +3052,46 @@ section[id]{
     text-align:left;
   }
 }
+/* CTA intermedia (home, tra Ultime Operazioni e Il Nostro Approccio) */
+
+.mid-cta{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+
+  padding:22px 28px;
+  margin:20px 0;
+
+  border-radius:16px;
+
+  background:
+    radial-gradient(circle at 20% 0%, rgba(0,217,255,0.10), transparent 40%),
+    rgba(22,24,26,0.72);
+
+  border:1px solid rgba(0,217,255,0.18);
+}
+
+.mid-cta p{
+  margin:0;
+  color:var(--text);
+  font-weight:600;
+  text-align:center;
+}
+
+@media(max-width:640px){
+  .mid-cta{
+    flex-direction:column;
+    padding:20px;
+    text-align:center;
+  }
+
+  .mid-cta .btn{
+    width:100%;
+  }
+}
+
 /* FIX hover bottone Programma Completo nella hero-card */
 
 .hero-card .card-actions .btn-ghost{

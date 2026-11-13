@@ -23,10 +23,31 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
 
   <link rel="icon"  type="image/png"  sizes="32x32"  href="/images/logos/favicon-32.png">
   <link rel="apple-touch-icon"    sizes="180x180"    href="/images/logos/apple-touch-icon.png">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"HowTo",
+    "name":"Come installare e usare DTC per DCS World",
+    "description":"Guida passo passo per installare DTC, configurare Saved Games, importare waypoint e mission data, impostare radio preset e CMS, e caricare i dati nel cockpit prima del volo.",
+    "inLanguage":"it-IT",
+    "totalTime":"PT20M",
+    "step":[
+      {"@type":"HowToStep","position":1,"name":"Scarica DTC","text":"Apri la pagina ufficiale delle release GitHub e scarica l'ultima versione stabile di DCS-DTC, evitando repository non ufficiali.","image":"https://www.flyingdonkeysvirtualsquadron.it/images/guide-dtc/01-download.webp"},
+      {"@type":"HowToStep","position":2,"name":"Installa DTC","text":"Avvia l'installer e completa il wizard; alcune versioni richiedono il .NET Desktop Runtime.","image":"https://www.flyingdonkeysvirtualsquadron.it/images/guide-dtc/02-installer.webp"},
+      {"@type":"HowToStep","position":3,"name":"Configura DCS e Saved Games","text":"Al primo avvio controlla che DTC rilevi correttamente la cartella Saved Games del tuo DCS, specialmente con piu' installazioni.","image":"https://www.flyingdonkeysvirtualsquadron.it/images/guide-dtc/03-paths.webp"},
+      {"@type":"HowToStep","position":4,"name":"Importa waypoint e mission data","text":"Importa i dati missione condivisi nel briefing (waypoint, steerpoint, target area, flight plan) e controllali prima del caricamento finale.","image":"https://www.flyingdonkeysvirtualsquadron.it/images/guide-dtc/04-waypoints.webp"},
+      {"@type":"HowToStep","position":5,"name":"Configura radio preset","text":"Inserisci frequenze operative, package frequency e canali COM1/COM2 indicati nel briefing, controllando tactical, AWACS e tanker.","image":"https://www.flyingdonkeysvirtualsquadron.it/images/guide-dtc/05-radios.webp"},
+      {"@type":"HowToStep","position":6,"name":"Configura CMS e impostazioni operative","text":"Prepara i programmi chaff e flare nei moduli compatibili, verificando che siano coerenti con missione e minacce previste.","image":"https://www.flyingdonkeysvirtualsquadron.it/images/guide-dtc/06-cms.webp"},
+      {"@type":"HowToStep","position":7,"name":"Controllo impostazioni di importazione","text":"Salva il file e prima del decollo verifica che waypoint e preset siano corretti, confrontandoti con il flight lead in caso di dubbi.","image":"https://www.flyingdonkeysvirtualsquadron.it/images/guide-dtc/07-save_setting.webp"},
+      {"@type":"HowToStep","position":8,"name":"Carica i dati nel cockpit","text":"Avvia DCS, entra nel modulo selezionato e usa la procedura di caricamento prevista dall'aereo (automatica o manuale tramite ICP).","image":"https://www.flyingdonkeysvirtualsquadron.it/images/guide-dtc/08-cockpit-load.webp"}
+    ]
+  }
+  </script>
 </head>
 
 <body>
