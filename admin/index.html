@@ -137,7 +137,10 @@
         <h1>Portale Admin</h1>
         <p class="muted small">Flying Donkeys Virtual Squadron — gestione roster, mission log e calendario</p>
       </div>
-      <button class="btn-ghost" id="logoutBtn">Esci</button>
+      <div>
+        <button class="btn-ghost" id="changeUrlBtn">Cambia URL</button>
+        <button class="btn-ghost" id="logoutBtn">Esci</button>
+      </div>
     </header>
 
     <div class="config-box" id="configBox" hidden>
@@ -291,6 +294,11 @@
   document.getElementById('logoutBtn').addEventListener('click', () => {
     sessionStorage.removeItem('fd_admin_password');
     location.reload();
+  });
+
+  document.getElementById('changeUrlBtn').addEventListener('click', () => {
+    webAppUrlInput.value = webAppUrl;
+    configBox.hidden = false;
   });
 
   document.getElementById('saveUrlBtn').addEventListener('click', () => {
