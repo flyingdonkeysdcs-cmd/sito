@@ -1,114 +1,65 @@
+/* ==========================================================
+   HOMEPAGE (index.html)
+
+   1. Prossimo evento + programma completo (Google Calendar)
+   2. Scroll morbido per i link interni (#sezione)
+   3. Popup contatti (apre il client email)
+   4. Galleria fotografica (caricata quando diventa visibile)
+   5. Newsletter DCS (caricate quando diventano visibili)
+
+   Richiede common.js (oggetto FD).
+   ========================================================== */
+
 document.addEventListener('DOMContentLoaded', () => {
 
-  function escapeHTML(value) {
-    return String(value ?? '').replace(
-      /[&<>"']/g,
-      char => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
-      })[char]
-    );
-  }
+  const { escapeHTML, safeExternalUrl, setScrollLock, whenVisible } = FD;
 
 
-  function safeExternalUrl(value) {
-    try {
-      const url =
-        new URL(
-          String(value ?? '').trim()
-        );
-
-      return ['http:', 'https:']
-        .includes(url.protocol)
-        ? url.href
-        : '';
-
-    } catch {
-      return '';
-    }
-  }
-
+  /* ----------------------------------------------------------
+     1. CALENDARIO EVENTI
+     ---------------------------------------------------------- */
 
   function formatEventDate(dateValue) {
-
-    const date =
-      new Date(dateValue);
-
-    return date.toLocaleString(
-      'it-IT',
-      {
-        weekday: 'long',
-        day: '2-digit',
-        month: 'long',
-        hour: '2-digit',
-        minute: '2-digit'
-      }
-    );
+    return new Date(dateValue).toLocaleString('it-IT', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
 
-  function formatEventDescription(
-    description
-  ) {
-
+  /*
+   * Descrizione evento dal calendario.
+   * Se contiene un link, il link diventa il pulsante "ATO"
+   * e viene tolto dal testo (insieme a eventuali tag HTML
+   * e all'etichetta "Discord:").
+   */
+  function formatEventDescription(description) {
     if (!description) return '';
 
-    const plainDescription =
-      String(description);
-
-    const urlMatch =
-      plainDescription.match(
-        /https?:\/\/[^\s"<]+/
-      );
-
+    const plainDescription = String(description);
+    const urlMatch = plainDescription.match(/https?:\/\/[^\s"<]+/);
 
     if (!urlMatch) {
-      return escapeHTML(
-        plainDescription
-      );
+      return escapeHTML(plainDescription);
     }
 
+    const url = safeExternalUrl(urlMatch[0]);
 
-    const url =
-      safeExternalUrl(
-        urlMatch[0]
-      );
+    const cleanDescription = plainDescription
+      .replace(/<a[^>]*>(.*?)<\/a>/gi, '$1')
+      .replace(urlMatch[0], '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/Discord:/gi, '')
+      .trim();
 
-
-    const cleanDescription =
-      plainDescription
-        .replace(
-          /<a[^>]*>(.*?)<\/a>/gi,
-          '$1'
-        )
-        .replace(
-          urlMatch[0],
-          ''
-        )
-        .replace(
-          /<[^>]+>/g,
-          ''
-        )
-        .replace(
-          /Discord:/gi,
-          ''
-        )
-        .trim();
-
-
-    const safeDescription =
-      escapeHTML(
-        cleanDescription
-      );
-
+    const safeDescription = escapeHTML(cleanDescription);
 
     if (!url) {
       return safeDescription;
     }
-
 
     return `
       <span>${safeDescription}</span>
@@ -126,137 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  async function loadNextCalendarEvent() {
-
-    const titleEl =
-      document.getElementById(
-        'nextEventTitle'
-      );
-
-    const descriptionEl =
-      document.getElementById(
-        'nextEventDescription'
-      );
-
-    const dateEl =
-      document.getElementById(
-        'nextEventDate'
-      );
-
-    const locationEl =
-      document.getElementById(
-        'nextEventLocation'
-      );
-
-    const programListEl =
-      document.getElementById(
-        'programEventsList'
-      );
-
-
-    if (
-      !titleEl ||
-      !dateEl ||
-      !locationEl
-    ) {
-      return;
-    }
-
-
-    try {
-
-      const response =
-        await fetch(
-          '/api/calendar-events'
-        );
-
-      const events =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          events.details ||
-          'Errore calendario'
-        );
-      }
-
-
-      if (!events.length) {
-
-        titleEl.textContent =
-          'Nessun evento programmato';
-
-
-        if (descriptionEl) {
-          descriptionEl.textContent =
-            '';
-        }
-
-
-        dateEl.textContent =
-          'Da definire';
-
-
-        locationEl.textContent =
-          'Server Flying Donkeys';
-
-
-        if (programListEl) {
-          programListEl.replaceChildren();
-        }
-
-        return;
-      }
-
-
-      const nextEvent =
-        events[0];
-
-
-      titleEl.textContent =
-        nextEvent.summary ||
-        nextEvent.calendarLabel;
-
-
-      if (descriptionEl) {
-
-        descriptionEl.innerHTML =
-          formatEventDescription(
-            nextEvent.description || ''
-          );
-      }
-
-
-      dateEl.textContent =
-        formatEventDate(
-          nextEvent.startValue
-        );
-
-
-      locationEl.textContent =
-        nextEvent.serverName;
-
-
-      if (programListEl) {
-
-        const nextEvents =
-          events.slice(1, 5);
-
-
-        if (!nextEvents.length) {
-
-          programListEl.innerHTML =
-            '<p class="muted">Nessun altro evento programmato.</p>';
-
-          return;
-        }
-
-
-        programListEl.innerHTML =
-          nextEvents
-            .map(event => `
+  function programEventCardHTML(event) {
+    return `
 
               <article class="program-event-card">
 
@@ -267,16 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
                   </p>
 
                   <h3>
-                    ${escapeHTML(
-                      event.summary ||
-                      event.calendarLabel
-                    )}
+                    ${escapeHTML(event.summary || event.calendarLabel)}
                   </h3>
 
                   <p>
-                    ${formatEventDescription(
-                      event.description || ''
-                    )}
+                    ${formatEventDescription(event.description || '')}
                   </p>
 
                 </div>
@@ -284,768 +101,339 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="program-event-meta">
 
                   <span>
-                    ${escapeHTML(
-                      formatEventDate(
-                        event.startValue
-                      )
-                    )}
+                    ${escapeHTML(formatEventDate(event.startValue))}
                   </span>
 
                   <strong>
-                    ${escapeHTML(
-                      event.serverName
-                    )}
+                    ${escapeHTML(event.serverName)}
                   </strong>
 
                 </div>
 
               </article>
 
-            `)
-            .join('');
-      }
-
-
-    } catch (error) {
-
-      console.error(
-        'Errore caricamento calendario:',
-        error
-      );
-
-
-      titleEl.textContent =
-        'Prossimo Evento';
-
-
-      if (descriptionEl) {
-        descriptionEl.textContent =
-          '';
-      }
-
-
-      dateEl.textContent =
-        'Martedì e Giovedì — 21:00 CEST';
-
-
-      locationEl.textContent =
-        'Server Flying Donkeys';
-
-
-      if (programListEl) {
-        programListEl.replaceChildren();
-      }
-    }
+            `;
   }
 
+
+  async function loadNextCalendarEvent() {
+
+    const titleEl       = document.getElementById('nextEventTitle');
+    const descriptionEl = document.getElementById('nextEventDescription');
+    const dateEl        = document.getElementById('nextEventDate');
+    const locationEl    = document.getElementById('nextEventLocation');
+    const programListEl = document.getElementById('programEventsList');
+
+    if (!titleEl || !dateEl || !locationEl) return;
+
+    /* Testi mostrati quando non ci sono eventi o il calendario non risponde */
+    function showPlaceholder(title, date) {
+      titleEl.textContent = title;
+      if (descriptionEl) descriptionEl.textContent = '';
+      dateEl.textContent = date;
+      locationEl.textContent = 'Server Flying Donkeys';
+      if (programListEl) programListEl.replaceChildren();
+    }
+
+    try {
+      const response = await fetch('/api/calendar-events');
+      const events = await response.json();
+
+      if (!response.ok) {
+        throw new Error(events.details || 'Errore calendario');
+      }
+
+      if (!events.length) {
+        showPlaceholder('Nessun evento programmato', 'Da definire');
+        return;
+      }
+
+      /* Card "Prossimo evento" nella hero */
+      const nextEvent = events[0];
+
+      titleEl.textContent = nextEvent.summary || nextEvent.calendarLabel;
+
+      if (descriptionEl) {
+        descriptionEl.innerHTML =
+          formatEventDescription(nextEvent.description || '');
+      }
+
+      dateEl.textContent = formatEventDate(nextEvent.startValue);
+      locationEl.textContent = nextEvent.serverName;
+
+      /* Sezione "Programma completo": i 4 eventi successivi */
+      if (programListEl) {
+        const nextEvents = events.slice(1, 5);
+
+        if (!nextEvents.length) {
+          programListEl.innerHTML =
+            '<p class="muted">Nessun altro evento programmato.</p>';
+          return;
+        }
+
+        programListEl.innerHTML = nextEvents.map(programEventCardHTML).join('');
+      }
+
+    } catch (error) {
+      console.error('Errore caricamento calendario:', error);
+      showPlaceholder('Prossimo Evento', 'Martedì e Giovedì — 21:00 CEST');
+    }
+  }
 
   loadNextCalendarEvent();
 
 
-  // Smooth scrolling
-  document
-    .querySelectorAll(
-      'a[href^="#"]'
-    )
-    .forEach(anchor => {
+  /* ----------------------------------------------------------
+     2. SCROLL MORBIDO
+     ---------------------------------------------------------- */
 
-      anchor.addEventListener(
-        'click',
-        function (event) {
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (event) {
+      const href = this.getAttribute('href');
 
-          const href =
-            this.getAttribute(
-              'href'
-            );
+      if (href === '#') return;
 
-          if (href === '#') {
-            return;
-          }
+      const target = document.querySelector(href);
 
-
-          const target =
-            document.querySelector(
-              href
-            );
-
-
-          if (target) {
-
-            event.preventDefault();
-
-            target.scrollIntoView({
-              behavior: 'smooth'
-            });
-          }
-        }
-      );
+      if (target) {
+        event.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
     });
+  });
 
 
-  // Modal contatti
-  const openBtn =
-    document.getElementById(
-      'openContact'
-    );
+  /* ----------------------------------------------------------
+     3. POPUP CONTATTI
+     ---------------------------------------------------------- */
 
-  const closeBtn =
-    document.getElementById(
-      'closeModal'
-    );
-
-  const cancelBtn =
-    document.getElementById(
-      'cancelModal'
-    );
-
-  const modal =
-    document.getElementById(
-      'modalBackdrop'
-    );
-
+  const openBtn   = document.getElementById('openContact');
+  const closeBtn  = document.getElementById('closeModal');
+  const cancelBtn = document.getElementById('cancelModal');
+  const modal     = document.getElementById('modalBackdrop');
 
   function openModal() {
-
     if (!modal) return;
-
     modal.hidden = false;
-
-    document.body.style.overflow =
-      'hidden';
+    setScrollLock(true);
   }
-
 
   function closeModal() {
-
     if (!modal) return;
-
     modal.hidden = true;
-
-    document.body.style.overflow =
-      '';
+    setScrollLock(false);
   }
 
-
-  if (openBtn) {
-    openBtn.addEventListener(
-      'click',
-      openModal
-    );
-  }
-
-
-  if (closeBtn) {
-    closeBtn.addEventListener(
-      'click',
-      closeModal
-    );
-  }
-
-
-  if (cancelBtn) {
-    cancelBtn.addEventListener(
-      'click',
-      closeModal
-    );
-  }
-
+  if (openBtn)   openBtn.addEventListener('click', openModal);
+  if (closeBtn)  closeBtn.addEventListener('click', closeModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
 
   if (modal) {
-
-    modal.addEventListener(
-      'click',
-      event => {
-
-        if (
-          event.target === modal
-        ) {
-          closeModal();
-        }
-      }
-    );
+    modal.addEventListener('click', event => {
+      if (event.target === modal) closeModal();
+    });
   }
 
-
-  document.addEventListener(
-    'keydown',
-    event => {
-
-      if (
-        event.key === 'Escape' &&
-        modal &&
-        !modal.hidden
-      ) {
-        closeModal();
-      }
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && modal && !modal.hidden) {
+      closeModal();
     }
-  );
+  });
 
 
-  const contactForm =
-    document.getElementById(
-      'contactForm'
-    );
-
+  /* Il form compone una email precompilata e apre il client di posta */
+  const contactForm = document.getElementById('contactForm');
 
   if (contactForm) {
+    contactForm.addEventListener('submit', event => {
+      event.preventDefault();
 
-    contactForm.addEventListener(
-      'submit',
-      event => {
+      const name    = document.getElementById('name').value;
+      const email   = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
 
-        event.preventDefault();
+      const recipient = 'flyingdonkeysdcs@gmail.com';
 
+      const subject = encodeURIComponent(`Messaggio da ${name}`);
 
-        const name =
-          document.getElementById(
-            'name'
-          ).value;
-
-        const email =
-          document.getElementById(
-            'email'
-          ).value;
-
-        const message =
-          document.getElementById(
-            'message'
-          ).value;
-
-
-        const recipient =
-          'flyingdonkeysdcs@gmail.com';
-
-
-        const subject =
-          encodeURIComponent(
-            `Messaggio da ${name}`
-          );
-
-
-        const body =
-          encodeURIComponent(
+      const body = encodeURIComponent(
 `Nome: ${name}
 
 Email: ${email}
 
 Messaggio:
 ${message}`
-          );
+      );
 
+      window.location.href =
+        `mailto:${recipient}?subject=${subject}&body=${body}`;
 
-        window.location.href =
-          `mailto:${recipient}?subject=${subject}&body=${body}`;
-
-
-        closeModal();
-      }
-    );
+      closeModal();
+    });
   }
 
 
-  // Galleria
-  async function initGallery() {
+  /* ----------------------------------------------------------
+     4. GALLERIA
+     Le immagini arrivano da /api/gallery; se l'API non risponde
+     resta lo slideshow con le immagini già presenti nell'HTML.
+     ---------------------------------------------------------- */
 
-    const container =
-      document.querySelector(
-        '.slideshow-container'
-      );
+  const SLIDE_INTERVAL_MS = 4000;
 
-    if (!container) return;
-
+  async function initGallery(container) {
 
     function startSlideshow() {
+      const slides = container.querySelectorAll('.slide');
 
-      const slides =
-        container.querySelectorAll(
-          '.slide'
-        );
-
-
-      if (!slides.length) {
-        return;
-      }
-
+      if (!slides.length) return;
 
       let currentSlide = 0;
 
-
-      slides.forEach(
-        (slide, index) => {
-
-          slide.classList.toggle(
-            'active-slide',
-            index === 0
-          );
-        }
-      );
-
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('active-slide', index === 0);
+      });
 
       if (slides.length > 1) {
-
         setInterval(() => {
-
-          slides[currentSlide]
-            .classList
-            .remove(
-              'active-slide'
-            );
-
-
-          currentSlide =
-            (
-              currentSlide + 1
-            ) %
-            slides.length;
-
-
-          slides[currentSlide]
-            .classList
-            .add(
-              'active-slide'
-            );
-
-        }, 4000);
+          slides[currentSlide].classList.remove('active-slide');
+          currentSlide = (currentSlide + 1) % slides.length;
+          slides[currentSlide].classList.add('active-slide');
+        }, SLIDE_INTERVAL_MS);
       }
     }
-
 
     try {
-
-      const response =
-        await fetch(
-          '/api/gallery'
-        );
-
+      const response = await fetch('/api/gallery');
 
       if (!response.ok) {
-
-        throw new Error(
-          `Gallery API error: ${response.status}`
-        );
+        throw new Error(`Gallery API error: ${response.status}`);
       }
 
+      const images = await response.json();
 
-      const images =
-        await response.json();
-
-
-      if (
-        !Array.isArray(images) ||
-        !images.length
-      ) {
-
-        throw new Error(
-          'Gallery vuota'
-        );
+      if (!Array.isArray(images) || !images.length) {
+        throw new Error('Gallery vuota');
       }
 
+      const fragment = document.createDocumentFragment();
 
-      const fragment =
-        document.createDocumentFragment();
+      images.forEach((image, index) => {
+        const img = document.createElement('img');
 
+        img.src = image.src;
+        img.alt = image.alt || 'Flying Donkeys Gallery';
+        img.className = index === 0 ? 'slide active-slide' : 'slide';
+        img.loading = 'lazy';
+        img.decoding = 'async';
 
-      images.forEach(
-        (image, index) => {
+        fragment.appendChild(img);
+      });
 
-          const img =
-            document.createElement(
-              'img'
-            );
-
-
-          img.src =
-            image.src;
-
-          img.alt =
-            image.alt ||
-            'Flying Donkeys Gallery';
-
-
-          img.className =
-            index === 0
-              ? 'slide active-slide'
-              : 'slide';
-
-
-          img.loading =
-            'lazy';
-
-          img.decoding =
-            'async';
-
-
-          fragment.appendChild(
-            img
-          );
-        }
-      );
-
-
-      container.replaceChildren(
-        fragment
-      );
-
-
+      container.replaceChildren(fragment);
       startSlideshow();
-
 
     } catch (error) {
-
-      console.error(
-        'Errore caricamento galleria:',
-        error
-      );
-
+      console.error('Errore caricamento galleria:', error);
       startSlideshow();
     }
   }
 
+  const galleryContainer = document.querySelector('.slideshow-container');
 
-  function initGalleryWhenVisible() {
-
-    const container =
-      document.querySelector(
-        '.slideshow-container'
-      );
+  whenVisible(galleryContainer, '600px 0px', () => initGallery(galleryContainer));
 
 
-    if (!container) return;
+  /* ----------------------------------------------------------
+     5. NEWSLETTER DCS
+     ---------------------------------------------------------- */
 
+  function showNewsMessage(listEl) {
+    listEl.replaceChildren();
 
-    if (
-      !(
-        'IntersectionObserver'
-        in window
-      )
-    ) {
+    const message = document.createElement('p');
+    message.className = 'muted';
+    message.textContent = 'Newsletter DCS non disponibili al momento.';
 
-      initGallery();
-      return;
-    }
-
-
-    const observer =
-      new IntersectionObserver(
-        entries => {
-
-          if (
-            !entries[0]
-              .isIntersecting
-          ) {
-            return;
-          }
-
-
-          observer.disconnect();
-
-          initGallery();
-
-        },
-        {
-          rootMargin:
-            '600px 0px'
-        }
-      );
-
-
-    observer.observe(
-      container
-    );
+    listEl.appendChild(message);
   }
 
 
-  initGalleryWhenVisible();
+  function createNewsCard(item) {
+    const article = document.createElement('article');
+    article.className = 'program-event-card dcs-news-card';
+
+    const content = document.createElement('div');
+
+    const source = document.createElement('p');
+    source.className = 'muted small';
+    source.textContent = 'Eagle Dynamics Newsletter';
+
+    const title = document.createElement('h3');
+    title.textContent = String(item?.title || 'DCS Newsletter');
+
+    const summary = document.createElement('p');
+    summary.textContent = String(item?.summary || 'Riassunto non disponibile.');
+
+    content.append(source, title, summary);
+    article.appendChild(content);
+
+    const newsletterUrl = safeExternalUrl(item?.url);
+
+    if (newsletterUrl) {
+      const meta = document.createElement('div');
+      meta.className = 'program-event-meta';
+
+      const link = document.createElement('a');
+      link.className = 'btn btn-primary';
+      link.href = newsletterUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = 'Leggi newsletter';
+
+      meta.appendChild(link);
+      article.appendChild(meta);
+    }
+
+    return article;
+  }
 
 
-  // News DCS
   async function loadDcsNews() {
-
-    const listEl =
-      document.getElementById(
-        'dcsNewsList'
-      );
-
+    const listEl = document.getElementById('dcsNewsList');
 
     if (!listEl) return;
 
-
     try {
-
-      const response =
-        await fetch(
-          '/api/dcs-news',
-          {
-            headers: {
-              Accept:
-                'application/json'
-            }
-          }
-        );
-
+      const response = await fetch('/api/dcs-news', {
+        headers: { Accept: 'application/json' }
+      });
 
       if (!response.ok) {
-
-        throw new Error(
-          'Errore caricamento newsletter'
-        );
+        throw new Error('Errore caricamento newsletter');
       }
 
-
-      const news =
-        await response.json();
-
+      const news = await response.json();
 
       if (!Array.isArray(news)) {
-
-        throw new Error(
-          'Formato newsletter non valido'
-        );
+        throw new Error('Formato newsletter non valido');
       }
 
-
-      listEl.replaceChildren();
-
-
       if (!news.length) {
-
-        const emptyMessage =
-          document.createElement(
-            'p'
-          );
-
-        emptyMessage.className =
-          'muted';
-
-        emptyMessage.textContent =
-          'Newsletter DCS non disponibili al momento.';
-
-
-        listEl.appendChild(
-          emptyMessage
-        );
-
+        showNewsMessage(listEl);
         return;
       }
 
+      const fragment = document.createDocumentFragment();
+      news.forEach(item => fragment.appendChild(createNewsCard(item)));
 
-      const fragment =
-        document.createDocumentFragment();
-
-
-      news.forEach(item => {
-
-        const article =
-          document.createElement(
-            'article'
-          );
-
-        article.className =
-          'program-event-card dcs-news-card';
-
-
-        const content =
-          document.createElement(
-            'div'
-          );
-
-
-        const source =
-          document.createElement(
-            'p'
-          );
-
-        source.className =
-          'muted small';
-
-        source.textContent =
-          'Eagle Dynamics Newsletter';
-
-
-        const title =
-          document.createElement(
-            'h3'
-          );
-
-        title.textContent =
-          String(
-            item?.title ||
-            'DCS Newsletter'
-          );
-
-
-        const summary =
-          document.createElement(
-            'p'
-          );
-
-        summary.textContent =
-          String(
-            item?.summary ||
-            'Riassunto non disponibile.'
-          );
-
-
-        content.appendChild(
-          source
-        );
-
-        content.appendChild(
-          title
-        );
-
-        content.appendChild(
-          summary
-        );
-
-
-        article.appendChild(
-          content
-        );
-
-
-        const newsletterUrl =
-          safeExternalUrl(
-            item?.url
-          );
-
-
-        if (newsletterUrl) {
-
-          const meta =
-            document.createElement(
-              'div'
-            );
-
-          meta.className =
-            'program-event-meta';
-
-
-          const link =
-            document.createElement(
-              'a'
-            );
-
-          link.className =
-            'btn btn-primary';
-
-          link.href =
-            newsletterUrl;
-
-          link.target =
-            '_blank';
-
-          link.rel =
-            'noopener noreferrer';
-
-          link.textContent =
-            'Leggi newsletter';
-
-
-          meta.appendChild(
-            link
-          );
-
-          article.appendChild(
-            meta
-          );
-        }
-
-
-        fragment.appendChild(
-          article
-        );
-      });
-
-
-      listEl.appendChild(
-        fragment
-      );
-
+      listEl.replaceChildren(fragment);
 
     } catch (error) {
-
-      console.error(
-        'Errore DCS news:',
-        error
-      );
-
-
-      listEl.replaceChildren();
-
-
-      const errorMessage =
-        document.createElement(
-          'p'
-        );
-
-      errorMessage.className =
-        'muted';
-
-      errorMessage.textContent =
-        'Newsletter DCS non disponibili al momento.';
-
-
-      listEl.appendChild(
-        errorMessage
-      );
+      console.error('Errore DCS news:', error);
+      showNewsMessage(listEl);
     }
   }
 
-
-  function initDcsNewsWhenVisible() {
-
-    const section =
-      document.getElementById(
-        'dcs-news'
-      );
-
-
-    if (!section) return;
-
-
-    if (
-      !(
-        'IntersectionObserver'
-        in window
-      )
-    ) {
-
-      loadDcsNews();
-      return;
-    }
-
-
-    const observer =
-      new IntersectionObserver(
-        entries => {
-
-          if (
-            !entries[0]
-              .isIntersecting
-          ) {
-            return;
-          }
-
-
-          observer.disconnect();
-
-          loadDcsNews();
-
-        },
-        {
-          rootMargin:
-            '700px 0px'
-        }
-      );
-
-
-    observer.observe(
-      section
-    );
-  }
-
-
-  initDcsNewsWhenVisible();
-
+  whenVisible(document.getElementById('dcs-news'), '700px 0px', loadDcsNews);
 });

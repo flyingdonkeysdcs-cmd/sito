@@ -1,3 +1,9 @@
+/* ==========================================================
+   event-preview.css
+   Anteprima Mission Log in home (#mission-preview) e relativo
+   popup #homeMissionModal. Caricato dopo style.css (index.html).
+   ========================================================== */
+
 .mission-preview-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);

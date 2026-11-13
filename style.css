@@ -1,3 +1,34 @@
+/* ==========================================================
+   FLYING DONKEYS VIRTUAL SQUADRON — style.css
+   Foglio di stile principale, condiviso da tutte le pagine.
+
+   INDICE (in ordine di apparizione nel file):
+     - Variabili globali (:root), reset, sfondo pagina
+     - Header, pulsanti
+     - Hero (home)
+     - Card generiche (why/operate/join/aircraft/ops/social)
+     - Slideshow, video, struttura, footer, modal contatti
+     - Roster (dropdown desktop)
+     - Pagina profilo pilota: statistiche, medagliere, nastrini
+     - Raduni (gallerie + popup media)
+     - Programma eventi / ATO
+     - Unified Card System (home) + variante v2 "FDVS"
+     - Pilot Map (dove-siamo)
+     - Guide (guida-*.html, guide.html)
+     - Footer moderno
+     - Header + hamburger mobile: QUESTE REGOLE SONO STRATIFICATE.
+       Esistono 3 generazioni di correzioni successive ("FINAL",
+       "COMPAT FIX v2", "HOTFIX v4") che si sovrascrivono a vicenda
+       con !important, nell'ordine in cui compaiono nel file.
+       L'ordine ATTUALE è quello corretto: non spostare questi
+       blocchi l'uno rispetto all'altro. Per modificare l'header,
+       intervenire nell'ultimo blocco (HOTFIX v4, più in basso),
+       che è quello che vince.
+     - Mobile optimization (passaggi 1, 2A/2B/2C, 3) — breakpoint
+       768px e 420px, pagina per pagina
+     - Uniform medals (presentazione nastrini su divisa, desktop)
+   ========================================================== */
+
 :root{
   --panel:#16181a;
 
@@ -14,6 +45,20 @@
   --container-padding:20px;
 
   --shadow:0 8px 22px rgba(0,0,0,0.55);
+
+  /* Unified Card System - Homepage */
+  --card-bg:linear-gradient(180deg, rgba(22,24,26,0.92), rgba(15,17,19,0.92));
+  --card-border:rgba(255,255,255,0.055);
+  --card-border-active:rgba(0,217,255,0.42);
+  --card-glow:0 0 22px rgba(0,217,255,0.15);
+  --card-glow-strong:0 0 28px rgba(0,217,255,0.20);
+
+  /* FDVS Uniform Card System v2 */
+  --card-bg-unified:linear-gradient(180deg, rgba(21,24,27,0.92), rgba(13,15,17,0.92));
+  --card-border-unified:rgba(255,255,255,0.065);
+  --card-border-hover:rgba(0,217,255,0.48);
+  --card-shadow-unified:0 10px 24px rgba(0,0,0,0.34);
+  --card-shadow-hover:0 0 0 1px rgba(0,217,255,0.12), 0 0 26px rgba(0,217,255,0.20), 0 14px 34px rgba(0,0,0,0.42);
 }
 
 *{
@@ -2080,14 +2125,8 @@ body.has-pilot-page-bg::before{
 /* ==========================================================
    Unified Card System - Homepage
    Minimal cards, shared interaction, soft cyan focus/hover
+   (variabili --card-* definite in :root, in testa al file)
    ========================================================== */
-:root{
-  --card-bg:linear-gradient(180deg, rgba(22,24,26,0.92), rgba(15,17,19,0.92));
-  --card-border:rgba(255,255,255,0.055);
-  --card-border-active:rgba(0,217,255,0.42);
-  --card-glow:0 0 22px rgba(0,217,255,0.15);
-  --card-glow-strong:0 0 28px rgba(0,217,255,0.20);
-}
 
 .unified-card,
 .hero-card,
@@ -2222,15 +2261,8 @@ body.has-pilot-page-bg::before{
   }
 }
 
-/* === FDVS UNIFORM CARD SYSTEM v2 === */
-
-:root{
-  --card-bg-unified:linear-gradient(180deg, rgba(21,24,27,0.92), rgba(13,15,17,0.92));
-  --card-border-unified:rgba(255,255,255,0.065);
-  --card-border-hover:rgba(0,217,255,0.48);
-  --card-shadow-unified:0 10px 24px rgba(0,0,0,0.34);
-  --card-shadow-hover:0 0 0 1px rgba(0,217,255,0.12), 0 0 26px rgba(0,217,255,0.20), 0 14px 34px rgba(0,0,0,0.42);
-}
+/* === FDVS UNIFORM CARD SYSTEM v2 ===
+   (variabili --card-*-unified definite in :root, in testa al file) */
 
 /* Sistema unico per tutte le card dell'index */
 .unified-card,
