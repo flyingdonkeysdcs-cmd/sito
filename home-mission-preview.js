@@ -1,45 +1,47 @@
-async function loadHomeMissionPreview() {
-  const container = document.getElementById('homeMissionPreview');
-  if (!container) return;
+/* ==========================================================
+   HOMEPAGE — ANTEPRIMA MISSION LOG
+   Mostra le ultime 3 missioni del foglio AAR e apre il
+   debriefing in un popup. Caricata quando la sezione
+   #mission-preview si avvicina all'area visibile.
 
-  const SHEET_ID = '1EM0RGmnRNoso32nElUh-hn_Bjv5AvMneL7ks-pedZwk';
-  const SHEET_NAME = 'AAR';
-  const url = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
+   Richiede common.js (oggetto FD).
+   ========================================================== */
 
-  try {
-    const response = await fetch(url);
-    const missions = await response.json();
+(() => {
 
-    if (!response.ok || !missions.length) {
-      container.innerHTML = '<p class="muted">Nessuna missione disponibile.</p>';
-      return;
-    }
+  const { SHEETS, escapeHTML, safeAssetUrl, formatMissionText, whenVisible } = FD;
 
-    const latestMissions = missions.slice(-3).reverse();
-	window.homeLatestMissions = latestMissions;
+  const PREVIEW_COUNT = 3;
+  const SUMMARY_PREVIEW_LENGTH = 160;
 
-  container.innerHTML = latestMissions.map((mission, index) => {
+  let latestMissions = [];
 
-  const image =
-    safeAssetUrl(mission.immagine) ||
-    safeAssetUrl('images/default-mission.jpg');
 
-  const title =
-    mission.titolo ||
-    'Operazione Flying Donkeys';
+  /* Campi della missione con i valori di ripiego */
+  function getMissionImage(mission) {
+    return safeAssetUrl(mission.immagine) ||
+      safeAssetUrl('images/default-mission.jpg');
+  }
 
-  const date =
-    mission.data || '';
+  function getMissionTitle(mission) {
+    return mission.titolo || 'Operazione Flying Donkeys';
+  }
 
-  const theatre =
-    mission.teatro || '';
+  function getMissionSummary(mission) {
+    return mission['riassunto debriefing'] ||
+      mission['riassunto debriefeing'] || // refuso presente nel foglio
+      '';
+  }
 
-  const summary =
-    mission['riassunto debriefing'] ||
-    mission['riassunto debriefeing'] ||
-    '';
 
-  return `
+  function missionPreviewCardHTML(mission, index) {
+    const image   = getMissionImage(mission);
+    const title   = getMissionTitle(mission);
+    const date    = mission.data || '';
+    const theatre = mission.teatro || '';
+    const summary = getMissionSummary(mission);
+
+    return `
     <article
       class="mission-preview-card unified-card"
       data-mission-index="${index}"
@@ -68,129 +70,71 @@ async function loadHomeMissionPreview() {
         </p>
 
         <p>
-          ${escapeHTML(String(summary).slice(0, 160))}...
+          ${escapeHTML(String(summary).slice(0, SUMMARY_PREVIEW_LENGTH))}...
         </p>
 
       </div>
     </article>
   `;
+  }
 
-}).join('');
-	
-container.querySelectorAll('.mission-preview-card').forEach(card => {
-  card.addEventListener('click', () => {
-    openHomeMissionModal(window.homeLatestMissions[card.dataset.missionIndex]);
-  });
 
-  card.addEventListener('keydown', event => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      openHomeMissionModal(window.homeLatestMissions[card.dataset.missionIndex]);
+  async function loadHomeMissionPreview() {
+    const container = document.getElementById('homeMissionPreview');
+    if (!container) return;
+
+    try {
+      const response = await fetch(SHEETS.aar);
+      const missions = await response.json();
+
+      if (!response.ok || !missions.length) {
+        container.innerHTML = '<p class="muted">Nessuna missione disponibile.</p>';
+        return;
+      }
+
+      latestMissions = missions.slice(-PREVIEW_COUNT).reverse();
+
+      container.innerHTML = latestMissions.map(missionPreviewCardHTML).join('');
+
+      container.querySelectorAll('.mission-preview-card').forEach(card => {
+        const open = () =>
+          openHomeMissionModal(latestMissions[card.dataset.missionIndex]);
+
+        card.addEventListener('click', open);
+
+        card.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            open();
+          }
+        });
+      });
+
+    } catch (error) {
+      console.error('Errore caricamento anteprima missioni:', error);
+      container.innerHTML =
+        '<p class="muted">Mission Log momentaneamente non disponibile.</p>';
     }
-  });
-});
-  } catch (error) {
-    console.error('Errore caricamento anteprima missioni:', error);
-    container.innerHTML = '<p class="muted">Mission Log momentaneamente non disponibile.</p>';
-  }
-}
-
-function initHomeMissionPreviewWhenVisible() {
-  const section = document.getElementById('mission-preview');
-
-  if (!section) return;
-
-  if (!('IntersectionObserver' in window)) {
-    loadHomeMissionPreview();
-    return;
   }
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      if (!entries[0].isIntersecting) return;
 
-      observer.disconnect();
-      loadHomeMissionPreview();
-    },
-    {
-      rootMargin: '400px 0px'
-    }
-  );
+  /* ----------------------------------------------------------
+     Popup debriefing
+     ---------------------------------------------------------- */
 
-  observer.observe(section);
-}
+  function openHomeMissionModal(mission) {
+    const modal   = document.getElementById('homeMissionModal');
+    const content = document.getElementById('homeMissionModalContent');
+    if (!modal || !content || !mission) return;
 
-initHomeMissionPreviewWhenVisible();
+    const image   = getMissionImage(mission);
+    const title   = getMissionTitle(mission);
+    const date    = mission.data || '';
+    const theatre = mission.teatro || '';
+    const pilots  = mission['piloti coinvolti'] || '';
+    const summary = getMissionSummary(mission);
 
-function escapeHTML(value) {
-  return String(value || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-function safeAssetUrl(value) {
-  const rawValue = String(value ?? '').trim();
-
-  const invalidValues = [
-    '',
-    '-',
-    'n/a',
-    'na',
-    'null',
-    'undefined'
-  ];
-
-  if (invalidValues.includes(rawValue.toLowerCase())) {
-    return '';
-  }
-
-  try {
-    const url = new URL(rawValue, window.location.href);
-
-    return ['http:', 'https:'].includes(url.protocol)
-      ? url.href
-      : '';
-
-  } catch {
-    return '';
-  }
-}
-function formatMissionText(text) {
-  if (!text) return '';
-
-  text = String(text).replace(/\r\n/g, '\n');
-  text = escapeHTML(text);
-
-  text = text.replace(/^##\s(.+)$/gm, '<strong class="mission-heading">$1</strong>');
-  text = text.replace(/^###\s(.+)$/gm, '<strong class="mission-subheading">$1</strong>');
-  text = text.replace(/^-+\s(.+)$/gm, '<li>$1</li>');
-  text = text.replace(/(<li>.*?<\/li>)+/gs, match => `<ul class="mission-list">${match}</ul>`);
-  text = text.replace(/\n\s*\n/g, '<br><br>');
-  text = text.replace(/\n/g, '<br>');
-
-  return text;
-}
-
-function openHomeMissionModal(mission) {
-  const modal = document.getElementById('homeMissionModal');
-  const content = document.getElementById('homeMissionModalContent');
-  if (!modal || !content || !mission) return;
-
-  const image =
-  	safeAssetUrl(mission.immagine) ||
- 	 safeAssetUrl('images/default-mission.jpg');
-  const title = mission.titolo || 'Operazione Flying Donkeys';
-  const date = mission.data || '';
-  const theatre = mission.teatro || '';
-  const pilots = mission['piloti coinvolti'] || '';
-  const summary =
-    mission['riassunto debriefing'] ||
-    mission['riassunto debriefeing'] ||
-    '';
-
-  content.innerHTML = `
+    content.innerHTML = `
     <img class="mission-detail-image" src="${escapeHTML(image)}" alt="${escapeHTML(title)}">
 
     <div class="mission-detail-tags">
@@ -211,29 +155,43 @@ function openHomeMissionModal(mission) {
     </div>
   `;
 
-  modal.hidden = false;
-  modal.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeHomeMissionModal() {
-  const modal = document.getElementById('homeMissionModal');
-  if (!modal) return;
-
-  modal.hidden = true;
-  modal.setAttribute('aria-hidden', 'true');
-  document.body.style.overflow = '';
-}
-
-document.addEventListener('click', event => {
-  if (event.target.id === 'homeMissionModal' || event.target.id === 'homeMissionModalClose') {
-    closeHomeMissionModal();
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
   }
-});
 
-document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') {
-    closeHomeMissionModal();
+
+  function closeHomeMissionModal() {
+    const modal = document.getElementById('homeMissionModal');
+    if (!modal) return;
+
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
   }
-});
 
+
+  /* Chiusura: clic sullo sfondo o sul pulsante ×, oppure Esc */
+  document.addEventListener('click', event => {
+    if (
+      event.target.id === 'homeMissionModal' ||
+      event.target.id === 'homeMissionModalClose'
+    ) {
+      closeHomeMissionModal();
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      closeHomeMissionModal();
+    }
+  });
+
+
+  whenVisible(
+    document.getElementById('mission-preview'),
+    '400px 0px',
+    loadHomeMissionPreview
+  );
+
+})();

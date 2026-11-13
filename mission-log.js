@@ -1,92 +1,43 @@
+/* ==========================================================
+   MISSION LOG (mission-log.html)
+   Elenco di tutte le missioni del foglio AAR (dalla più
+   recente) con popup del debriefing.
+
+   Richiede common.js (oggetto FD).
+   ========================================================== */
+
 document.addEventListener('DOMContentLoaded', async () => {
 
-  const list = document.getElementById('missionLogGrid');
-  const index = document.getElementById('missionEventIndex');
+  const { SHEETS, escapeHTML, safeAssetUrl, formatMissionText } = FD;
+
+  const list    = document.getElementById('missionLogGrid');
+  const index   = document.getElementById('missionEventIndex');
   const loading = document.getElementById('missionLogLoading');
-  const empty = document.getElementById('missionLogEmpty');
+  const empty   = document.getElementById('missionLogEmpty');
 
   if (!list) return;
 
-  const SHEET_ID = '1EM0RGmnRNoso32nElUh-hn_Bjv5AvMneL7ks-pedZwk';
-  const SHEET_NAME = 'AAR';
-  const url = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
-
-  function escapeHTML(value) {
-    return String(value || '')
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#039;');
-  }
-function safeAssetUrl(value) {
-  const rawValue = String(value ?? '').trim();
-
-  const invalidValues = [
-    '',
-    '-',
-    'n/a',
-    'na',
-    'null',
-    'undefined'
-  ];
-
-  if (invalidValues.includes(rawValue.toLowerCase())) {
-    return '';
-  }
-
-  try {
-    const url = new URL(rawValue, window.location.href);
-
-    return ['http:', 'https:'].includes(url.protocol)
-      ? url.href
-      : '';
-
-  } catch {
-    return '';
-  }
-}
-  function formatMissionText(text) {
-    if (!text) return '';
-
-    text = String(text).replace(/\r\n/g, '\n');
-
-    text = escapeHTML(text);
-
-    /* H2 */
-
-		text = text.replace(
-			/^##\s(.+)$/gm,
-			'<strong class="mission-heading">$1</strong>'
-			);
-
-	/* H3 */
-
-		text = text.replace(
-			/^###\s(.+)$/gm,
-			'<strong class="mission-subheading">$1</strong>'
-			);
-			
-    text = text.replace(/^-+\s(.+)$/gm, '<li>$1</li>');
-    text = text.replace(/(<li>.*?<\/li>)+/gs, match => `<ul class="mission-list">${match}</ul>`);
-    text = text.replace(/\n\s*\n/g, '<br><br>');
-    text = text.replace(/\n/g, '<br>');
-
-    return text;
-  }
 
   function getMissionData(mission) {
     return {
-    image:
-	  safeAssetUrl(mission.immagine) ||
-	  safeAssetUrl('images/default-mission.jpg'),
-      title: mission.titolo || 'Untitled Operation',
-      date: mission.data || '',
+      image:
+        safeAssetUrl(mission.immagine) ||
+        safeAssetUrl('images/default-mission.jpg'),
+      title:   mission.titolo || 'Untitled Operation',
+      date:    mission.data || '',
       theatre: mission.teatro || '',
-      pilots: mission['piloti coinvolti'] || '',
-      summary: mission['riassunto debriefeing'] || mission['riassunto debriefing'] || ''
+      pilots:  mission['piloti coinvolti'] || '',
+      summary:
+        mission['riassunto debriefeing'] || // refuso presente nel foglio
+        mission['riassunto debriefing'] ||
+        ''
     };
   }
+
+
+  /* ----------------------------------------------------------
+     Popup debriefing (creato una volta sola)
+     ---------------------------------------------------------- */
 
   function createModal() {
     const modal = document.createElement('div');
@@ -96,10 +47,10 @@ function safeAssetUrl(value) {
 
     modal.innerHTML = `
       <div
-		  class="mission-modal"
-		  role="dialog"
-		  aria-modal="true"
-		  aria-labelledby="missionModalTitle">
+        class="mission-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="missionModalTitle">
         <button class="mission-modal-close" type="button" aria-label="Chiudi">×</button>
         <div class="mission-modal-media">
           <img id="missionModalImage" src="" alt="">
@@ -118,14 +69,12 @@ function safeAssetUrl(value) {
 
     document.body.appendChild(modal);
 
-    const closeBtn = modal.querySelector('.mission-modal-close');
-
     function closeModal() {
       modal.hidden = true;
       document.body.classList.remove('modal-open');
     }
 
-    closeBtn.addEventListener('click', closeModal);
+    modal.querySelector('.mission-modal-close').addEventListener('click', closeModal);
 
     modal.addEventListener('click', event => {
       if (event.target === modal) closeModal();
@@ -140,36 +89,38 @@ function safeAssetUrl(value) {
 
   const modal = createModal();
 
+
   function openMissionModal(mission) {
-    document.getElementById('missionModalImage').src = mission.image;
-    document.getElementById('missionModalImage').alt = mission.title;
+    const image = document.getElementById('missionModalImage');
+    image.src = mission.image;
+    image.alt = mission.title;
+
     document.getElementById('missionModalTheatre').textContent = mission.theatre;
     document.getElementById('missionModalTitle').textContent = mission.title;
     document.getElementById('missionModalDate').textContent = mission.date;
-    document.getElementById('missionModalPilots').textContent = mission.pilots ? `Teatro: ${mission.pilots}` : '';
-    document.getElementById('missionModalSummary').innerHTML = formatMissionText(mission.summary);
+    document.getElementById('missionModalPilots').textContent =
+      mission.pilots ? `Teatro: ${mission.pilots}` : '';
+    document.getElementById('missionModalSummary').innerHTML =
+      formatMissionText(mission.summary);
 
     modal.hidden = false;
     document.body.classList.add('modal-open');
   }
 
- try {
 
-  const response = await fetch(url);
+  /* ----------------------------------------------------------
+     Elenco missioni
+     ---------------------------------------------------------- */
 
-  console.log('Mission Log response:', response.status);
+  try {
+    const response = await fetch(SHEETS.aar);
+    const missionsRaw = await response.json();
 
-  const missionsRaw = await response.json();
-
-  console.log('Missioni caricate:', missionsRaw);
-
-  const missions = missionsRaw
-    .reverse()
-    .map(getMissionData);
+    const missions = missionsRaw.reverse().map(getMissionData);
 
     if (loading) loading.hidden = true;
-	if (index) index.hidden = false;
-	
+    if (index) index.hidden = false;
+
     if (!missions.length) {
       if (empty) empty.hidden = false;
       return;
@@ -177,8 +128,8 @@ function safeAssetUrl(value) {
 
     list.classList.add('mission-event-list');
 
-    list.innerHTML = missions.map((mission, index) => `
-      <button class="mission-event-row unified-card" type="button" data-index="${index}">
+    list.innerHTML = missions.map((mission, i) => `
+      <button class="mission-event-row unified-card" type="button" data-index="${i}">
         <span class="mission-event-date">${escapeHTML(mission.date)}</span>
         <span class="mission-event-title">${escapeHTML(mission.title)}</span>
         <span class="mission-event-theatre">${escapeHTML(mission.theatre)}</span>

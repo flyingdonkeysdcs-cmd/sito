@@ -2,6 +2,14 @@
    FDVS Mission Log / AAR
    File dedicato: mission-log.css
    Deve essere caricato DOPO style.css
+
+   NOTA: alcuni selettori (.mission-event-row, .mission-modal,
+   .mission-modal-close, .mission-heading...) sono definiti più
+   volte in questo file, in blocchi successivi via via più
+   recenti ("Event Index + Debrief Modal", poi "Lista eventi",
+   poi "Uniform UI polish"). Le regole più in basso sono quelle
+   che vincono e vanno modificate per cambiare l'aspetto attuale;
+   l'ordine dei blocchi non va alterato.
    ========================================================== */
 
 /* Hero Mission Log */
