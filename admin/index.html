@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Portale Admin — Flying Donkeys</title>
+<style>
+  :root{
+    --bg:#0a0c0e;
+    --panel:#16181a;
+    --panel-2:#1c1f22;
+    --border:rgba(255,255,255,0.08);
+    --text:#e6e9eb;
+    --muted:#9aa0a6;
+    --accent:#00d9ff;
+    --accent-2:#00a6cb;
+    --danger:#ff5d5d;
+    --ok:#4ade80;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    line-height:1.5;
+  }
+  a{color:var(--accent);}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px;}
+  h1{font-size:1.4rem;margin:0 0 4px;}
+  .muted{color:var(--muted);}
+  .small{font-size:0.85rem;}
+
+  /* Login */
+  #loginScreen{
+    max-width:380px;margin:80px auto;padding:28px;
+    background:var(--panel);border:1px solid var(--border);border-radius:14px;
+  }
+  #loginScreen input{width:100%;}
+  #loginScreen .error{color:var(--danger);min-height:1.2em;font-size:0.9rem;}
+
+  input, textarea, select{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:8px;
+    padding:9px 11px;
+    font-size:0.95rem;
+    font-family:inherit;
+  }
+  textarea{width:100%;min-height:90px;resize:vertical;}
+  label{display:block;font-size:0.82rem;color:var(--muted);margin:10px 0 4px;}
+
+  button{
+    cursor:pointer;
+    border:none;
+    border-radius:8px;
+    padding:9px 16px;
+    font-size:0.9rem;
+    font-weight:600;
+    font-family:inherit;
+  }
+  .btn-primary{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#021014;}
+  .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+  .btn-danger{background:rgba(255,93,93,0.12);border:1px solid rgba(255,93,93,0.4);color:var(--danger);}
+  button:disabled{opacity:0.5;cursor:not-allowed;}
+
+  /* Layout app */
+  #app{display:none;}
+  header.topbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 0;border-bottom:1px solid var(--border);margin-bottom:18px;
+  }
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+  .tab-btn{background:var(--panel);border:1px solid var(--border);color:var(--muted);}
+  .tab-btn.active{background:rgba(0,217,255,0.12);border-color:rgba(0,217,255,0.4);color:var(--accent);}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;}
+  th{color:var(--muted);font-weight:600;white-space:nowrap;}
+  tr:hover td{background:rgba(255,255,255,0.03);}
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;}
+
+  .toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+
+  /* Modal */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);
+    display:flex;align-items:center;justify-content:center;z-index:100;
+    padding:16px;
+  }
+  .modal-backdrop[hidden]{display:none;}
+  .modal{
+    width:min(640px,100%);max-height:88vh;overflow-y:auto;
+    background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;
+  }
+  .modal h2{margin-top:0;font-size:1.1rem;}
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;}
+  .field-grid .full{grid-column:1/-1;}
+  .checkbox-row{display:flex;align-items:center;gap:8px;margin-top:14px;}
+  .checkbox-row input{width:auto;}
+  .checkbox-row label{margin:0;color:var(--text);font-size:0.9rem;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+
+  .status{font-size:0.85rem;margin-left:8px;}
+  .status.ok{color:var(--ok);}
+  .status.err{color:var(--danger);}
+
+  .config-box{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:14px;margin-bottom:18px;font-size:0.88rem;
+  }
+  .config-box input{width:100%;margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <h1>Portale Admin</h1>
+  <p class="muted small">Flying Donkeys Virtual Squadron</p>
+  <label for="passwordInput">Password</label>
+  <input type="password" id="passwordInput" autocomplete="current-password">
+  <p class="error" id="loginError"></p>
+  <button class="btn-primary" id="loginBtn" style="width:100%;margin-top:4px;">Entra</button>
+</div>
+
+<div id="app">
+  <div class="wrap">
+
+    <header class="topbar">
+      <div>
+        <h1>Portale Admin</h1>
+        <p class="muted small">Flying Donkeys Virtual Squadron — gestione roster, mission log e calendario</p>
+      </div>
+      <button class="btn-ghost" id="logoutBtn">Esci</button>
+    </header>
+
+    <div class="config-box" id="configBox" hidden>
+      <strong>Configurazione necessaria</strong>
+      <p class="muted">Incolla qui l'URL dell'app web pubblicato da Google Apps Script (vedi admin/ISTRUZIONI.md).</p>
+      <input type="text" id="webAppUrlInput" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
+      <button class="btn-primary" id="saveUrlBtn" style="margin-top:10px;">Salva</button>
+    </div>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="roster">Roster</button>
+      <button class="tab-btn" data-tab="photos">Foto &amp; Coordinate</button>
+      <button class="tab-btn" data-tab="medals">Regole Medaglie</button>
+      <button class="tab-btn" data-tab="missions">Mission Log</button>
+      <button class="tab-btn" data-tab="calendar">Calendario</button>
+    </nav>
+
+    <!-- ROSTER -->
+    <section class="panel active" id="panel-roster">
+      <div class="toolbar">
+        <button class="btn-primary" id="rosterAddBtn">+ Nuovo pilota</button>
+        <button class="btn-ghost" id="rosterReloadBtn">Ricarica</button>
+        <span class="status" id="rosterStatus"></span>
+      </div>
+      <div class="table-wrap"><table id="rosterTable"></table></div>
+    </section>
+
+    <!-- FOTO -->
+    <section class="panel" id="panel-photos">
+      <div class="toolbar">
+        <button class="btn-primary" id="photosAddBtn">+ Nuova voce</button>
+        <button class="btn-ghost" id="photosReloadBtn">Ricarica</button>
+        <span class="status" id="photosStatus"></span>
+      </div>
+      <div class="table-wrap"><table id="photosTable"></table></div>
+    </section>
+
+    <!-- REGOLE MEDAGLIE -->
+    <section class="panel" id="panel-medals">
+      <div class="toolbar">
+        <button class="btn-primary" id="medalsAddBtn">+ Nuova medaglia</button>
+        <button class="btn-ghost" id="medalsReloadBtn">Ricarica</button>
+        <span class="status" id="medalsStatus"></span>
+      </div>
+      <div class="table-wrap"><table id="medalsTable"></table></div>
+    </section>
+
+    <!-- MISSION LOG -->
+    <section class="panel" id="panel-missions">
+      <div class="toolbar">
+        <button class="btn-primary" id="missionsAddBtn">+ Nuova missione</button>
+        <button class="btn-ghost" id="missionsReloadBtn">Ricarica</button>
+        <span class="status" id="missionsStatus"></span>
+      </div>
+      <div class="table-wrap"><table id="missionsTable"></table></div>
+    </section>
+
+    <!-- CALENDARIO -->
+    <section class="panel" id="panel-calendar">
+      <div class="toolbar">
+        <button class="btn-primary" id="calendarAddBtn">+ Nuovo evento</button>
+        <button class="btn-ghost" id="calendarReloadBtn">Ricarica</button>
+        <span class="status" id="calendarStatus"></span>
+      </div>
+      <div class="table-wrap"><table id="calendarTable"></table></div>
+    </section>
+
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <div class="modal">
+    <h2 id="modalTitle">Modifica</h2>
+    <div id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="modalCancelBtn">Annulla</button>
+      <button class="btn-primary" id="modalSaveBtn">Salva</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+
+  /* ----------------------------------------------------------
+     CONFIGURAZIONE E SESSIONE
+     ---------------------------------------------------------- */
+
+  let webAppUrl = localStorage.getItem('fd_admin_webapp_url') || '';
+  let password  = sessionStorage.getItem('fd_admin_password') || '';
+
+  const loginScreen = document.getElementById('loginScreen');
+  const app = document.getElementById('app');
+  const configBox = document.getElementById('configBox');
+  const webAppUrlInput = document.getElementById('webAppUrlInput');
+
+  function showApp() {
+    loginScreen.style.display = 'none';
+    app.style.display = 'block';
+
+    if (!webAppUrl) {
+      configBox.hidden = false;
+    } else {
+      configBox.hidden = true;
+      loadAllTabs();
+    }
+  }
+
+  if (password) showApp();
+
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    const value = document.getElementById('passwordInput').value;
+    if (!value) return;
+
+    password = value;
+    sessionStorage.setItem('fd_admin_password', value);
+    document.getElementById('loginError').textContent = '';
+    showApp();
+  });
+
+  document.getElementById('passwordInput').addEventListener('keydown', event => {
+    if (event.key === 'Enter') document.getElementById('loginBtn').click();
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('fd_admin_password');
+    location.reload();
+  });
+
+  document.getElementById('saveUrlBtn').addEventListener('click', () => {
+    const value = webAppUrlInput.value.trim();
+    if (!value) return;
+
+    webAppUrl = value;
+    localStorage.setItem('fd_admin_webapp_url', value);
+    configBox.hidden = true;
+    loadAllTabs();
+  });
+
+
+  /* ----------------------------------------------------------
+     CHIAMATA AL BACKEND (Google Apps Script)
+     Content-Type text/plain per evitare il preflight CORS:
+     Apps Script legge comunque il JSON dal body.
+     ---------------------------------------------------------- */
+
+  async function callApi(action, payload) {
+    const response = await fetch(webAppUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action, password, payload: payload || {} })
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      if (data.error.includes('Password errata')) {
+        sessionStorage.removeItem('fd_admin_password');
+        alert('Password errata o scaduta. Rientra nel portale.');
+        location.reload();
+      }
+      throw new Error(data.error);
+    }
+
+    return data.data;
+  }
+
+
+  function setStatus(id, text, kind) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+
+  /* ----------------------------------------------------------
+     TAB SWITCHING
+     ---------------------------------------------------------- */
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+
+  function loadAllTabs() {
+    loadRoster();
+    loadPhotos();
+    loadMedalRules();
+    loadMissions();
+    loadCalendar();
+  }
+
+
+  /* ----------------------------------------------------------
+     MODALE GENERICO
+     ---------------------------------------------------------- */
+
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  let modalOnSave = null;
+
+  function openModal(title, bodyHtml, onSave) {
+    modalTitle.textContent = title;
+    modalBody.innerHTML = bodyHtml;
+    modalOnSave = onSave;
+    modalBackdrop.hidden = false;
+  }
+
+  function closeModal() {
+    modalBackdrop.hidden = true;
+    modalOnSave = null;
+  }
+
+  document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
+
+  document.getElementById('modalSaveBtn').addEventListener('click', async () => {
+    if (!modalOnSave) return;
+    const btn = document.getElementById('modalSaveBtn');
+    btn.disabled = true;
+
+    try {
+      await modalOnSave();
+      closeModal();
+    } catch (error) {
+      alert('Errore: ' + error.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    })[c]);
+  }
+
+
+  /* ============================================================
+     ROSTER (dinamico: le colonne arrivano dal foglio Statistiche)
+     ============================================================ */
+
+  let rosterHeaders = [];
+  let rosterRows = [];
+  let rosterBooleanCols = new Set();
+
+  async function loadRoster() {
+    setStatus('rosterStatus', 'Caricamento...', '');
+    try {
+      const data = await callApi('getRoster', {});
+      rosterHeaders = data.headers;
+      rosterRows = data.rows;
+
+      rosterBooleanCols = new Set(
+        rosterHeaders.filter(header => {
+          const values = rosterRows
+            .map(r => String(r[header] ?? '').trim().toUpperCase())
+            .filter(v => v !== '');
+          return values.length > 0 && values.every(v => v === 'TRUE' || v === 'FALSE');
+        })
+      );
+
+      renderRosterTable();
+      setStatus('rosterStatus', `${rosterRows.length} piloti`, 'ok');
+    } catch (error) {
+      setStatus('rosterStatus', 'Errore: ' + error.message, 'err');
+    }
+  }
+
+  function renderRosterTable() {
+    const mainCols = rosterHeaders.slice(0, 6); // prime colonne come anteprima
+    const table = document.getElementById('rosterTable');
+
+    table.innerHTML = `
+      <tr>${mainCols.map(h => `<th>${escapeHtml(h)}</th>`).join('')}<th></th></tr>
+      ${rosterRows.map(row => `
+        <tr>
+          ${mainCols.map(h => `<td>${escapeHtml(row[h])}</td>`).join('')}
+          <td><button class="btn-ghost" data-edit-pilot="${escapeHtml(row[rosterHeaders[0]])}">Modifica</button></td>
+        </tr>
+      `).join('')}
+    `;
+
+    table.querySelectorAll('[data-edit-pilot]').forEach(btn => {
+      btn.addEventListener('click', () => openRosterEditor(btn.dataset.editPilot));
+    });
+  }
+
+  function rosterFieldHtml(header, value) {
+    if (rosterBooleanCols.has(header)) {
+      const checked = String(value ?? '').trim().toUpperCase() === 'TRUE';
+      return `
+        <div class="checkbox-row">
+          <input type="checkbox" id="rf_${cssId(header)}" ${checked ? 'checked' : ''}>
+          <label for="rf_${cssId(header)}">${escapeHtml(header)}</label>
+        </div>`;
+    }
+
+    return `
+      <div>
+        <label for="rf_${cssId(header)}">${escapeHtml(header)}</label>
+        <input type="text" id="rf_${cssId(header)}" value="${escapeHtml(value)}" style="width:100%;">
+      </div>`;
+  }
+
+  function cssId(text) {
+    return String(text).replace(/[^a-zA-Z0-9]/g, '_');
+  }
+
+  function openRosterEditor(pilotKey) {
+    const existing = pilotKey
+      ? rosterRows.find(r => String(r[rosterHeaders[0]]).trim().toLowerCase() === pilotKey.trim().toLowerCase())
+      : null;
+
+    const html = `<div class="field-grid">
+      ${rosterHeaders.map(h => `<div class="${rosterBooleanCols.has(h) ? '' : ''}">${rosterFieldHtml(h, existing ? existing[h] : '')}</div>`).join('')}
+    </div>`;
+
+    openModal(existing ? `Modifica ${escapeHtml(pilotKey)}` : 'Nuovo pilota', html, async () => {
+      const values = {};
+      rosterHeaders.forEach(h => {
+        const el = document.getElementById('rf_' + cssId(h));
+        values[h] = rosterBooleanCols.has(h) ? (el.checked ? 'TRUE' : 'FALSE') : el.value;
+      });
+
+      const newKey = values[rosterHeaders[0]];
+      await callApi('saveRosterPilot', { key: pilotKey || '', values });
+      await loadRoster();
+    });
+  }
+
+  document.getElementById('rosterAddBtn').addEventListener('click', () => openRosterEditor(null));
+  document.getElementById('rosterReloadBtn').addEventListener('click', loadRoster);
+
+
+  /* ============================================================
+     FOTO & COORDINATE PILOTI
+     ============================================================ */
+
+  let photoRows = [];
+
+  async function loadPhotos() {
+    setStatus('photosStatus', 'Caricamento...', '');
+    try {
+      const data = await callApi('getPilotPhotos', {});
+      photoRows = data.rows;
+      renderPhotosTable();
+      setStatus('photosStatus', `${photoRows.length} voci`, 'ok');
+    } catch (error) {
+      setStatus('photosStatus', 'Errore: ' + error.message, 'err');
+    }
+  }
+
+  function renderPhotosTable() {
+    const table = document.getElementById('photosTable');
+    table.innerHTML = `
+      <tr><th>Pilota</th><th>Foto profilo</th><th>Foto header</th><th>Coordinate</th><th></th></tr>
+      ${photoRows.map(row => `
+        <tr>
+          <td>${escapeHtml(row.pilota)}</td>
+          <td class="small muted">${escapeHtml(row.fotoProfilo)}</td>
+          <td class="small muted">${escapeHtml(row.fotoHeader)}</td>
+          <td>${escapeHtml(row.coordinate)}</td>
+          <td><button class="btn-ghost" data-edit-photo="${escapeHtml(row.pilota)}">Modifica</button></td>
+        </tr>
+      `).join('')}
+    `;
+
+    table.querySelectorAll('[data-edit-photo]').forEach(btn => {
+      btn.addEventListener('click', () => openPhotoEditor(btn.dataset.editPhoto));
+    });
+  }
+
+  function openPhotoEditor(pilotKey) {
+    const existing = pilotKey ? photoRows.find(r => r.pilota === pilotKey) : null;
+
+    const html = `
+      <label>Nome pilota (deve combaciare con il roster)</label>
+      <input type="text" id="pf_pilota" value="${escapeHtml(existing ? existing.pilota : '')}" style="width:100%;" ${existing ? 'disabled' : ''}>
+      <label>URL foto profilo</label>
+      <input type="text" id="pf_profilo" value="${escapeHtml(existing ? existing.fotoProfilo : '')}" style="width:100%;">
+      <label>URL foto header (sfondo pagina pilota)</label>
+      <input type="text" id="pf_header" value="${escapeHtml(existing ? existing.fotoHeader : '')}" style="width:100%;">
+      <label>Coordinate mappa (lat,lng — es. 44.64,10.88)</label>
+      <input type="text" id="pf_coord" value="${escapeHtml(existing ? existing.coordinate : '')}" style="width:100%;">
+    `;
+
+    openModal(existing ? `Modifica ${escapeHtml(pilotKey)}` : 'Nuova voce foto/coordinate', html, async () => {
+      const key = existing ? existing.pilota : document.getElementById('pf_pilota').value;
+
+      await callApi('savePilotPhoto', {
+        key,
+        values: {
+          fotoProfilo: document.getElementById('pf_profilo').value,
+          fotoHeader: document.getElementById('pf_header').value,
+          coordinate: document.getElementById('pf_coord').value
+        }
+      });
+
+      await loadPhotos();
+    });
+  }
+
+  document.getElementById('photosAddBtn').addEventListener('click', () => openPhotoEditor(null));
+  document.getElementById('photosReloadBtn').addEventListener('click', loadPhotos);
+
+
+  /* ============================================================
+     REGOLE MEDAGLIERE
+     ============================================================ */
+
+  let medalRows = [];
+
+  async function loadMedalRules() {
+    setStatus('medalsStatus', 'Caricamento...', '');
+    try {
+      const data = await callApi('getMedalRules', {});
+      medalRows = data.rows;
+      renderMedalsTable();
+      setStatus('medalsStatus', `${medalRows.length} regole`, 'ok');
+    } catch (error) {
+      setStatus('medalsStatus', 'Errore: ' + error.message, 'err');
+    }
+  }
+
+  function renderMedalsTable() {
+    const table = document.getElementById('medalsTable');
+    table.innerHTML = `
+      <tr><th>Codice</th><th>Statistica</th><th>Tipo</th><th>Valore/Soglia</th><th>Titolo</th><th></th></tr>
+      ${medalRows.map(row => `
+        <tr>
+          <td>${escapeHtml(row.medaglia)}</td>
+          <td>${escapeHtml(row.statistica)}</td>
+          <td>${escapeHtml(row.tipo)}</td>
+          <td>${escapeHtml(row.valore)}</td>
+          <td>${escapeHtml(row.titolo)}</td>
+          <td><button class="btn-ghost" data-edit-medal="${escapeHtml(row.medaglia)}">Modifica</button></td>
+        </tr>
+      `).join('')}
+    `;
+
+    table.querySelectorAll('[data-edit-medal]').forEach(btn => {
+      btn.addEventListener('click', () => openMedalEditor(btn.dataset.editMedal));
+    });
+  }
+
+  function openMedalEditor(key) {
+    const existing = key ? medalRows.find(r => r.medaglia === key) : null;
+
+    const html = `
+      <label>Codice medaglia (univoco, es. ZATARRA)</label>
+      <input type="text" id="mf_code" value="${escapeHtml(existing ? existing.medaglia : '')}" style="width:100%;" ${existing ? 'disabled' : ''}>
+      <label>Nome statistica collegata (deve combaciare con una colonna del Roster)</label>
+      <input type="text" id="mf_stat" value="${escapeHtml(existing ? existing.statistica : '')}" style="width:100%;">
+      <label>Tipo</label>
+      <select id="mf_tipo" style="width:100%;">
+        ${['BOOL','TESTO','NUM','TESTO_BADGE','BOOL_WINGS'].map(t =>
+          `<option value="${t}" ${existing && String(existing.tipo).toUpperCase() === t ? 'selected' : ''}>${t}</option>`
+        ).join('')}
+      </select>
+      <label>Valore / Soglia (es. TRUE, oppure un numero, oppure un testo da confrontare)</label>
+      <input type="text" id="mf_valore" value="${escapeHtml(existing ? existing.valore : '')}" style="width:100%;">
+      <label>URL immagine nastrino</label>
+      <input type="text" id="mf_img" value="${escapeHtml(existing ? existing.immagineNastrino : '')}" style="width:100%;">
+      <label>Titolo (mostrato nel popup)</label>
+      <input type="text" id="mf_titolo" value="${escapeHtml(existing ? existing.titolo : '')}" style="width:100%;">
+      <label>Descrizione (mostrata nel popup)</label>
+      <textarea id="mf_desc">${escapeHtml(existing ? existing.descrizione : '')}</textarea>
+      <label>URL immagine di dettaglio (opzionale, mostrata nel popup)</label>
+      <input type="text" id="mf_imgdett" value="${escapeHtml(existing ? existing.immagineDettaglio : '')}" style="width:100%;">
+    `;
+
+    openModal(existing ? `Modifica ${escapeHtml(key)}` : 'Nuova medaglia', html, async () => {
+      const code = existing ? existing.medaglia : document.getElementById('mf_code').value;
+
+      await callApi('saveMedalRule', {
+        key: code,
+        values: {
+          statistica: document.getElementById('mf_stat').value,
+          tipo: document.getElementById('mf_tipo').value,
+          valore: document.getElementById('mf_valore').value,
+          immagineNastrino: document.getElementById('mf_img').value,
+          titolo: document.getElementById('mf_titolo').value,
+          descrizione: document.getElementById('mf_desc').value,
+          immagineDettaglio: document.getElementById('mf_imgdett').value
+        }
+      });
+
+      await loadMedalRules();
+    });
+  }
+
+  document.getElementById('medalsAddBtn').addEventListener('click', () => openMedalEditor(null));
+  document.getElementById('medalsReloadBtn').addEventListener('click', loadMedalRules);
+
+
+  /* ============================================================
+     MISSION LOG (AAR)
+     ============================================================ */
+
+  let missionHeaders = [];
+  let missionRows = [];
+
+  async function loadMissions() {
+    setStatus('missionsStatus', 'Caricamento...', '');
+    try {
+      const data = await callApi('getMissions', {});
+      missionHeaders = data.headers;
+      missionRows = data.rows;
+      renderMissionsTable();
+      setStatus('missionsStatus', `${missionRows.length} missioni`, 'ok');
+    } catch (error) {
+      setStatus('missionsStatus', 'Errore: ' + error.message, 'err');
+    }
+  }
+
+  function renderMissionsTable() {
+    const table = document.getElementById('missionsTable');
+    table.innerHTML = `
+      <tr><th>Data</th><th>Titolo</th><th>Teatro</th><th></th></tr>
+      ${missionRows.map(row => `
+        <tr>
+          <td>${escapeHtml(row['data'])}</td>
+          <td>${escapeHtml(row['titolo'])}</td>
+          <td>${escapeHtml(row['teatro'])}</td>
+          <td><button class="btn-ghost" data-edit-mission="${row._row}">Modifica</button></td>
+        </tr>
+      `).join('')}
+    `;
+
+    table.querySelectorAll('[data-edit-mission]').forEach(btn => {
+      btn.addEventListener('click', () => openMissionEditor(Number(btn.dataset.editMission)));
+    });
+  }
+
+  function openMissionEditor(rowNum) {
+    const existing = rowNum ? missionRows.find(r => r._row === rowNum) : null;
+
+    const html = `
+      <label>Data (gg/mm/aaaa)</label>
+      <input type="text" id="ms_data" value="${escapeHtml(existing ? existing['data'] : '')}" style="width:100%;">
+      <label>Titolo</label>
+      <input type="text" id="ms_titolo" value="${escapeHtml(existing ? existing['titolo'] : '')}" style="width:100%;">
+      <label>Teatro</label>
+      <input type="text" id="ms_teatro" value="${escapeHtml(existing ? existing['teatro'] : '')}" style="width:100%;">
+      <label>Piloti coinvolti</label>
+      <input type="text" id="ms_piloti" value="${escapeHtml(existing ? existing['piloti coinvolti'] : '')}" style="width:100%;">
+      <label>URL immagine</label>
+      <input type="text" id="ms_img" value="${escapeHtml(existing ? existing['immagine'] : '')}" style="width:100%;">
+      <label>Riassunto debriefing (supporta ## titoli, ### sottotitoli, - elenchi)</label>
+      <textarea id="ms_riassunto" style="min-height:220px;">${escapeHtml(existing ? (existing['riassunto debriefeing'] || existing['riassunto debriefing']) : '')}</textarea>
+    `;
+
+    openModal(existing ? `Modifica missione` : 'Nuova missione', html, async () => {
+      const values = {};
+      missionHeaders.forEach(h => { values[h] = ''; });
+
+      values['data'] = document.getElementById('ms_data').value;
+      values['titolo'] = document.getElementById('ms_titolo').value;
+      values['teatro'] = document.getElementById('ms_teatro').value;
+      values['piloti coinvolti'] = document.getElementById('ms_piloti').value;
+      values['immagine'] = document.getElementById('ms_img').value;
+
+      const summaryKey = missionHeaders.includes('riassunto debriefeing') ? 'riassunto debriefeing' : 'riassunto debriefing';
+      values[summaryKey] = document.getElementById('ms_riassunto').value;
+
+      await callApi('saveMission', { row: rowNum || null, values });
+      await loadMissions();
+    });
+  }
+
+  document.getElementById('missionsAddBtn').addEventListener('click', () => openMissionEditor(null));
+  document.getElementById('missionsReloadBtn').addEventListener('click', loadMissions);
+
+
+  /* ============================================================
+     CALENDARIO
+     ============================================================ */
+
+  let calendarEvents = [];
+  const CALENDAR_NAMES = ['Flying Donkeys', 'Flying Donkeys Events', 'JATF'];
+
+  async function loadCalendar() {
+    setStatus('calendarStatus', 'Caricamento...', '');
+    try {
+      const data = await callApi('getEvents', {});
+      calendarEvents = data.events;
+      renderCalendarTable();
+      setStatus('calendarStatus', `${calendarEvents.length} eventi (prossimi 120 giorni)`, 'ok');
+    } catch (error) {
+      setStatus('calendarStatus', 'Errore: ' + error.message, 'err');
+    }
+  }
+
+  function formatDateTimeLocal(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function renderCalendarTable() {
+    const table = document.getElementById('calendarTable');
+    table.innerHTML = `
+      <tr><th>Calendario</th><th>Titolo</th><th>Inizio</th><th></th></tr>
+      ${calendarEvents.map(ev => ev.error ? `
+        <tr><td>${escapeHtml(ev.calendarName)}</td><td colspan="3" class="muted">Errore: ${escapeHtml(ev.error)}</td></tr>
+      ` : `
+        <tr>
+          <td>${escapeHtml(ev.calendarName)}</td>
+          <td>${escapeHtml(ev.title)}</td>
+          <td>${new Date(ev.start).toLocaleString('it-IT')}</td>
+          <td>
+            <button class="btn-ghost" data-edit-event="${escapeHtml(ev.id)}" data-cal="${escapeHtml(ev.calendarName)}">Modifica</button>
+            <button class="btn-danger" data-del-event="${escapeHtml(ev.id)}" data-cal="${escapeHtml(ev.calendarName)}">Elimina</button>
+          </td>
+        </tr>
+      `).join('')}
+    `;
+
+    table.querySelectorAll('[data-edit-event]').forEach(btn => {
+      btn.addEventListener('click', () => openEventEditor(btn.dataset.editEvent, btn.dataset.cal));
+    });
+
+    table.querySelectorAll('[data-del-event]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Eliminare questo evento dal calendario?')) return;
+        try {
+          await callApi('deleteEvent', { id: btn.dataset.delEvent, calendarName: btn.dataset.cal });
+          await loadCalendar();
+        } catch (error) {
+          alert('Errore: ' + error.message);
+        }
+      });
+    });
+  }
+
+  function openEventEditor(id, calName) {
+    const existing = id ? calendarEvents.find(e => e.id === id && e.calendarName === calName) : null;
+
+    const html = `
+      <label>Calendario</label>
+      <select id="ev_cal" style="width:100%;" ${existing ? 'disabled' : ''}>
+        ${CALENDAR_NAMES.map(n => `<option value="${n}" ${existing && existing.calendarName === n ? 'selected' : ''}>${n}</option>`).join('')}
+      </select>
+      <label>Titolo</label>
+      <input type="text" id="ev_title" value="${escapeHtml(existing ? existing.title : '')}" style="width:100%;">
+      <label>Descrizione</label>
+      <textarea id="ev_desc">${escapeHtml(existing ? existing.description : '')}</textarea>
+      <div class="field-grid">
+        <div><label>Inizio</label><input type="datetime-local" id="ev_start" value="${existing ? formatDateTimeLocal(existing.start) : ''}" style="width:100%;"></div>
+        <div><label>Fine</label><input type="datetime-local" id="ev_end" value="${existing ? formatDateTimeLocal(existing.end) : ''}" style="width:100%;"></div>
+      </div>
+    `;
+
+    openModal(existing ? 'Modifica evento' : 'Nuovo evento', html, async () => {
+      await callApi('saveEvent', {
+        id: existing ? existing.id : null,
+        calendarName: document.getElementById('ev_cal').value,
+        title: document.getElementById('ev_title').value,
+        description: document.getElementById('ev_desc').value,
+        start: document.getElementById('ev_start').value,
+        end: document.getElementById('ev_end').value
+      });
+
+      await loadCalendar();
+    });
+  }
+
+  document.getElementById('calendarAddBtn').addEventListener('click', () => openEventEditor(null, null));
+  document.getElementById('calendarReloadBtn').addEventListener('click', loadCalendar);
+
+})();
+</script>
+</body>
+</html>
