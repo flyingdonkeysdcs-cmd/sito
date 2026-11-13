@@ -355,6 +355,7 @@ body::before{
 
 .hero-main-logo{
   width:260px;
+  height:auto;
 
   filter:drop-shadow(
     0 0 20px rgba(0,217,255,0.25)
@@ -2763,6 +2764,7 @@ body.has-pilot-page-bg::before{
 
 .guide-figure img{
   width:100%;
+  height:auto;
   display:block;
   border-radius:12px;
 }
