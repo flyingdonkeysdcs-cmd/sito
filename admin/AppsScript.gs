@@ -115,6 +115,32 @@ function getSheet(name) {
 
 
 /*
+ * Alcune celle sono di tipo nativo (data, checkbox) e getValues()
+ * le restituisce come oggetto Date o booleano JS, non come testo.
+ * Il sito legge pero' sempre tutto come stringa (CSV pubblico), con
+ * le date in formato gg/mm/aaaa e i booleani come "TRUE"/"FALSE":
+ * qui uniformiamo la lettura allo stesso formato, cosi' il portale
+ * mostra e riscrive gli stessi valori che il sito si aspetta.
+ */
+function formatCellValue(value) {
+  if (value instanceof Date) {
+    const hasTime = value.getHours() || value.getMinutes() || value.getSeconds();
+    return Utilities.formatDate(
+      value,
+      Session.getScriptTimeZone(),
+      hasTime ? 'dd/MM/yyyy HH:mm' : 'dd/MM/yyyy'
+    );
+  }
+
+  if (typeof value === 'boolean') {
+    return value ? 'TRUE' : 'FALSE';
+  }
+
+  return value;
+}
+
+
+/*
  * Legge un intero foglio e lo restituisce come { headers, rows }
  * dove ogni riga e' un oggetto { nomeColonna: valore }.
  * Usato per Roster e Mission Log, i cui fogli hanno intestazioni
@@ -132,7 +158,7 @@ function getSheetAsObjects(sheetName) {
       const obj = { _row: index + 2 }; // riga reale nel foglio (per debug)
 
       headers.forEach((header, i) => {
-        if (header) obj[header] = row[i];
+        if (header) obj[header] = formatCellValue(row[i]);
       });
 
       return obj;
@@ -199,10 +225,10 @@ function getPilotPhotos() {
     .filter(row => String(row[0] || '').trim() !== '')
     .map((row, index) => ({
       _row: index + 2,
-      pilota: row[0],
-      fotoProfilo: row[1] || '',
-      fotoHeader: row[2] || '',
-      coordinate: row[3] || ''
+      pilota: formatCellValue(row[0]),
+      fotoProfilo: formatCellValue(row[1]) || '',
+      fotoHeader: formatCellValue(row[2]) || '',
+      coordinate: formatCellValue(row[3]) || ''
     }));
 
   return { rows };
@@ -258,14 +284,14 @@ function getMedalRules() {
     .filter(row => String(row[0] || '').trim() !== '')
     .map((row, index) => ({
       _row: index + 2,
-      medaglia: row[0],
-      statistica: row[1],
-      tipo: row[2],
-      valore: row[3],
-      immagineNastrino: row[5] || '',
-      descrizione: row[6] || '',
-      immagineDettaglio: row[7] || '',
-      titolo: row[8] || ''
+      medaglia: formatCellValue(row[0]),
+      statistica: formatCellValue(row[1]),
+      tipo: formatCellValue(row[2]),
+      valore: formatCellValue(row[3]),
+      immagineNastrino: formatCellValue(row[5]) || '',
+      descrizione: formatCellValue(row[6]) || '',
+      immagineDettaglio: formatCellValue(row[7]) || '',
+      titolo: formatCellValue(row[8]) || ''
     }));
 
   return { rows };
