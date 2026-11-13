@@ -12,6 +12,7 @@
 }
 
 .mission-preview-card{
+  position:relative;
   overflow:hidden;
 }
 
@@ -54,6 +55,27 @@
 .mission-preview-card:focus{
   outline:2px solid rgba(0,217,255,0.55);
   outline-offset:4px;
+}
+
+/* Badge "nuova" sull'ultima missione pubblicata */
+.mission-preview-badge{
+  position:absolute;
+  top:14px;
+  left:14px;
+  z-index:2;
+
+  padding:6px 12px;
+  border-radius:999px;
+
+  background:linear-gradient(180deg, var(--accent-1), var(--accent-2));
+  color:#021014;
+
+  font-size:0.72rem;
+  font-weight:800;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+
+  box-shadow:0 0 16px rgba(0,217,255,0.4);
 }
 #homeMissionModal .mission-detail-image{
   width:100%;

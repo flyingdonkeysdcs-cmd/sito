@@ -2,6 +2,7 @@
    HOMEPAGE (index.html)
 
    1. Prossimo evento + programma completo (Google Calendar)
+   1b. Contatori live (piloti attivi, missioni volate, anni di attività)
    2. Scroll morbido per i link interni (#sezione)
    3. Popup contatti (apre il client email)
    4. Galleria fotografica (caricata quando diventa visibile)
@@ -181,6 +182,64 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   loadNextCalendarEvent();
+
+
+  /* ----------------------------------------------------------
+     1b. CONTATORI LIVE
+     Numeri reali letti dai fogli Google: numero di piloti nel
+     roster, missioni registrate nel Mission Log, anni di
+     attività del pilota più anziano.
+     ---------------------------------------------------------- */
+
+  async function loadHomeStats() {
+
+    const pilotsEl   = document.getElementById('statPilots');
+    const missionsEl = document.getElementById('statMissions');
+    const yearsEl    = document.getElementById('statYears');
+
+    if (!pilotsEl && !missionsEl && !yearsEl) return;
+
+    try {
+
+      const [rosterRows, missions] = await Promise.all([
+        FD.loadSheet(FD.SHEETS.stats),
+        fetch(FD.SHEETS.aar).then(response => response.json())
+      ]);
+
+      const headers = rosterRows[0] || [];
+      const pilotRows = rosterRows
+        .slice(1)
+        .filter(row => String(row[0] || '').trim());
+
+      if (pilotsEl) {
+        pilotsEl.textContent = `${pilotRows.length} Piloti Attivi`;
+      }
+
+      if (missionsEl && Array.isArray(missions)) {
+        missionsEl.textContent = `${missions.length} Missioni Volate`;
+      }
+
+      if (yearsEl) {
+        const maxYears = pilotRows.reduce((max, row) => {
+          const value = Number(
+            String(FD.getCellByHeader(headers, row, 'Anni di Attività') || '0')
+              .replace(',', '.')
+          );
+          return isNaN(value) ? max : Math.max(max, value);
+        }, 0);
+
+        yearsEl.textContent = maxYears > 0
+          ? `${maxYears}+ Anni di Attività`
+          : 'Anni di Attività';
+      }
+
+    } catch (error) {
+      console.error('Errore caricamento contatori home:', error);
+      // In caso di errore restano le etichette generiche gia' nell'HTML.
+    }
+  }
+
+  loadHomeStats();
 
 
   /* ----------------------------------------------------------
