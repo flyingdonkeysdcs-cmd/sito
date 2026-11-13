@@ -34,6 +34,20 @@
   }
 
 
+  /*
+   * Anteprima testuale per la card (non il popup, che usa
+   * FD.formatMissionText): toglie titoli ed elenchi puntati del
+   * mini-markdown cosi' il trafiletto si legge come prosa normale.
+   */
+  function plainTextSnippet(text) {
+    return String(text || '')
+      .replace(/^#{1,6}\s.*$/gm, '')
+      .replace(/^-+\s/gm, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+
   function missionPreviewCardHTML(mission, index) {
     const image   = getMissionImage(mission);
     const title   = getMissionTitle(mission);
@@ -47,6 +61,8 @@
       data-mission-index="${index}"
       role="button"
       tabindex="0">
+
+      ${index === 0 ? '<span class="mission-preview-badge">Nuova</span>' : ''}
 
       <div class="mission-preview-image">
         <img
@@ -70,7 +86,7 @@
         </p>
 
         <p>
-          ${escapeHTML(String(summary).slice(0, SUMMARY_PREVIEW_LENGTH))}...
+          ${escapeHTML(plainTextSnippet(summary).slice(0, SUMMARY_PREVIEW_LENGTH))}...
         </p>
 
       </div>
