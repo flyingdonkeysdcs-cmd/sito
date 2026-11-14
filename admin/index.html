@@ -153,11 +153,11 @@
     <nav class="tabs">
       <button class="tab-btn active" data-tab="roster">Roster</button>
       <button class="tab-btn" data-tab="photos">Foto &amp; Coordinate</button>
-      <button class="tab-btn" data-tab="medals">Regole Medaglie</button>
       <button class="tab-btn" data-tab="missions">Mission Log</button>
       <button class="tab-btn" data-tab="calendar">Calendario</button>
       <button class="tab-btn" data-tab="attendance">Presenze</button>
       <button class="tab-btn" data-tab="gallery">Galleria</button>
+      <button class="tab-btn" data-tab="medals" style="margin-left:auto;">Regole Medaglie</button>
     </nav>
 
     <!-- ROSTER -->
@@ -568,13 +568,30 @@
       ${rosterRows.map(row => `
         <tr>
           ${mainCols.map(h => `<td>${escapeHtml(row[h])}</td>`).join('')}
-          <td><button class="btn-ghost" data-edit-pilot="${escapeHtml(row[rosterHeaders[0]])}">Modifica</button></td>
+          <td>
+            <button class="btn-ghost" data-edit-pilot="${escapeHtml(row[rosterHeaders[0]])}">Modifica</button>
+            <button class="btn-danger" data-del-pilot="${escapeHtml(row[rosterHeaders[0]])}">Elimina</button>
+          </td>
         </tr>
       `).join('')}
     `;
 
     table.querySelectorAll('[data-edit-pilot]').forEach(btn => {
       btn.addEventListener('click', () => openRosterEditor(btn.dataset.editPilot));
+    });
+
+    table.querySelectorAll('[data-del-pilot]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const name = btn.dataset.delPilot;
+        if (!confirm(`Eliminare definitivamente "${name}" dal Roster? L'operazione non e' reversibile dal portale.`)) return;
+
+        try {
+          await callApi('deleteRosterPilot', { key: name });
+          await loadRoster();
+        } catch (error) {
+          alert('Errore: ' + error.message);
+        }
+      });
     });
   }
 

@@ -70,6 +70,7 @@ function routeAction(action, payload) {
 
     case 'getRoster':        return getSheetAsObjects(SHEET_NAMES.roster);
     case 'saveRosterPilot':  return saveRowByKey(SHEET_NAMES.roster, 0, payload);
+    case 'deleteRosterPilot': return deleteRosterPilot(payload);
 
     case 'getPilotPhotos':       return getPilotPhotos();
     case 'savePilotPhoto':       return savePilotPhoto(payload);
@@ -212,6 +213,68 @@ function saveRowByKey(sheetName, keyColumnIndex, payload) {
   });
 
   return { created: false };
+}
+
+
+/*
+ * Elimina un pilota dal Roster (Statistiche).
+ *
+ * Attenzione: la colonna "Pilota" nel foglio FotoPiloti e' generata
+ * da una formula collegata a questo foglio (vedi savePilotPhoto piu'
+ * sotto), ma le colonne Foto/Coordinate sono valori fissi per riga.
+ * Eliminare una riga da Statistiche fa scorrere verso l'alto tutti i
+ * nomi sottostanti (anche in FotoPiloti, via formula), ma SENZA
+ * questo resync le foto/coordinate degli altri piloti resterebbero
+ * ferme nella vecchia riga, disallineandosi dal nome giusto di una
+ * posizione. Per questo si salva prima una mappa nome -> foto/
+ * coordinate, si elimina la riga, e poi si riscrivono foto/coordinate
+ * nelle righe giuste in base ai nomi aggiornati.
+ */
+function deleteRosterPilot(payload) {
+  const key = String(payload.key || '').trim();
+  if (!key) throw new Error('Nessun pilota specificato.');
+
+  const photosByName = {};
+  getPilotPhotos().rows.forEach(row => {
+    photosByName[row.pilota.trim().toLowerCase()] = {
+      fotoProfilo: row.fotoProfilo,
+      fotoHeader: row.fotoHeader,
+      coordinate: row.coordinate
+    };
+  });
+
+  const rosterSheet = getSheet(SHEET_NAMES.roster);
+  const rosterValues = rosterSheet.getDataRange().getValues();
+  const keyLower = key.toLowerCase();
+
+  let targetRow = -1;
+  for (let r = 1; r < rosterValues.length; r++) {
+    if (String(rosterValues[r][0] || '').trim().toLowerCase() === keyLower) {
+      targetRow = r + 1;
+      break;
+    }
+  }
+  if (targetRow === -1) throw new Error('Pilota non trovato nel Roster: ' + key);
+
+  rosterSheet.deleteRow(targetRow);
+  SpreadsheetApp.flush();
+
+  const photoSheet = getSheet(SHEET_NAMES.pilotPhotos);
+  const photoValues = photoSheet.getDataRange().getValues();
+
+  for (let r = 1; r < photoValues.length; r++) {
+    const name = String(photoValues[r][0] || '').trim().toLowerCase();
+    if (!name) continue;
+
+    const data = photosByName[name] || { fotoProfilo: '', fotoHeader: '', coordinate: '' };
+    photoSheet.getRange(r + 1, 2, 1, 3).setValues([[
+      data.fotoProfilo || '',
+      data.fotoHeader || '',
+      data.coordinate || ''
+    ]]);
+  }
+
+  return { deleted: true };
 }
 
 
