@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=110">
+  <link rel="stylesheet" href="style.css?v=113">
   <link rel="icon"  type="image/png"  sizes="32x32"  href="/images/logos/favicon-32.png">
   <link rel="apple-touch-icon"    sizes="180x180"    href="/images/logos/apple-touch-icon.png">
 </head>
@@ -43,12 +43,10 @@
     <div class="desktop-menu">
       <div class="header-actions" aria-label="Azioni principali">
         <a class="btn btn-ghost" href="/index.html">← Torna alla Home</a>
-        <div class="activity-dropdown">
-          <button class="btn btn-ghost" id="openActivity">Attività</button>
-          <div class="activity-menu" id="activityMenu" hidden>
+        <div class="nav-dropdown">
+          <button class="btn btn-ghost" id="openSquadriglia">Squadriglia</button>
+          <div class="nav-dropdown-menu" id="squadrigliaMenu" hidden>
             <a href="/dove-siamo.html">Dove Siamo</a>
-            <a href="/raduni.html">Raduni</a>
-            <a href="/mission-log.html">Report Missioni</a>
             <div class="roster-dropdown">
               <button class="btn btn-ghost" id="openRoster">Roster</button>
               <div class="roster-menu" id="rosterMenu" hidden>
@@ -58,9 +56,27 @@
             </div>
           </div>
         </div>
-        <a class="btn btn-ghost" href="/guide.html">Guide</a>
-        <a class="btn btn-ghost" href="/dcs-world-multiplayer-italia.html">Inizia con DCS</a>
-        <a class="btn btn-ghost" href="/calendario.html">Calendario</a>
+        <div class="nav-dropdown">
+          <button class="btn btn-ghost" id="openOperazioni">Operazioni</button>
+          <div class="nav-dropdown-menu" id="operazioniMenu" hidden>
+            <a href="/calendario.html">Calendario</a>
+            <a href="/mission-log.html">Report Missioni</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button class="btn btn-ghost" id="openMedia">Media</button>
+          <div class="nav-dropdown-menu" id="mediaMenu" hidden>
+            <a href="/raduni.html">Raduni</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button class="btn btn-ghost" id="openGuideMenu">Guide</button>
+          <div class="nav-dropdown-menu" id="guideMenu" hidden>
+            <a href="/guide.html">Guide</a>
+            <a href="/dcs-world-multiplayer-italia.html">Inizia con DCS</a>
+          </div>
+        </div>
+        <a class="btn btn-primary" href="https://discord.gg/ZSgUBNUhgP" target="_blank" rel="noopener noreferrer">Unisciti a noi</a>
       </div>
     </div>
 
@@ -245,7 +261,7 @@
   </div>
 
   <script src="mobile.js?v=2"></script>
-  <script src="common.js?v=4"></script>
+  <script src="common.js?v=5"></script>
   <script src="galleria.js?v=1"></script>
 </body>
 </html>

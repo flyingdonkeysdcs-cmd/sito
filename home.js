@@ -4,9 +4,8 @@
    1. Prossimo evento + programma completo (Google Calendar)
    1b. Contatori live (piloti attivi, missioni volate, anni di attività)
    2. Scroll morbido per i link interni (#sezione)
-   3. Popup contatti (apre il client email)
-   4. Galleria fotografica (caricata quando diventa visibile)
-   5. Newsletter DCS (caricate quando diventano visibili)
+   3. Galleria fotografica (caricata quando diventa visibile)
+   4. Newsletter DCS (caricate quando diventano visibili)
 
    Richiede common.js (oggetto FD).
    ========================================================== */
@@ -262,78 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  /* ----------------------------------------------------------
-     3. POPUP CONTATTI
-     ---------------------------------------------------------- */
-
-  const openBtn   = document.getElementById('openContact');
-  const closeBtn  = document.getElementById('closeModal');
-  const cancelBtn = document.getElementById('cancelModal');
-  const modal     = document.getElementById('modalBackdrop');
-
-  function openModal() {
-    if (!modal) return;
-    modal.hidden = false;
-    setScrollLock(true);
-  }
-
-  function closeModal() {
-    if (!modal) return;
-    modal.hidden = true;
-    setScrollLock(false);
-  }
-
-  if (openBtn)   openBtn.addEventListener('click', openModal);
-  if (closeBtn)  closeBtn.addEventListener('click', closeModal);
-  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-
-  if (modal) {
-    modal.addEventListener('click', event => {
-      if (event.target === modal) closeModal();
-    });
-  }
-
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && modal && !modal.hidden) {
-      closeModal();
-    }
-  });
-
-
-  /* Il form compone una email precompilata e apre il client di posta */
-  const contactForm = document.getElementById('contactForm');
-
-  if (contactForm) {
-    contactForm.addEventListener('submit', event => {
-      event.preventDefault();
-
-      const name    = document.getElementById('name').value;
-      const email   = document.getElementById('email').value;
-      const message = document.getElementById('message').value;
-
-      const recipient = 'flyingdonkeysdcs@gmail.com';
-
-      const subject = encodeURIComponent(`Messaggio da ${name}`);
-
-      const body = encodeURIComponent(
-`Nome: ${name}
-
-Email: ${email}
-
-Messaggio:
-${message}`
-      );
-
-      window.location.href =
-        `mailto:${recipient}?subject=${subject}&body=${body}`;
-
-      closeModal();
-    });
-  }
+  /* Il pulsante "Contatti"/popup modulo e' stato sostituito da un
+     link diretto a Discord ("Unisciti a noi") nella nav. */
 
 
   /* ----------------------------------------------------------
-     4. GALLERIA
+     3. GALLERIA
      Le immagini arrivano da /api/gallery; se l'API non risponde
      resta lo slideshow con le immagini già presenti nell'HTML.
      ---------------------------------------------------------- */
@@ -404,7 +337,7 @@ ${message}`
 
 
   /* ----------------------------------------------------------
-     5. NEWSLETTER DCS
+     4. NEWSLETTER DCS
      ---------------------------------------------------------- */
 
   function showNewsMessage(listEl) {

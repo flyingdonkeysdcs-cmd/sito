@@ -1210,13 +1210,13 @@ textarea{
   background: rgba(255,255,255,0.03);
 }
 
-/* Menu a tendina "Attività" (Dove Siamo / Raduni / Report Missioni /
-   Roster), per tenere la barra di navigazione su una sola riga. */
-.activity-dropdown{
+/* Menu a tendina della nav (Squadriglia / Operazioni / Media /
+   Guide), per tenere la barra di navigazione su una sola riga. */
+.nav-dropdown{
   position:relative;
 }
 
-.activity-menu{
+.nav-dropdown-menu{
   position:absolute;
   top:120%;
   left:50%;
@@ -1234,12 +1234,12 @@ textarea{
   z-index:500;
 }
 
-.activity-menu[hidden]{
+.nav-dropdown-menu[hidden]{
   display:none;
 }
 
-.activity-menu a,
-.activity-menu .roster-dropdown .btn{
+.nav-dropdown-menu a,
+.nav-dropdown-menu .roster-dropdown .btn{
   display:block;
   width:100%;
   padding:10px 14px;
@@ -1255,8 +1255,8 @@ textarea{
   text-decoration:none;
 }
 
-.activity-menu a:hover,
-.activity-menu .roster-dropdown .btn:hover{
+.nav-dropdown-menu a:hover,
+.nav-dropdown-menu .roster-dropdown .btn:hover{
   transform:translateY(-2px);
   color:var(--text);
   border-color:rgba(0,217,255,0.35);

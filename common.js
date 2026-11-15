@@ -389,34 +389,41 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  /* Menu "Attività" desktop (Dove Siamo / Raduni / Report Missioni /
-     Roster): stesso comportamento del menu Roster, si chiude
-     cliccando fuori. */
-  const openActivity = document.getElementById('openActivity');
-  const activityMenu  = document.getElementById('activityMenu');
+  /* Menu a tendina della nav desktop (Squadriglia / Operazioni /
+     Media / Guide): stesso comportamento del menu Roster, si chiude
+     cliccando fuori. Funziona su qualunque coppia pulsante/pannello
+     che segua la convenzione id "open<Nome>"/"<nome>Menu". */
+  function wireNavDropdown(openId, menuId) {
+    const openBtn = document.getElementById(openId);
+    const menu    = document.getElementById(menuId);
 
-  if (openActivity && activityMenu) {
+    if (!openBtn || !menu) return;
 
-    openActivity.setAttribute('aria-expanded', 'false');
+    openBtn.setAttribute('aria-expanded', 'false');
 
-    openActivity.addEventListener('click', () => {
-      const willOpen = activityMenu.hidden;
+    openBtn.addEventListener('click', () => {
+      const willOpen = menu.hidden;
 
-      activityMenu.hidden = !willOpen;
-      openActivity.setAttribute('aria-expanded', String(willOpen));
+      menu.hidden = !willOpen;
+      openBtn.setAttribute('aria-expanded', String(willOpen));
     });
 
     document.addEventListener('click', event => {
       const clickedInside =
-        openActivity.contains(event.target) ||
-        activityMenu.contains(event.target);
+        openBtn.contains(event.target) ||
+        menu.contains(event.target);
 
       if (!clickedInside) {
-        activityMenu.hidden = true;
-        openActivity.setAttribute('aria-expanded', 'false');
+        menu.hidden = true;
+        openBtn.setAttribute('aria-expanded', 'false');
       }
     });
   }
+
+  wireNavDropdown('openSquadriglia', 'squadrigliaMenu');
+  wireNavDropdown('openOperazioni', 'operazioniMenu');
+  wireNavDropdown('openMedia', 'mediaMenu');
+  wireNavDropdown('openGuideMenu', 'guideMenu');
 
 
   /* Roster mobile: sezione espandibile dentro il menu hamburger */
