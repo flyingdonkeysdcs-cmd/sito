@@ -1730,7 +1730,7 @@ textarea{
   left:0;
   right:0;
   height:50.5%;
-  background:var(--bg);
+  background:#0a0c0e;
   transition:transform .8s cubic-bezier(.7,0,.2,1);
 }
 
@@ -1745,7 +1745,7 @@ textarea{
   width:min(60vw, 520px);
   margin-top:-1px;
   transform:translateX(-50%) scaleX(.04);
-  background:linear-gradient(90deg, transparent, var(--accent) 20%, var(--accent) 80%, transparent);
+  background:linear-gradient(90deg, transparent, var(--accent-1) 20%, var(--accent-1) 80%, transparent);
   animation:piGlow 1.4s ease-in-out infinite alternate;
   box-shadow:0 0 18px rgba(0,217,255,0.55);
 }
@@ -1754,9 +1754,9 @@ textarea{
   position:absolute;
   left:50%;
   top:50%;
-  width:84px;
-  height:84px;
-  margin:-118px 0 0 -42px;
+  width:74px;
+  height:auto;
+  margin:-124px 0 0 -37px;
   opacity:0;
   animation:piFade .6s .1s ease forwards;
   transition:opacity .3s;
