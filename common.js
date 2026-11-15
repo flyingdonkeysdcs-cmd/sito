@@ -389,6 +389,36 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+  /* Menu "Attività" desktop (Dove Siamo / Raduni / Report Missioni /
+     Roster): stesso comportamento del menu Roster, si chiude
+     cliccando fuori. */
+  const openActivity = document.getElementById('openActivity');
+  const activityMenu  = document.getElementById('activityMenu');
+
+  if (openActivity && activityMenu) {
+
+    openActivity.setAttribute('aria-expanded', 'false');
+
+    openActivity.addEventListener('click', () => {
+      const willOpen = activityMenu.hidden;
+
+      activityMenu.hidden = !willOpen;
+      openActivity.setAttribute('aria-expanded', String(willOpen));
+    });
+
+    document.addEventListener('click', event => {
+      const clickedInside =
+        openActivity.contains(event.target) ||
+        activityMenu.contains(event.target);
+
+      if (!clickedInside) {
+        activityMenu.hidden = true;
+        openActivity.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+
   /* Roster mobile: sezione espandibile dentro il menu hamburger */
   if (openMobileRoster && mobileRosterMenu && mobilePilotList) {
 

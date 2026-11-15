@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=109">
+  <link rel="stylesheet" href="style.css?v=110">
   <link rel="icon"  type="image/png"  sizes="32x32"  href="/images/logos/favicon-32.png">
   <link rel="apple-touch-icon"    sizes="180x180"    href="/images/logos/apple-touch-icon.png">
 
@@ -62,17 +62,21 @@
     <div class="desktop-menu">
       <div class="header-actions" aria-label="Azioni principali">
         <a class="btn btn-ghost" href="/index.html">← Torna alla Home</a>
-		<a class="btn btn-ghost" href="/raduni.html">Raduni</a>
-		<div class="roster-dropdown">
-					<button class="btn btn-ghost" id="openRoster">Roster</button>
-
-					<div class="roster-menu" id="rosterMenu" hidden>
-						<div class="roster-title">Piloti Attivi</div>
-						<div id="pilotList" class="pilot-list"></div>
-					</div>
-		</div>	
-        <a class="btn btn-ghost" href="/dove-siamo.html">Dove Siamo</a>
-		<a class="btn btn-ghost" href="/mission-log.html">Report Missioni</a>
+        <div class="activity-dropdown">
+          <button class="btn btn-ghost" id="openActivity">Attività</button>
+          <div class="activity-menu" id="activityMenu" hidden>
+            <a href="/dove-siamo.html">Dove Siamo</a>
+            <a href="/raduni.html">Raduni</a>
+            <a href="/mission-log.html">Report Missioni</a>
+            <div class="roster-dropdown">
+              <button class="btn btn-ghost" id="openRoster">Roster</button>
+              <div class="roster-menu" id="rosterMenu" hidden>
+                <div class="roster-title">Piloti Attivi</div>
+                <div id="pilotList" class="pilot-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
 		<!-- <a class="btn btn-ghost" href="guide.html">Guide</a> -->
         <a class="btn btn-ghost" href="/dcs-world-multiplayer-italia.html">Inizia con DCS</a>
         <a class="btn btn-ghost" href="/galleria.html">Galleria</a>
@@ -420,6 +424,6 @@
 
 
   <script src="mobile.js?v=2"></script>
-  <script src="common.js?v=2"></script>
+  <script src="common.js?v=4"></script>
 </body>
 </html>

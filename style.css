@@ -202,6 +202,7 @@ body::before{
 
 .btn{
   border:none;
+  margin:0;
 
   border-radius:8px;
 
@@ -214,6 +215,7 @@ body::before{
   display:inline-flex;
   align-items:center;
   justify-content:center;
+  line-height:1.2;
 
   font-size:0.95rem;
 
@@ -1206,6 +1208,63 @@ textarea{
   color: white;
   border-color: rgba(0,217,255,0.35);
   background: rgba(255,255,255,0.03);
+}
+
+/* Menu a tendina "Attività" (Dove Siamo / Raduni / Report Missioni /
+   Roster), per tenere la barra di navigazione su una sola riga. */
+.activity-dropdown{
+  position:relative;
+}
+
+.activity-menu{
+  position:absolute;
+  top:120%;
+  left:50%;
+  transform:translateX(-50%);
+  min-width:200px;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  background:rgba(22,24,26,0.96);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+  z-index:500;
+}
+
+.activity-menu[hidden]{
+  display:none;
+}
+
+.activity-menu a,
+.activity-menu .roster-dropdown .btn{
+  display:block;
+  width:100%;
+  padding:10px 14px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px;
+  color:var(--muted);
+  text-align:left;
+  font-family:'Montserrat', sans-serif;
+  font-size:0.95rem;
+  cursor:pointer;
+  transition:0.2s ease;
+  text-decoration:none;
+}
+
+.activity-menu a:hover,
+.activity-menu .roster-dropdown .btn:hover{
+  transform:translateY(-2px);
+  color:var(--text);
+  border-color:rgba(0,217,255,0.35);
+  background:rgba(255,255,255,0.03);
+}
+
+.activity-menu .roster-dropdown{
+  position:relative;
 }
 
 @media(max-width:980px){

@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const CAL_COLOR_CLASS = {
     'Flying Donkeys Events': 'cal-dot-fd',
-    'JATF': 'cal-dot-jatf'
+    'JATF Events': 'cal-dot-jatf'
   };
 
   const pad = n => String(n).padStart(2, '0');
