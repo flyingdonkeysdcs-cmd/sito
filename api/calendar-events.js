@@ -1,3 +1,5 @@
+import { fetchICSEvents } from './_ics-utils.js';
+
 const calendars = [
   {
     name: "Flying Donkeys",
@@ -10,14 +12,21 @@ const calendars = [
 		  id: "flyingdonkeysdcs@gmail.com",
 		  label: "Evento Flying Donkeys",
 		  server: "Server Flying Donkeys"
-		},
-  {
-    name: "JATF",
-    id: "609e54e597d66d5d7ba5605cdde4840b0218a70d2118bcc89b735094d6ff62ba@group.calendar.google.com",
-    label: "Evento JATF",
-    server: "Server JATF"
-  }
+		}
 ];
+
+/* "JATF Events" non e' un calendario Google interrogabile con l'API:
+   e' un feed ICS pubblicato da uno script Google (lo stesso usato
+   dalla pagina Calendario, vedi api/calendar-full.js). */
+const JATF_ICS_URL =
+  "https://script.google.com/macros/s/AKfycbzTI3mC7yHBmLbHRVCEqlwhKm7PWls_rTqBuWteNSK3JM5VnN9ram8RHmo-WEFlkkXo6g/exec?ics=all";
+
+const JATF_SOURCE = {
+  name: "JATF Events",
+  label: "Evento JATF",
+  server: "Server JATF"
+};
+
 export default async function handler(req, res) {
 
   // L'endpoint serve soltanto lettura dati.
@@ -39,7 +48,18 @@ export default async function handler(req, res) {
       throw new Error('GOOGLE_CALENDAR_API_KEY mancante');
     }
 
-    const now = new Date().toISOString();
+    const nowMs = Date.now();
+    const now = new Date(nowMs).toISOString();
+
+    const jatfEventsPromise = fetchICSEvents(
+      JATF_ICS_URL,
+      JATF_SOURCE,
+      nowMs,
+      nowMs + 2 * 365 * 24 * 60 * 60 * 1000 // 2 anni avanti, il feed contiene solo eventi reali
+    ).catch(error => {
+      console.error('Errore calendario JATF Events:', error);
+      return [];
+    });
 
     const results = await Promise.all(
       calendars.map(async calendar => {
@@ -125,8 +145,9 @@ export default async function handler(req, res) {
       })
     );
 
-    const events = results
-      .flat()
+    const jatfEvents = await jatfEventsPromise;
+
+    const events = [...results.flat(), ...jatfEvents]
       .sort(
         (a, b) =>
           new Date(a.startValue) -

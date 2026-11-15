@@ -6,6 +6,8 @@
    dipende la card "Prossimo evento" in home, che si aspetta solo
    eventi futuri in un elenco corto). */
 
+import { fetchICSEvents } from './_ics-utils.js';
+
 const GOOGLE_CALENDAR_SOURCE = {
   name: "Flying Donkeys Events",
   id: "flyingdonkeysdcs@gmail.com",
@@ -21,110 +23,6 @@ const JATF_SOURCE = {
   label: "Evento JATF",
   server: "Server JATF"
 };
-
-
-/* ----------------------------------------------------------
-   Parser ICS minimale (RFC 5545): quanto basta per SUMMARY,
-   DESCRIPTION, DTSTART, DTEND. Nessuna libreria esterna.
-   ---------------------------------------------------------- */
-
-function unfoldICS(text) {
-  // Le righe continuano se iniziano con uno spazio o un tab.
-  return text.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '');
-}
-
-function unescapeICSText(value) {
-  return String(value || '')
-    .replace(/\\n/gi, '\n')
-    .replace(/\\,/g, ',')
-    .replace(/\\;/g, ';')
-    .replace(/\\\\/g, '\\');
-}
-
-function parseICSDate(value) {
-  const m = value.match(/^(\d{4})(\d{2})(\d{2})(T(\d{2})(\d{2})(\d{2})(Z)?)?$/);
-  if (!m) return null;
-
-  const [, y, mo, d, hasTime, h, mi, s, isUTC] = m;
-
-  if (!hasTime) {
-    return { iso: new Date(Date.UTC(+y, +mo - 1, +d)).toISOString(), allDay: true };
-  }
-
-  const date = isUTC
-    ? new Date(Date.UTC(+y, +mo - 1, +d, +h, +mi, +s))
-    : new Date(+y, +mo - 1, +d, +h, +mi, +s);
-
-  return { iso: date.toISOString(), allDay: false };
-}
-
-function parseICS(text) {
-  const lines = unfoldICS(text).split(/\r\n|\n|\r/);
-
-  const events = [];
-  let current = null;
-
-  lines.forEach(line => {
-    if (line === 'BEGIN:VEVENT') {
-      current = {};
-      return;
-    }
-
-    if (line === 'END:VEVENT') {
-      if (current) events.push(current);
-      current = null;
-      return;
-    }
-
-    if (!current) return;
-
-    const sep = line.indexOf(':');
-    if (sep === -1) return;
-
-    const left = line.slice(0, sep);
-    const value = line.slice(sep + 1);
-    const key = left.split(';')[0];
-
-    if (key === 'SUMMARY') current.summary = unescapeICSText(value);
-    else if (key === 'DESCRIPTION') current.description = unescapeICSText(value);
-    else if (key === 'DTSTART') current.dtstart = parseICSDate(value);
-    else if (key === 'DTEND') current.dtend = parseICSDate(value);
-  });
-
-  return events;
-}
-
-
-async function fetchJatfEvents(timeMinMs, timeMaxMs) {
-  const response = await fetch(JATF_ICS_URL, {
-    headers: { 'Accept': 'text/calendar, text/plain, */*' }
-  });
-
-  if (!response.ok) {
-    console.error('Errore feed ICS JATF Events:', response.status);
-    return [];
-  }
-
-  const text = await response.text();
-  const parsed = parseICS(text);
-
-  return parsed
-    .filter(event => event.dtstart)
-    .map(event => ({
-      summary: event.summary || JATF_SOURCE.label,
-      description: event.description || '',
-      startValue: event.dtstart.iso,
-      endValue: event.dtend ? event.dtend.iso : event.dtstart.iso,
-      allDay: event.dtstart.allDay,
-      calendarLabel: JATF_SOURCE.label,
-      serverName: JATF_SOURCE.server,
-      calendarName: JATF_SOURCE.name
-    }))
-    .filter(event => {
-      const t = new Date(event.startValue).getTime();
-      return t >= timeMinMs && t <= timeMaxMs;
-    });
-}
 
 
 async function fetchGoogleCalendarEvents(timeMin, timeMax) {
@@ -196,7 +94,7 @@ export default async function handler(req, res) {
         console.error('Errore calendario Flying Donkeys Events:', error);
         return [];
       }),
-      fetchJatfEvents(timeMinMs, timeMaxMs).catch(error => {
+      fetchICSEvents(JATF_ICS_URL, JATF_SOURCE, timeMinMs, timeMaxMs).catch(error => {
         console.error('Errore calendario JATF Events:', error);
         return [];
       })

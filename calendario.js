@@ -13,13 +13,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const prevBtn        = document.getElementById('calPrevBtn');
   const nextBtn        = document.getElementById('calNextBtn');
   const todayBtn       = document.getElementById('calTodayBtn');
-  const dayHeadingEl  = document.getElementById('calDayHeading');
-  const eventListEl   = document.getElementById('calEventList');
 
   const bannerEl     = document.getElementById('calNextBanner');
   const countdownEl  = document.getElementById('calNextCountdown');
   const bannerTitle  = document.getElementById('calNextTitle');
   const bannerMeta   = document.getElementById('calNextMeta');
+
+  const modalEl      = document.getElementById('calEventModal');
+  const modalTitleEl = document.getElementById('calModalTitle');
+  const modalBodyEl  = document.getElementById('calModalBody');
+  const modalCloseBtn = document.getElementById('calModalClose');
 
   if (!gridEl) return;
 
@@ -177,43 +180,71 @@ document.addEventListener('DOMContentLoaded', async () => {
     }).join('');
 
     gridEl.querySelectorAll('[data-day-key]').forEach(btn => {
-      btn.addEventListener('click', () => selectDay(btn.dataset.dayKey));
+      btn.addEventListener('click', () => {
+        highlightDay(btn.dataset.dayKey);
+        openDayModal(btn.dataset.dayKey);
+      });
     });
   }
 
-  function selectDay(key) {
+  /* Evidenzia il giorno nella griglia, senza aprire il popup
+     (usato anche al caricamento, per segnare il prossimo evento). */
+  function highlightDay(key) {
     selectedKey = key;
 
     gridEl.querySelectorAll('[data-day-key]').forEach(btn => {
       btn.classList.toggle('cal-day-selected', btn.dataset.dayKey === key);
     });
+  }
+
+  /* Apre il popup con gli eventi del giorno cliccato. */
+  function openDayModal(key) {
+    if (!modalEl) return;
 
     const [y, m, d] = key.split('-').map(Number);
-    dayHeadingEl.textContent = formatDayTitle(new Date(y, m - 1, d));
+    modalTitleEl.textContent = formatDayTitle(new Date(y, m - 1, d));
 
     const dayEvents = (eventsByDay.get(key) || [])
       .slice()
       .sort((a, b) => eventDate(a) - eventDate(b));
 
-    if (!dayEvents.length) {
-      eventListEl.innerHTML = '<p class="muted">Nessun evento in questo giorno.</p>';
-      return;
-    }
+    modalBodyEl.innerHTML = dayEvents.length
+      ? dayEvents.map(event => `
+          <article class="cal-event-item">
+            <span class="cal-dot ${CAL_COLOR_CLASS[event.calendarName] || 'cal-dot-fd'}"></span>
+            <div>
+              <div class="cal-event-item-head">
+                <strong>${FD.escapeHTML(event.summary || event.calendarLabel)}</strong>
+                <span class="muted small">${formatTime(event)}</span>
+              </div>
+              ${formatEventDescription(event.description)}
+              <p class="muted small">${FD.escapeHTML(event.serverName)}</p>
+            </div>
+          </article>
+        `).join('')
+      : '<p class="muted">Nessun evento in questo giorno.</p>';
 
-    eventListEl.innerHTML = dayEvents.map(event => `
-      <article class="cal-event-item">
-        <span class="cal-dot ${CAL_COLOR_CLASS[event.calendarName] || 'cal-dot-fd'}"></span>
-        <div>
-          <div class="cal-event-item-head">
-            <strong>${FD.escapeHTML(event.summary || event.calendarLabel)}</strong>
-            <span class="muted small">${formatTime(event)}</span>
-          </div>
-          ${formatEventDescription(event.description)}
-          <p class="muted small">${FD.escapeHTML(event.serverName)}</p>
-        </div>
-      </article>
-    `).join('');
+    modalEl.hidden = false;
+    document.body.style.overflow = 'hidden';
   }
+
+  function closeDayModal() {
+    if (!modalEl) return;
+    modalEl.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeDayModal);
+
+  if (modalEl) {
+    modalEl.addEventListener('click', event => {
+      if (event.target === modalEl) closeDayModal();
+    });
+  }
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && modalEl && !modalEl.hidden) closeDayModal();
+  });
 
   function goToMonth(offset) {
     currentMonth.setMonth(currentMonth.getMonth() + offset);
@@ -230,7 +261,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderMonth();
 
     const today = new Date();
-    selectDay(dayKey(today.getFullYear(), today.getMonth(), today.getDate()));
+    highlightDay(dayKey(today.getFullYear(), today.getMonth(), today.getDate()));
   });
 
   try {
@@ -248,11 +279,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const now = new Date();
     const upcomingKey = (events.find(event => eventDate(event).getTime() >= now.getTime()) || {});
-    selectDay(upcomingKey.startValue ? eventDayKey(upcomingKey) : dayKey(now.getFullYear(), now.getMonth(), now.getDate()));
+    highlightDay(upcomingKey.startValue ? eventDayKey(upcomingKey) : dayKey(now.getFullYear(), now.getMonth(), now.getDate()));
 
   } catch (error) {
     console.error('Errore caricamento calendario:', error);
     renderMonth();
-    eventListEl.innerHTML = '<p class="muted">Impossibile caricare il calendario al momento.</p>';
   }
 });

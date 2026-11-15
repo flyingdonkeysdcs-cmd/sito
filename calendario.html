@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=110">
+  <link rel="stylesheet" href="style.css?v=111">
   <link rel="icon"  type="image/png"  sizes="32x32"  href="/images/logos/favicon-32.png">
   <link rel="apple-touch-icon"    sizes="180x180"    href="/images/logos/apple-touch-icon.png">
 </head>
@@ -167,11 +167,17 @@
         <div class="cal-grid" id="calGrid" aria-live="polite"></div>
       </div>
 
-      <h2 class="section-title cal-day-heading" id="calDayHeading">Eventi</h2>
-      <div class="cal-event-list" id="calEventList"></div>
-
     </section>
   </main>
+
+  <!-- Popup eventi del giorno selezionato -->
+  <div id="calEventModal" class="cal-modal-backdrop" hidden>
+    <div class="cal-modal">
+      <button id="calModalClose" class="cal-modal-close" aria-label="Chiudi popup">&times;</button>
+      <h2 class="cal-modal-title" id="calModalTitle"></h2>
+      <div id="calModalBody"></div>
+    </div>
+  </div>
 
 <footer class="site-footer">
 
@@ -263,6 +269,6 @@
 
   <script src="mobile.js?v=2"></script>
   <script src="common.js?v=4"></script>
-  <script src="calendario.js?v=1"></script>
+  <script src="calendario.js?v=2"></script>
 </body>
 </html>

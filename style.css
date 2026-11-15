@@ -1936,12 +1936,63 @@ textarea{
   border-color:var(--accent-1);
 }
 
-.cal-day-heading{
-  margin-top:28px;
+/* Popup eventi del giorno selezionato */
+.cal-modal-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:9000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.78);
+  backdrop-filter:blur(6px);
+  padding:24px;
+}
+
+.cal-modal-backdrop[hidden]{
+  display:none;
+}
+
+.cal-modal{
+  position:relative;
+  width:min(92vw, 560px);
+  max-height:84vh;
+  overflow-y:auto;
+  background:rgba(22,24,26,0.98);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:28px 24px 24px;
+}
+
+.cal-modal-title{
+  margin:0 0 16px;
+  padding-right:30px;
   text-transform:capitalize;
 }
 
-.cal-event-list{
+.cal-modal-close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:32px;
+  height:32px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,0.06);
+  color:var(--text);
+  font-size:1.3rem;
+  line-height:1;
+  cursor:pointer;
+  transition:0.2s ease;
+}
+
+.cal-modal-close:hover{
+  background:rgba(0,217,255,0.18);
+  color:var(--accent-1);
+}
+
+.cal-modal #calModalBody{
   display:flex;
   flex-direction:column;
   gap:12px;
