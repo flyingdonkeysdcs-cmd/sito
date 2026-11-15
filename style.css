@@ -1717,6 +1717,105 @@ textarea{
   filter:brightness(1.08) drop-shadow(0 0 12px rgba(0,217,255,0.25));
 }
 
+/* ----------------------------------------------------------
+   TRANSIZIONE DI CARICAMENTO (#pageIntro)
+   Overlay con logo e barra luminosa, usato sulle pagine che
+   caricano dati dal foglio Google e possono impiegare un
+   secondo. Vedi common.js per la logica di apertura.
+   ---------------------------------------------------------- */
+#pageIntro{position:fixed;inset:0;z-index:9999;pointer-events:none}
+
+#pageIntro .pi-half{
+  position:absolute;
+  left:0;
+  right:0;
+  height:50.5%;
+  background:var(--bg);
+  transition:transform .8s cubic-bezier(.7,0,.2,1);
+}
+
+#pageIntro .pi-top{top:0}
+#pageIntro .pi-bottom{bottom:0}
+
+#pageIntro .pi-line{
+  position:absolute;
+  top:50%;
+  left:50%;
+  height:2px;
+  width:min(60vw, 520px);
+  margin-top:-1px;
+  transform:translateX(-50%) scaleX(.04);
+  background:linear-gradient(90deg, transparent, var(--accent) 20%, var(--accent) 80%, transparent);
+  animation:piGlow 1.4s ease-in-out infinite alternate;
+  box-shadow:0 0 18px rgba(0,217,255,0.55);
+}
+
+#pageIntro img{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:84px;
+  height:84px;
+  margin:-118px 0 0 -42px;
+  opacity:0;
+  animation:piFade .6s .1s ease forwards;
+  transition:opacity .3s;
+}
+
+@keyframes piGlow{ to{ transform:translateX(-50%) scaleX(1); } }
+@keyframes piFade{ to{ opacity:1; } }
+
+#pageIntro.open .pi-line{
+  animation:none;
+  transform:translateX(-50%) scaleX(1);
+  width:100vw;
+  opacity:0;
+  transition:width .35s ease, opacity .5s .35s;
+}
+
+#pageIntro.open img{
+  animation:none;
+  opacity:0;
+}
+
+#pageIntro.open .pi-top{
+  transform:translateY(-100%);
+  transition-delay:.3s;
+}
+
+#pageIntro.open .pi-bottom{
+  transform:translateY(100%);
+  transition-delay:.3s;
+}
+
+body.pi-loading main,
+body.pi-loading .site-header{
+  opacity:0;
+  transform:scale(.985);
+}
+
+main,
+.site-header{
+  transition:opacity .9s .45s ease, transform .9s .45s ease;
+}
+
+@media(prefers-reduced-motion:reduce){
+  #pageIntro .pi-half,
+  #pageIntro .pi-line,
+  main,
+  .site-header{
+    transition:opacity .3s !important;
+    animation:none !important;
+  }
+  #pageIntro.open{
+    opacity:0;
+    transition:opacity .3s;
+  }
+  #pageIntro.open .pi-half{
+    transform:none;
+  }
+}
+
 /* Popup fullscreen foto/video raduni */
 .media-modal-backdrop{
   position:fixed;

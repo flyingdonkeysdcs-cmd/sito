@@ -2,11 +2,54 @@
    FLYING DONKEYS — SCRIPT COMUNE
    Caricato su tutte le pagine, prima degli script di pagina.
 
+   0. Transizione di caricamento (#pageIntro, se presente)
    1. FD: utility condivise (fogli Google, sicurezza HTML/URL,
       formattazione testi missione, lazy loading)
    2. Copyright nel footer
    3. Roster piloti (menu desktop + menu mobile)
    ========================================================== */
+
+
+/* ----------------------------------------------------------
+   0. TRANSIZIONE DI CARICAMENTO
+   Nelle pagine che includono il markup #pageIntro (vedi
+   style.css), apre l'overlay quando la pagina ha finito di
+   caricare, con un tempo minimo a schermo e uno massimo di
+   sicurezza nel caso il caricamento sia troppo lento o fallisca.
+   Nelle altre pagine non fa nulla.
+   ---------------------------------------------------------- */
+
+(() => {
+  const intro = document.getElementById('pageIntro');
+  if (!intro) return;
+
+  const MIN_VISIBLE_MS = 700;
+  const MAX_WAIT_MS = 5000;
+
+  const introStart = Date.now();
+  let introDone = false;
+
+  function reveal() {
+    if (introDone) return;
+    introDone = true;
+
+    const wait = Math.max(0, MIN_VISIBLE_MS - (Date.now() - introStart));
+
+    setTimeout(() => {
+      intro.classList.add('open');
+      document.body.classList.remove('pi-loading');
+      setTimeout(() => intro.remove(), 1400);
+    }, wait);
+  }
+
+  setTimeout(reveal, MAX_WAIT_MS);
+
+  if (document.readyState === 'complete') {
+    reveal();
+  } else {
+    window.addEventListener('load', reveal);
+  }
+})();
 
 
 /* ----------------------------------------------------------
