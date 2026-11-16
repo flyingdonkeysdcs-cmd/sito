@@ -56,5 +56,14 @@
       "images/raduni/10052026/6.webp",
       "images/raduni/10052026/7.mp4"
     ]
+  },
+  {
+    "slug": "old",
+    "titolo": "Correva l'anno...",
+    "data": "Tanto tempo Fa",
+    "foto": [
+      "images/raduni/old/1794788059155-q46mxg.webp",
+      "images/raduni/old/1794788100447-0iprir.webp"
+    ]
   }
 ]
