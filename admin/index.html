@@ -157,6 +157,7 @@
       <button class="tab-btn" data-tab="calendar">Calendario</button>
       <button class="tab-btn" data-tab="attendance">Presenze</button>
       <button class="tab-btn" data-tab="gallery">Galleria</button>
+      <button class="tab-btn" data-tab="raduni">Raduni</button>
       <button class="tab-btn" data-tab="medals" style="margin-left:auto;">Regole Medaglie</button>
     </nav>
 
@@ -232,6 +233,16 @@
         <input type="file" id="galleryFileInput" accept="image/*" multiple>
         <span class="status" id="galleryStatus"></span>
       </div>
+    </section>
+
+    <!-- RADUNI -->
+    <section class="panel" id="panel-raduni">
+      <div class="toolbar">
+        <button class="btn-primary" id="raduniAddBtn">+ Nuovo raduno</button>
+        <button class="btn-ghost" id="raduniReloadBtn">Ricarica</button>
+        <span class="status" id="raduniStatus"></span>
+      </div>
+      <div class="table-wrap"><table id="raduniTable"></table></div>
     </section>
 
   </div>
@@ -368,6 +379,7 @@
     loadMedalRules();
     loadMissions();
     loadCalendar();
+    loadRaduni();
   }
 
 
@@ -649,7 +661,7 @@
       ${rosterHeaders.map(h => `<div class="${rosterBooleanCols.has(h) ? '' : ''}">${rosterFieldHtml(h, existing ? existing[h] : '')}</div>`).join('')}
     </div>`;
 
-    openModal(existing ? `Modifica ${escapeHtml(pilotKey)}` : 'Nuovo pilota', html, async () => {
+    openModal(existing ? `Modifica ${pilotKey}` : 'Nuovo pilota', html, async () => {
       const values = {};
       rosterHeaders.forEach(h => {
         const el = document.getElementById('rf_' + cssId(h));
@@ -732,7 +744,7 @@
       <input type="text" id="pf_coord" value="${escapeHtml(existing ? existing.coordinate : '')}" style="width:100%;">
     `;
 
-    openModal(existing ? `Modifica ${escapeHtml(pilotKey)}` : 'Nuova voce foto/coordinate', html, async () => {
+    openModal(existing ? `Modifica ${pilotKey}` : 'Nuova voce foto/coordinate', html, async () => {
       const key = existing ? existing.pilota : document.getElementById('pf_pilota').value;
 
       await callApi('savePilotPhoto', {
@@ -819,7 +831,7 @@
       ${imageUploadFieldHtml('mf_imgdett', 'Immagine di dettaglio, opzionale (percorso o carica un file)', existing ? existing.immagineDettaglio : '')}
     `;
 
-    openModal(existing ? `Modifica ${escapeHtml(key)}` : 'Nuova medaglia', html, async () => {
+    openModal(existing ? `Modifica ${key}` : 'Nuova medaglia', html, async () => {
       const code = existing ? existing.medaglia : document.getElementById('mf_code').value;
 
       await callApi('saveMedalRule', {
@@ -1159,7 +1171,7 @@
 
     for (const file of files) {
       try {
-        const base64 = await resizeImageToWebp(file, 1600, 0.82);
+        const base64 = await resizeImageToWebp(file, 1600, 0.8);
         const path = `images/gallery/gallery-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
         await callApi('uploadImage', { path, base64 });
       } catch (error) {
@@ -1178,6 +1190,207 @@
       errors.length ? 'err' : 'ok'
     );
   });
+
+
+  /* ============================================================
+     RADUNI
+     I dati (titolo, data, foto) vivono in data/raduni.json nel
+     repository, non sul foglio Google: si legge con una fetch
+     diretta (stesso file che legge raduni.html) e si scrive
+     riscrivendo tutto il file tramite l'azione "uploadImage" già
+     usata per le immagini (stesso meccanismo get-sha-poi-put,
+     qui con il testo del JSON invece di un'immagine).
+     ============================================================ */
+
+  let raduniData = [];
+
+  function utf8ToBase64(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+
+  async function loadRaduni() {
+    setStatus('raduniStatus', 'Caricamento...', '');
+    try {
+      const response = await fetch('/data/raduni.json?t=' + Date.now());
+      if (!response.ok) throw new Error('Errore caricamento raduni.json (' + response.status + ')');
+
+      raduniData = await response.json();
+      if (!Array.isArray(raduniData)) raduniData = [];
+
+      renderRaduniTable();
+      setStatus('raduniStatus', `${raduniData.length} raduni`, 'ok');
+    } catch (error) {
+      setStatus('raduniStatus', 'Errore: ' + error.message, 'err');
+    }
+  }
+
+  function renderRaduniTable() {
+    const table = document.getElementById('raduniTable');
+    table.innerHTML = `
+      <tr><th>Titolo</th><th>Data</th><th>Foto</th><th></th></tr>
+      ${raduniData.map(raduno => `
+        <tr>
+          <td>${escapeHtml(raduno.titolo)}</td>
+          <td>${escapeHtml(raduno.data)}</td>
+          <td class="small muted">${(raduno.foto || []).length}</td>
+          <td><button class="btn-ghost" data-edit-raduno="${escapeHtml(raduno.slug)}">Modifica</button></td>
+        </tr>
+      `).join('')}
+    `;
+
+    table.querySelectorAll('[data-edit-raduno]').forEach(btn => {
+      btn.addEventListener('click', () => openRaduniEditor(btn.dataset.editRaduno));
+    });
+  }
+
+  async function saveRaduniData() {
+    const base64 = utf8ToBase64(JSON.stringify(raduniData, null, 2));
+    await callApi('uploadImage', { path: 'data/raduni.json', base64 });
+  }
+
+  function openRaduniEditor(slug) {
+    const existing = slug ? raduniData.find(r => r.slug === slug) : null;
+    const modalPhotos = existing ? (existing.foto || []).slice() : [];
+
+    function isVideoSrc(src) {
+      return /\.(mp4|webm|mov)$/i.test(src);
+    }
+
+    function renderPhotoList() {
+      const listEl = document.getElementById('rad_photoList');
+      if (!listEl) return;
+
+      listEl.innerHTML = modalPhotos.map((src, index) => `
+        <div class="raduni-photo-item" style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--border);">
+          ${isVideoSrc(src)
+            ? `<span class="small muted" style="width:56px;">Video</span>`
+            : `<img src="${escapeHtml(src)}" style="width:56px; height:56px; object-fit:cover; border-radius:6px;">`}
+          <span class="small muted" style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(src)}</span>
+          <button type="button" class="btn-ghost" data-move-up="${index}" ${index === 0 ? 'disabled' : ''}>↑</button>
+          <button type="button" class="btn-ghost" data-move-down="${index}" ${index === modalPhotos.length - 1 ? 'disabled' : ''}>↓</button>
+          <button type="button" class="btn-ghost" data-remove="${index}">Rimuovi</button>
+        </div>
+      `).join('') || '<p class="muted small">Nessuna foto caricata.</p>';
+
+      listEl.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          modalPhotos.splice(Number(btn.dataset.remove), 1);
+          renderPhotoList();
+        });
+      });
+
+      listEl.querySelectorAll('[data-move-up]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const i = Number(btn.dataset.moveUp);
+          [modalPhotos[i - 1], modalPhotos[i]] = [modalPhotos[i], modalPhotos[i - 1]];
+          renderPhotoList();
+        });
+      });
+
+      listEl.querySelectorAll('[data-move-down]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const i = Number(btn.dataset.moveDown);
+          [modalPhotos[i + 1], modalPhotos[i]] = [modalPhotos[i], modalPhotos[i + 1]];
+          renderPhotoList();
+        });
+      });
+    }
+
+    const html = `
+      <label>Titolo</label>
+      <input type="text" id="rad_titolo" value="${escapeHtml(existing ? existing.titolo : '')}" style="width:100%;">
+      <label>Data (testo libero, es. 10 maggio 2026)</label>
+      <input type="text" id="rad_data" value="${escapeHtml(existing ? existing.data : '')}" style="width:100%;">
+      <label>Cartella foto (es. 10052026 — solo lettere/numeri, non modificabile dopo la creazione)</label>
+      <input type="text" id="rad_slug" value="${escapeHtml(existing ? existing.slug : '')}" style="width:100%;" ${existing ? 'disabled' : ''}>
+
+      <label style="margin-top:14px;">Foto e video</label>
+      <div id="rad_photoList" style="margin-bottom:8px;"></div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <input type="file" id="rad_fileInput" accept="image/*,video/mp4" multiple style="flex:1;">
+        <span id="rad_uploadStatus" class="small muted"></span>
+      </div>
+    `;
+
+    openModal(existing ? `Modifica ${existing.titolo}` : 'Nuovo raduno', html, async () => {
+      const titolo = document.getElementById('rad_titolo').value.trim();
+      const data = document.getElementById('rad_data').value.trim();
+      const rawSlug = document.getElementById('rad_slug').value.trim();
+      const finalSlug = existing ? existing.slug : rawSlug.replace(/[^a-zA-Z0-9_-]/g, '');
+
+      if (!titolo || !data || !finalSlug) {
+        throw new Error('Titolo, data e cartella sono obbligatori.');
+      }
+
+      const updated = { slug: finalSlug, titolo, data, foto: modalPhotos };
+
+      const index = raduniData.findIndex(r => r.slug === finalSlug);
+      if (index === -1) {
+        raduniData.push(updated);
+      } else {
+        raduniData[index] = updated;
+      }
+
+      await saveRaduniData();
+      await loadRaduni();
+    });
+
+    renderPhotoList();
+
+    const fileInput = document.getElementById('rad_fileInput');
+    const uploadStatusEl = document.getElementById('rad_uploadStatus');
+
+    fileInput.addEventListener('change', async () => {
+      const slugNow = (existing ? existing.slug : document.getElementById('rad_slug').value.trim())
+        .replace(/[^a-zA-Z0-9_-]/g, '');
+
+      if (!slugNow) {
+        uploadStatusEl.textContent = 'Specifica prima la cartella qui sopra.';
+        fileInput.value = '';
+        return;
+      }
+
+      const files = Array.from(fileInput.files);
+      let done = 0;
+      uploadStatusEl.textContent = `Caricamento 0/${files.length}...`;
+
+      for (const file of files) {
+        try {
+          const isVideo = file.type.startsWith('video/');
+          let path, base64;
+
+          if (isVideo) {
+            path = `images/raduni/${slugNow}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.mp4`;
+            base64 = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result.split(',')[1]);
+              reader.onerror = () => reject(new Error('Lettura video fallita.'));
+              reader.readAsDataURL(file);
+            });
+          } else {
+            path = `images/raduni/${slugNow}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
+            base64 = await resizeImageToWebp(file, 1600, 0.8);
+          }
+
+          const result = await callApi('uploadImage', { path, base64 });
+          modalPhotos.push(result.path);
+          renderPhotoList();
+
+        } catch (error) {
+          uploadStatusEl.textContent = 'Errore: ' + error.message;
+        }
+
+        done++;
+        uploadStatusEl.textContent = `Caricamento ${done}/${files.length}...`;
+      }
+
+      fileInput.value = '';
+      uploadStatusEl.textContent = `${files.length} file caricati.`;
+    });
+  }
+
+  document.getElementById('raduniAddBtn').addEventListener('click', () => openRaduniEditor(null));
+  document.getElementById('raduniReloadBtn').addEventListener('click', loadRaduni);
 
 })();
 </script>

@@ -159,103 +159,11 @@
         Piccola galleria dei nostri raduni in questi anni, perchè FD non vuol dire solo essere piloti virtuali, ma sopratutto amici reali!
       </p>
 
-      <div class="raduni-grid">
-        <article class="raduno-card">
-          <div class="raduno-gallery">
-	        <img src="images/raduni/14102023/1.webp" alt="Raduno Flying Donkeys 2023 - foto 1" loading="lazy" decoding="async">
-            <img src="images/raduni/14102023/2.webp" alt="Raduno Flying Donkeys 2023 - foto 2" loading="lazy" decoding="async">
-            <img src="images/raduni/14102023/3.webp" alt="Raduno Flying Donkeys 2023 - foto 3" loading="lazy" decoding="async"> 
-          </div>
-          <div class="raduno-content">
-            <p class="muted small">Raduno</p>
-            <h3>Raduno JATF e FD - Modena</h3>
-            <p>
-              14 ottobre 2023.
-            </p>
-          </div>
-        </article>
+      <p class="muted" id="raduniEmptyState" hidden>
+        Nessun raduno disponibile al momento.
+      </p>
 
-        <article class="raduno-card">
-          <div class="raduno-gallery">
-            <img src="images/raduni/14052024/1.webp" alt="Raduno Flying Donkeys 2024 - foto 1" loading="lazy" decoding="async">
-            <img src="images/raduni/14052024/2.webp" alt="Raduno Flying Donkeys 2024 - foto 2" loading="lazy" decoding="async"> 
-            <img src="images/raduni/14052024/3.webp" alt="Raduno Flying Donkeys 2024 - foto 3" loading="lazy" decoding="async">
-			<img src="images/raduni/14052024/4.webp" alt="Raduno Flying Donkeys 2024 - foto 4" loading="lazy" decoding="async">
-            <img src="images/raduni/14052024/5.webp" alt="Raduno Flying Donkeys 2024 - foto 5" loading="lazy" decoding="async">
-            <img src="images/raduni/14052024/6.webp" alt="Raduno Flying Donkeys 2024 - foto 6" loading="lazy" decoding="async">
-          </div>
-          <div class="raduno-content">
-            <p class="muted small">Raduno</p>
-            <h3>Raduno FD '24</h3>
-            <p>
-              14 maggio 2024
-            </p>
-          </div>
-        </article>
-		
-		<article class="raduno-card">
-          <div class="raduno-gallery">
-            <img src="images/raduni/10062025/1.webp" alt="Raduno Flying Donkeys 2025 - foto 1" loading="lazy" decoding="async">
-            <img src="images/raduni/10062025/2.webp" alt="Raduno Flying Donkeys 2025 - foto 2" loading="lazy" decoding="async">
-            <img src="images/raduni/10062025/3.webp" alt="Raduno Flying Donkeys 2025 - foto 3" loading="lazy" decoding="async">
-			<img src="images/raduni/10062025/4.webp" alt="Raduno Flying Donkeys 2025 - foto 4" loading="lazy" decoding="async">
-            <img src="images/raduni/10062025/5.webp" alt="Raduno Flying Donkeys 2025 - foto 5" loading="lazy" decoding="async">
-          </div>
-          <div class="raduno-content">
-            <p class="muted small">Raduno</p>
-            <h3>Raduno FD '25</h3>
-            <p>
-              10 giugno 2025
-            </p>
-          </div>
-        </article>
-		
-		<article class="raduno-card">
-          <div class="raduno-gallery">
-            <img src="images/raduni/07092025/1.webp" alt="Rivolto Phase Out AMX 2025 - foto 1" loading="lazy" decoding="async">
-            <img src="images/raduni/07092025/2.webp" alt="Rivolto Phase Out AMX 2025 - foto 2" loading="lazy" decoding="async">
-          </div>
-          <div class="raduno-content">
-            <p class="muted small">Raduno</p>
-            <h3>Rivolto Phase out AMX</h3>
-            <p>
-              7 settembre 2025
-            </p>
-          </div>
-        </article>
-		
-		<article class="raduno-card">
-          <div class="raduno-gallery">
-            <img src="images/raduni/10052026/1.webp" alt="Raduno Flying Donkeys 2026 - foto 1" loading="lazy" decoding="async">
-            <img src="images/raduni/10052026/2.webp" alt="Raduno Flying Donkeys 2026 - foto 2" loading="lazy" decoding="async">
-            <img src="images/raduni/10052026/3.webp" alt="Raduno Flying Donkeys 2026 - foto 3" loading="lazy" decoding="async">
-			<img src="images/raduni/10052026/4.webp" alt="Raduno Flying Donkeys 2026 - foto 4" loading="lazy" decoding="async">
-            <img src="images/raduni/10052026/5.webp" alt="Raduno Flying Donkeys 2026 - foto 5" loading="lazy" decoding="async">
-			<img src="images/raduni/10052026/6.webp" alt="Raduno Flying Donkeys 2026 - foto 6" loading="lazy" decoding="async">
-			<video controls width="100%">
-				<source src="images/raduni/10052026/7.mp4" type="video/mp4" loading="lazy" decoding="async">
-		    </video>
-          </div>
-          <div class="raduno-content">
-            <p class="muted small">Raduno</p>
-            <h3>Raduno FD '26</h3>
-            <p>
-              10 maggio 2026
-            </p>
-          </div>
-        </article>
-
-     <!--   <article class="raduno-card raduno-placeholder">
-          <div class="raduno-empty">+</div>
-          <div class="raduno-content">
-            <p class="muted small">Nuovo raduno</p>
-            <h3>Prossimo raduno</h3>
-            <p>
-              Duplica questa card e cambia titolo, testo e percorsi immagini per aggiungere altri raduni.
-            </p>
-          </div>
-        </article> -->
-      </div>
+      <div class="raduni-grid" id="raduniGrid"></div>
     </section>
   </main>
 
@@ -361,6 +269,6 @@
 
   <script src="mobile.js?v=2"></script>
   <script src="common.js?v=5"></script>
-  <script src="raduni.js?v=2"></script>
+  <script src="raduni.js?v=3"></script>
 </body>
 </html>
