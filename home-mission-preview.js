@@ -36,13 +36,17 @@
 
   /*
    * Anteprima testuale per la card (non il popup, che usa
-   * FD.formatMissionText): toglie titoli ed elenchi puntati del
-   * mini-markdown cosi' il trafiletto si legge come prosa normale.
+   * FD.formatMissionText): toglie titoli, elenchi puntati,
+   * separatori e marcatori di grassetto/corsivo del mini-markdown
+   * cosi' il trafiletto si legge come prosa normale.
    */
   function plainTextSnippet(text) {
     return String(text || '')
       .replace(/^#{1,6}\s.*$/gm, '')
       .replace(/^-+\s/gm, '')
+      .replace(/^---+$/gm, '')
+      .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/(^|[^\w*])\*([^*\n]+)\*(?=$|[^\w*])/g, '$1$2')
       .replace(/\s+/g, ' ')
       .trim();
   }
