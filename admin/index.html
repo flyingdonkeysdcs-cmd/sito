@@ -648,6 +648,13 @@
     altro.style.display = select.value === ROSTER_ALTRO ? '' : 'none';
   }
 
+  function toggleMissionTeatroAltro() {
+    const select = document.getElementById('ms_teatro');
+    const altro = document.getElementById('ms_teatro_altro');
+    if (!select || !altro) return;
+    altro.style.display = select.value === '__altro__' ? '' : 'none';
+  }
+
   function cssId(text) {
     return String(text).replace(/[^a-zA-Z0-9]/g, '_');
   }
@@ -865,6 +872,26 @@
 
   let missionHeaders = [];
   let missionRows = [];
+  const MISSION_ALTRO = '__altro__';
+
+  /* Mappe DCS World attualmente in uso dalla squadriglia, più i
+     Balcani (in uscita). */
+  const MISSION_THEATRES = [
+    'Caucasus', 'Nevada', 'Normandy', 'The Channel', 'Persian Gulf',
+    'Syria', 'South Atlantic', 'Sinai', 'Marianas', 'Kola',
+    'Afghanistan', 'Iraq', 'Vietnam', 'Balkans'
+  ];
+
+  function ddmmyyyyToInputDate(value) {
+    const m = String(value || '').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (!m) return '';
+    return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+  }
+
+  function inputDateToDdmmyyyy(value) {
+    const [y, m, d] = String(value || '').split('-');
+    return (y && m && d) ? `${d}/${m}/${y}` : '';
+  }
 
   async function loadMissions() {
     setStatus('missionsStatus', 'Caricamento...', '');
@@ -900,18 +927,27 @@
 
   function openMissionEditor(rowNum) {
     const existing = rowNum ? missionRows.find(r => r._row === rowNum) : null;
+    const existingTeatro = existing ? String(existing['teatro'] || '').trim() : '';
+    const teatroIsKnown = existingTeatro === '' || MISSION_THEATRES.includes(existingTeatro);
 
     const html = `
-      <label>Data (gg/mm/aaaa)</label>
-      <input type="text" id="ms_data" value="${escapeHtml(existing ? existing['data'] : '')}" style="width:100%;">
+      <label>Data</label>
+      <input type="date" id="ms_data" value="${ddmmyyyyToInputDate(existing ? existing['data'] : '')}" style="width:100%;">
       <label>Titolo</label>
       <input type="text" id="ms_titolo" value="${escapeHtml(existing ? existing['titolo'] : '')}" style="width:100%;">
-      <label>Teatro</label>
-      <input type="text" id="ms_teatro" value="${escapeHtml(existing ? existing['teatro'] : '')}" style="width:100%;">
+      <label>Teatro (mappa DCS)</label>
+      <select id="ms_teatro" style="width:100%;" onchange="toggleMissionTeatroAltro()">
+        <option value="">-</option>
+        ${MISSION_THEATRES.map(t =>
+          `<option value="${t}" ${t === existingTeatro ? 'selected' : ''}>${t}</option>`
+        ).join('')}
+        <option value="${MISSION_ALTRO}" ${!teatroIsKnown ? 'selected' : ''}>Altro...</option>
+      </select>
+      <input type="text" id="ms_teatro_altro" value="${escapeHtml(teatroIsKnown ? '' : existingTeatro)}"
+        placeholder="Nuovo scenario" style="width:100%; margin-top:6px; ${teatroIsKnown ? 'display:none;' : ''}">
       <label>Piloti coinvolti</label>
       <input type="text" id="ms_piloti" value="${escapeHtml(existing ? existing['piloti coinvolti'] : '')}" style="width:100%;">
-      <label>URL immagine</label>
-      <input type="text" id="ms_img" value="${escapeHtml(existing ? existing['immagine'] : '')}" style="width:100%;">
+      ${imageUploadFieldHtml('ms_img', 'Immagine missione (percorso o carica un file)', existing ? existing['immagine'] : '')}
       <label>Riassunto debriefing (supporta ## titoli, ### sottotitoli, - elenchi)</label>
       <textarea id="ms_riassunto" style="min-height:220px;">${escapeHtml(existing ? (existing['riassunto debriefeing'] || existing['riassunto debriefing']) : '')}</textarea>
     `;
@@ -920,9 +956,13 @@
       const values = {};
       missionHeaders.forEach(h => { values[h] = ''; });
 
-      values['data'] = document.getElementById('ms_data').value;
+      const teatroSelect = document.getElementById('ms_teatro').value;
+
+      values['data'] = inputDateToDdmmyyyy(document.getElementById('ms_data').value);
       values['titolo'] = document.getElementById('ms_titolo').value;
-      values['teatro'] = document.getElementById('ms_teatro').value;
+      values['teatro'] = teatroSelect === MISSION_ALTRO
+        ? document.getElementById('ms_teatro_altro').value
+        : teatroSelect;
       values['piloti coinvolti'] = document.getElementById('ms_piloti').value;
       values['immagine'] = document.getElementById('ms_img').value;
 
@@ -932,6 +972,12 @@
       await callApi('saveMission', { row: rowNum || null, values });
       await loadMissions();
     });
+
+    const missionSlug = () => {
+      const date = document.getElementById('ms_data').value || 'missione';
+      return date.replace(/[^a-zA-Z0-9]/g, '');
+    };
+    wireImageUpload('ms_img', () => `images/missions/${missionSlug()}-${Date.now()}.webp`, 1600, 0.8);
   }
 
   document.getElementById('missionsAddBtn').addEventListener('click', () => openMissionEditor(null));
