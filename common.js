@@ -204,79 +204,76 @@ const FD = (() => {
    *   riga vuota     -> spazio tra paragrafi
    */
   function formatMissionText(text) {
-  
-function formatMissionText(text) {
-  if (!text) return '';
+    if (!text) return '';
 
-  const source = escapeHTML(
-    String(text).replace(/\r\n?/g, '\n')
-  );
+    const source = escapeHTML(
+      String(text).replace(/\r\n?/g, '\n')
+    );
 
-  const inline = value => value
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/(^|[^\w*])\*([^*\n]+)\*(?=$|[^\w*])/g,
-      '$1<em>$2</em>');
+    const inline = value => value
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^\w*])\*([^*\n]+)\*(?=$|[^\w*])/g,
+        '$1<em>$2</em>');
 
-  const lines = source.split('\n');
-  const output = [];
-  let inList = false;
+    const lines = source.split('\n');
+    const output = [];
+    let inList = false;
 
-  function closeList() {
-    if (inList) {
-      output.push('</ul>');
-      inList = false;
-    }
-  }
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    if (!trimmed) {
-      closeList();
-      if (output.length && output.at(-1) !== '<br>') {
-        output.push('<br>');
+    function closeList() {
+      if (inList) {
+        output.push('</ul>');
+        inList = false;
       }
-      continue;
     }
 
-    if (/^---+$/.test(trimmed)) {
-      closeList();
-      output.push('<hr class="mission-divider">');
-      continue;
-    }
+    for (const line of lines) {
+      const trimmed = line.trim();
 
-    const heading = trimmed.match(/^(#{1,3})\s+(.+)$/);
-    if (heading) {
-      closeList();
-
-      const cls = heading[1].length === 3
-        ? 'mission-subheading'
-        : 'mission-heading';
-
-      output.push(
-        `<strong class="${cls}">${inline(heading[2])}</strong>`
-      );
-      continue;
-    }
-
-    const bullet = trimmed.match(/^[-*]\s+(.+)$/);
-    if (bullet) {
-      if (!inList) {
-        output.push('<ul class="mission-list">');
-        inList = true;
+      if (!trimmed) {
+        closeList();
+        if (output.length && output.at(-1) !== '<br>') {
+          output.push('<br>');
+        }
+        continue;
       }
-      output.push(`<li>${inline(bullet[1])}</li>`);
-      continue;
+
+      if (/^---+$/.test(trimmed)) {
+        closeList();
+        output.push('<hr class="mission-divider">');
+        continue;
+      }
+
+      const heading = trimmed.match(/^(#{1,3})\s+(.+)$/);
+      if (heading) {
+        closeList();
+
+        const cls = heading[1].length === 3
+          ? 'mission-subheading'
+          : 'mission-heading';
+
+        output.push(
+          `<strong class="${cls}">${inline(heading[2])}</strong>`
+        );
+        continue;
+      }
+
+      const bullet = trimmed.match(/^[-*]\s+(.+)$/);
+      if (bullet) {
+        if (!inList) {
+          output.push('<ul class="mission-list">');
+          inList = true;
+        }
+        output.push(`<li>${inline(bullet[1])}</li>`);
+        continue;
+      }
+
+      closeList();
+      output.push(`${inline(line)}<br>`);
     }
 
     closeList();
-    output.push(`${inline(line)}<br>`);
+    return output.join('\n');
   }
-
-  closeList();
-  return output.join('\n');
-}
-
 
 
   /* Blocca/sblocca lo scroll della pagina mentre un popup è aperto */
