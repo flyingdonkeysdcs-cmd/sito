@@ -204,20 +204,79 @@ const FD = (() => {
    *   riga vuota     -> spazio tra paragrafi
    */
   function formatMissionText(text) {
-    if (!text) return '';
+  
+function formatMissionText(text) {
+  if (!text) return '';
 
-    text = String(text).replace(/\r\n/g, '\n');
-    text = escapeHTML(text);
+  const source = escapeHTML(
+    String(text).replace(/\r\n?/g, '\n')
+  );
 
-    text = text.replace(/^##\s(.+)$/gm, '<strong class="mission-heading">$1</strong>');
-    text = text.replace(/^###\s(.+)$/gm, '<strong class="mission-subheading">$1</strong>');
-    text = text.replace(/^-+\s(.+)$/gm, '<li>$1</li>');
-    text = text.replace(/(<li>.*?<\/li>)+/gs, match => `<ul class="mission-list">${match}</ul>`);
-    text = text.replace(/\n\s*\n/g, '<br><br>');
-    text = text.replace(/\n/g, '<br>');
+  const inline = value => value
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^\w*])\*([^*\n]+)\*(?=$|[^\w*])/g,
+      '$1<em>$2</em>');
 
-    return text;
+  const lines = source.split('\n');
+  const output = [];
+  let inList = false;
+
+  function closeList() {
+    if (inList) {
+      output.push('</ul>');
+      inList = false;
+    }
   }
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      closeList();
+      if (output.length && output.at(-1) !== '<br>') {
+        output.push('<br>');
+      }
+      continue;
+    }
+
+    if (/^---+$/.test(trimmed)) {
+      closeList();
+      output.push('<hr class="mission-divider">');
+      continue;
+    }
+
+    const heading = trimmed.match(/^(#{1,3})\s+(.+)$/);
+    if (heading) {
+      closeList();
+
+      const cls = heading[1].length === 3
+        ? 'mission-subheading'
+        : 'mission-heading';
+
+      output.push(
+        `<strong class="${cls}">${inline(heading[2])}</strong>`
+      );
+      continue;
+    }
+
+    const bullet = trimmed.match(/^[-*]\s+(.+)$/);
+    if (bullet) {
+      if (!inList) {
+        output.push('<ul class="mission-list">');
+        inList = true;
+      }
+      output.push(`<li>${inline(bullet[1])}</li>`);
+      continue;
+    }
+
+    closeList();
+    output.push(`${inline(line)}<br>`);
+  }
+
+  closeList();
+  return output.join('\n');
+}
+
 
 
   /* Blocca/sblocca lo scroll della pagina mentre un popup è aperto */
