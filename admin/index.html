@@ -449,12 +449,45 @@
       .replace(/^-+|-+$/g, '');
   }
 
-  function resizeImageToWebp(file, maxDim, quality) {
+  /* Filigrana (logo bianco, solo per la Galleria): caricata una
+     sola volta e riusata per tutti gli upload della sessione. */
+  let watermarkImagePromise = null;
+
+  function loadWatermarkImage() {
+    if (!watermarkImagePromise) {
+      watermarkImagePromise = new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('Filigrana non disponibile.'));
+        img.src = '/images/logos/watermark.png';
+      });
+    }
+    return watermarkImagePromise;
+  }
+
+  function drawWatermark(ctx, canvasWidth, canvasHeight, watermarkImg) {
+    const margin = Math.round(canvasWidth * 0.03);
+    const wmWidth = Math.round(canvasWidth * 0.18);
+    const wmHeight = Math.round(wmWidth * (watermarkImg.height / watermarkImg.width));
+
+    ctx.save();
+    ctx.globalAlpha = 0.75;
+    ctx.drawImage(
+      watermarkImg,
+      canvasWidth - wmWidth - margin,
+      canvasHeight - wmHeight - margin,
+      wmWidth,
+      wmHeight
+    );
+    ctx.restore();
+  }
+
+  function resizeImageToWebp(file, maxDim, quality, watermark) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
-        img.onload = () => {
+        img.onload = async () => {
           let { width, height } = img;
           if (width > maxDim || height > maxDim) {
             if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
@@ -464,7 +497,18 @@
           const canvas = document.createElement('canvas');
           canvas.width = width;
           canvas.height = height;
-          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          if (watermark) {
+            try {
+              const watermarkImg = await loadWatermarkImage();
+              drawWatermark(ctx, width, height, watermarkImg);
+            } catch (error) {
+              // Senza filigrana disponibile, l'immagine si carica comunque.
+              console.error(error);
+            }
+          }
 
           canvas.toBlob(blob => {
             if (!blob) { reject(new Error('Conversione immagine fallita.')); return; }
@@ -1217,7 +1261,7 @@
 
     for (const file of files) {
       try {
-        const base64 = await resizeImageToWebp(file, 1600, 0.8);
+        const base64 = await resizeImageToWebp(file, 1600, 0.8, true);
         const path = `images/gallery/gallery-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
         await callApi('uploadImage', { path, base64 });
       } catch (error) {
