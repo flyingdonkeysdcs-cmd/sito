@@ -466,8 +466,7 @@
   }
 
   function drawWatermark(ctx, canvasWidth, canvasHeight, watermarkImg) {
-    const margin = Math.round(canvasWidth * 0.015);
-    const marginTop = Math.round(canvasWidth * 0.007);
+    const margin = 16;
     const wmWidth = Math.round(canvasWidth * 0.18);
     const wmHeight = Math.round(wmWidth * (watermarkImg.height / watermarkImg.width));
 
@@ -476,7 +475,7 @@
     ctx.drawImage(
       watermarkImg,
       margin,
-      marginTop,
+      margin,
       wmWidth,
       wmHeight
     );
