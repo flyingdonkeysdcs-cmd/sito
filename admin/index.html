@@ -465,17 +465,26 @@
     return watermarkImagePromise;
   }
 
+  /* Il file watermark.png ha un bordo trasparente interno attorno allo
+     stemma (non tocca i margini del proprio canvas): queste proporzioni
+     compensano quel bordo cosi' che il logo VISIBILE, non il PNG intero,
+     risulti a `margin` px dai bordi dell'immagine. */
+  const WM_CONTENT_TOP_RATIO = 371 / 2000;
+  const WM_CONTENT_LEFT_RATIO = 167 / 1649;
+
   function drawWatermark(ctx, canvasWidth, canvasHeight, watermarkImg) {
     const margin = 16;
     const wmWidth = Math.round(canvasWidth * 0.18);
     const wmHeight = Math.round(wmWidth * (watermarkImg.height / watermarkImg.width));
+    const x = margin - Math.round(wmWidth * WM_CONTENT_LEFT_RATIO);
+    const y = margin - Math.round(wmHeight * WM_CONTENT_TOP_RATIO);
 
     ctx.save();
     ctx.globalAlpha = 0.75;
     ctx.drawImage(
       watermarkImg,
-      margin,
-      margin,
+      x,
+      y,
       wmWidth,
       wmHeight
     );
