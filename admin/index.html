@@ -451,18 +451,21 @@
 
   /* Filigrana (logo bianco, solo per la Galleria): caricata una
      sola volta e riusata per tutti gli upload della sessione. */
-  let watermarkImagePromise = null;
+  const watermarkImagePromises = {};
 
-  function loadWatermarkImage() {
-    if (!watermarkImagePromise) {
-      watermarkImagePromise = new Promise((resolve, reject) => {
+  function loadWatermarkImage(variant) {
+    if (!watermarkImagePromises[variant]) {
+      const src = variant === 'dark'
+        ? '/images/logos/watermark-dark.png'
+        : '/images/logos/watermark.png';
+      watermarkImagePromises[variant] = new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => resolve(img);
         img.onerror = () => reject(new Error('Filigrana non disponibile.'));
-        img.src = '/images/logos/watermark.png';
+        img.src = src;
       });
     }
-    return watermarkImagePromise;
+    return watermarkImagePromises[variant];
   }
 
   /* Il file watermark.png ha un bordo trasparente interno attorno allo
@@ -472,12 +475,35 @@
   const WM_CONTENT_TOP_RATIO = 371 / 2000;
   const WM_CONTENT_LEFT_RATIO = 167 / 1649;
 
-  function drawWatermark(ctx, canvasWidth, canvasHeight, watermarkImg) {
+  /* Sopra 195 (su 255) lo sfondo e' abbastanza chiaro da rendere il logo
+     bianco poco leggibile: in quel caso si usa la variante nera. */
+  const WM_LUMINANCE_THRESHOLD = 195;
+
+  function getAverageLuminance(ctx, x, y, w, h, canvasWidth, canvasHeight) {
+    const sx = Math.max(0, Math.round(x));
+    const sy = Math.max(0, Math.round(y));
+    const sw = Math.min(canvasWidth, Math.round(x + w)) - sx;
+    const sh = Math.min(canvasHeight, Math.round(y + h)) - sy;
+    if (sw <= 0 || sh <= 0) return 0;
+
+    const { data } = ctx.getImageData(sx, sy, sw, sh);
+    let total = 0;
+    const count = data.length / 4;
+    for (let i = 0; i < data.length; i += 4) {
+      total += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+    }
+    return total / count;
+  }
+
+  function drawWatermark(ctx, canvasWidth, canvasHeight, watermarkImgLight, watermarkImgDark) {
     const margin = 16;
     const wmWidth = Math.round(canvasWidth * 0.18);
-    const wmHeight = Math.round(wmWidth * (watermarkImg.height / watermarkImg.width));
+    const wmHeight = Math.round(wmWidth * (watermarkImgLight.height / watermarkImgLight.width));
     const x = margin - Math.round(wmWidth * WM_CONTENT_LEFT_RATIO);
     const y = margin - Math.round(wmHeight * WM_CONTENT_TOP_RATIO);
+
+    const luminance = getAverageLuminance(ctx, x, y, wmWidth, wmHeight, canvasWidth, canvasHeight);
+    const watermarkImg = luminance > WM_LUMINANCE_THRESHOLD ? watermarkImgDark : watermarkImgLight;
 
     ctx.save();
     ctx.globalAlpha = 0.75;
@@ -511,8 +537,11 @@
 
           if (watermark) {
             try {
-              const watermarkImg = await loadWatermarkImage();
-              drawWatermark(ctx, width, height, watermarkImg);
+              const [watermarkImgLight, watermarkImgDark] = await Promise.all([
+                loadWatermarkImage('light'),
+                loadWatermarkImage('dark')
+              ]);
+              drawWatermark(ctx, width, height, watermarkImgLight, watermarkImgDark);
             } catch (error) {
               // Senza filigrana disponibile, l'immagine si carica comunque.
               console.error(error);
