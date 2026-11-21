@@ -80,6 +80,20 @@
   .panel{display:none;}
   .panel.active{display:block;}
 
+  .social-info{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:0.9rem;}
+  .social-info b{color:var(--text);}
+  .social-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-bottom:22px;}
+  .social-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
+  .social-card.next{border-color:rgba(0,217,255,0.6);box-shadow:0 0 0 1px rgba(0,217,255,0.3);}
+  .social-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--panel-2);}
+  .social-card .body{padding:10px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .social-card .caption{font-size:0.8rem;color:var(--muted);white-space:pre-line;max-height:4.6em;overflow:hidden;flex:1;}
+  .social-card .caption.custom{color:var(--text);}
+  .badge{display:inline-block;font-size:0.72rem;padding:2px 8px;border-radius:999px;border:1px solid var(--border);color:var(--muted);}
+  .badge.next{color:var(--accent);border-color:rgba(0,217,255,0.5);}
+  .badge.done{color:var(--ok);border-color:rgba(74,222,128,0.4);}
+  .social-section-title{font-size:1rem;margin:18px 0 10px;}
+
   table{width:100%;border-collapse:collapse;font-size:0.88rem;}
   th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;}
   th{color:var(--muted);font-weight:600;white-space:nowrap;}
@@ -158,6 +172,7 @@
       <button class="tab-btn" data-tab="attendance">Presenze</button>
       <button class="tab-btn" data-tab="gallery">Galleria</button>
       <button class="tab-btn" data-tab="raduni">Raduni</button>
+      <button class="tab-btn" data-tab="social">Social</button>
       <button class="tab-btn" data-tab="medals" style="margin-left:auto;">Regole Medaglie</button>
     </nav>
 
@@ -243,6 +258,24 @@
         <span class="status" id="raduniStatus"></span>
       </div>
       <div class="table-wrap"><table id="raduniTable"></table></div>
+    </section>
+
+    <!-- SOCIAL -->
+    <section class="panel" id="panel-social">
+      <div class="toolbar">
+        <button class="btn-ghost" id="socialReloadBtn">Ricarica</button>
+        <button class="btn-ghost" id="socialDefaultBtn">Didascalia standard</button>
+        <button class="btn-primary" id="socialPublishBtn" style="margin-left:auto;">Pubblica ora la prossima</button>
+        <span class="status" id="socialStatus"></span>
+      </div>
+      <div class="social-info" id="socialInfo">Caricamento...</div>
+
+      <h3 class="social-section-title">Foto della galleria</h3>
+      <p class="muted small">Le foto escono in quest'ordine; finito il giro, si ricomincia dalla pubblicata meno di recente. Per caricarne di nuove usa la scheda Galleria.</p>
+      <div class="social-grid" id="socialGrid"></div>
+
+      <h3 class="social-section-title">Ultimi post</h3>
+      <div class="table-wrap"><table id="socialLogTable"></table></div>
     </section>
 
   </div>
@@ -380,6 +413,7 @@
     loadMissions();
     loadCalendar();
     loadRaduni();
+    loadSocial();
   }
 
 
@@ -1519,6 +1553,141 @@
 
   document.getElementById('raduniAddBtn').addEventListener('click', () => openRaduniEditor(null));
   document.getElementById('raduniReloadBtn').addEventListener('click', loadRaduni);
+
+
+  /* ============================================================
+     SOCIAL (pubblicazione automatica Facebook + Instagram)
+     Le foto sono quelle di images/gallery; didascalie e storico
+     vivono nei fogli "SocialDidascalie" e "SocialLog". La
+     pubblicazione automatica la fanno i trigger di Apps Script
+     (vedi admin/ISTRUZIONI-SOCIAL.md).
+     ============================================================ */
+
+  let socialData = null;
+
+  const SOCIAL_DAY_NAMES = {
+    MONDAY: 'lunedì', TUESDAY: 'martedì', WEDNESDAY: 'mercoledì', THURSDAY: 'giovedì',
+    FRIDAY: 'venerdì', SATURDAY: 'sabato', SUNDAY: 'domenica'
+  };
+
+  async function loadSocial() {
+    setStatus('socialStatus', 'Caricamento...', '');
+    try {
+      socialData = await callApi('getSocial', {});
+      renderSocial();
+      setStatus('socialStatus', '', '');
+    } catch (error) {
+      document.getElementById('socialInfo').textContent = 'Errore: ' + error.message;
+      setStatus('socialStatus', 'Errore: ' + error.message, 'err');
+    }
+  }
+
+  function renderSocial() {
+    const d = socialData;
+    const days = d.schedule.days.map(day => SOCIAL_DAY_NAMES[day] || day).join(', ');
+    const scheduleText = d.schedule.active
+      ? `<b style="color:var(--ok);">Attiva</b> — ${escapeHtml(days)} tra le ${d.schedule.hour}:00 e le ${d.schedule.hour + 1}:00`
+      : `<b style="color:var(--danger);">Non attiva</b> — per avviarla esegui <code>setupSocialSchedule</code> nell'editor di Apps Script`;
+
+    document.getElementById('socialInfo').innerHTML = `
+      <div>Pubblicazione automatica: ${scheduleText}</div>
+      <div>Prossima foto: <b>${escapeHtml(d.next || '—')}</b></div>
+      ${d.configured ? '' : '<div style="color:var(--danger);">Collegamento a Meta non configurato: mancano META_PAGE_ID, META_PAGE_TOKEN o META_IG_USER_ID nelle Proprietà dello script.</div>'}
+    `;
+
+    const grid = document.getElementById('socialGrid');
+    grid.innerHTML = d.files.map(file => {
+      const custom = d.captions[file];
+      const isNext = file === d.next;
+      const posted = d.lastPosted[file];
+      const badge = isNext
+        ? '<span class="badge next">Prossima</span>'
+        : posted ? `<span class="badge done">Pubblicata il ${escapeHtml(posted)}</span>` : '<span class="badge">Mai pubblicata</span>';
+
+      return `
+        <div class="social-card${isNext ? ' next' : ''}">
+          <img src="/images/gallery/${encodeURIComponent(file)}" alt="${escapeHtml(file)}" loading="lazy">
+          <div class="body">
+            <div style="display:flex;justify-content:space-between;gap:6px;align-items:center;">
+              <span class="small">${escapeHtml(file)}</span>${badge}
+            </div>
+            <div class="caption${custom ? ' custom' : ''}">${custom ? escapeHtml(custom) : 'Didascalia standard'}</div>
+            <button class="btn-ghost" data-social-caption="${escapeHtml(file)}">Didascalia</button>
+          </div>
+        </div>
+      `;
+    }).join('') || '<p class="muted">Nessuna foto nella galleria.</p>';
+
+    grid.querySelectorAll('[data-social-caption]').forEach(btn => {
+      btn.addEventListener('click', () => openSocialCaptionEditor(btn.dataset.socialCaption));
+    });
+
+    const mark = id => id ? '<span style="color:var(--ok);">✓</span>' : '<span style="color:var(--danger);">✗</span>';
+    document.getElementById('socialLogTable').innerHTML = d.log.length ? `
+      <tr><th>Data</th><th>Foto</th><th>Facebook</th><th>Instagram</th><th>Errori</th></tr>
+      ${d.log.map(row => `
+        <tr>
+          <td>${escapeHtml(row.date)}</td>
+          <td>${escapeHtml(row.file)}</td>
+          <td>${mark(row.facebook)}</td>
+          <td>${mark(row.instagram)}</td>
+          <td class="small" style="color:var(--danger);">${escapeHtml(row.errors)}</td>
+        </tr>
+      `).join('')}
+    ` : '<tr><td class="muted">Nessun post ancora pubblicato.</td></tr>';
+  }
+
+  function openSocialCaptionEditor(file) {
+    const current = socialData.captions[file] || '';
+    const html = `
+      <img src="/images/gallery/${encodeURIComponent(file)}" alt="" style="width:100%;border-radius:8px;margin-bottom:10px;">
+      <label>Didascalia per ${escapeHtml(file)} (lascia vuoto per usare quella standard)</label>
+      <textarea id="sc_caption" rows="8" style="width:100%;">${escapeHtml(current)}</textarea>
+      <p class="muted small">Standard attuale:<br><span style="white-space:pre-line;">${escapeHtml(socialData.defaultCaption)}</span></p>
+    `;
+
+    openModal('Didascalia ' + file, html, async () => {
+      await callApi('saveSocialCaption', { file, caption: document.getElementById('sc_caption').value });
+      await loadSocial();
+    });
+  }
+
+  document.getElementById('socialDefaultBtn').addEventListener('click', () => {
+    if (!socialData) return;
+    const html = `
+      <label>Didascalia standard (usata per tutte le foto senza didascalia propria; lascia vuoto per ripristinare quella predefinita)</label>
+      <textarea id="sc_default" rows="8" style="width:100%;">${escapeHtml(socialData.defaultCaption)}</textarea>
+    `;
+    openModal('Didascalia standard', html, async () => {
+      await callApi('saveSocialDefaultCaption', { caption: document.getElementById('sc_default').value });
+      await loadSocial();
+    });
+  });
+
+  document.getElementById('socialPublishBtn').addEventListener('click', async () => {
+    if (!socialData) return;
+    if (!confirm(`Pubblicare adesso ${socialData.next} su Facebook e Instagram?`)) return;
+
+    const btn = document.getElementById('socialPublishBtn');
+    btn.disabled = true;
+    setStatus('socialStatus', 'Pubblicazione in corso (fino a 1 minuto)...', '');
+
+    try {
+      const result = await callApi('publishSocialNow', {});
+      setStatus(
+        'socialStatus',
+        result.errors ? `Pubblicata con errori: ${result.errors}` : `${result.file} pubblicata su Facebook e Instagram.`,
+        result.errors ? 'err' : 'ok'
+      );
+      await loadSocial();
+    } catch (error) {
+      setStatus('socialStatus', 'Errore: ' + error.message, 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('socialReloadBtn').addEventListener('click', loadSocial);
 
 })();
 </script>
