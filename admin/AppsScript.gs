@@ -94,6 +94,8 @@ function routeAction(action, payload) {
     case 'saveSocialCaption':        return saveSocialCaption(payload);
     case 'saveSocialDefaultCaption': return saveSocialDefaultCaption(payload);
     case 'publishSocialNow':         return publishSocialNow();
+    case 'saveSocialSchedule':       return saveSocialSchedule(payload);
+    case 'saveSocialQueue':          return saveSocialQueue(payload);
 
     default:
       throw new Error('Azione sconosciuta: ' + action);
@@ -659,33 +661,40 @@ function uploadImageToGithub(payload) {
 
    Pubblica a rotazione le foto della galleria del sito
    (images/gallery) sulla Pagina Facebook e sull'account
-   Instagram professionale, nei giorni e all'ora indicati in
-   SOCIAL_SCHEDULE. Vedi admin/ISTRUZIONI-SOCIAL.md.
+   Instagram professionale, nei giorni e all'ora scelti dal
+   portale admin (scheda Social). Vedi admin/ISTRUZIONI-SOCIAL.md.
 
    Proprietà dello script richieste (mai nel codice):
      META_PAGE_ID      ID della Pagina Facebook
      META_PAGE_TOKEN   token della Pagina (permanente)
      META_IG_USER_ID   ID dell'account Instagram professionale
-   Facoltativa:
+   Gestite dal portale (facoltative):
      SOCIAL_CAPTION    didascalia standard (altrimenti quella sotto)
+     SOCIAL_SCHEDULE   giorni e ora (altrimenti SOCIAL_SCHEDULE_DEFAULT)
 
-   Fogli usati:
+   Fogli usati (gestiti dal portale, creati da soli se mancano):
      "SocialLog"        storico: data, foto, ID post, errori
-                        (creato da solo se manca)
-     "SocialDidascalie" facoltativo: colonna A = nome file
-                        (es. 3.webp), colonna B = testo specifico
-                        per quella foto; in fondo viene sempre
-                        aggiunta la didascalia standard
+     "SocialDidascalie" colonna A = nome file (es. 3.webp),
+                        colonna B = testo specifico per quella foto;
+                        in fondo viene sempre aggiunta la standard
+     "SocialCoda"       colonna A = foto nell'ordine di uscita,
+                        colonna B = esclusa (TRUE = mai sui social)
    ---------------------------------------------------------- */
 
 const SOCIAL_SITE_URL = 'https://www.flyingdonkeysvirtualsquadron.it';
 const SOCIAL_GRAPH_URL = 'https://graph.facebook.com/v27.0';
 
-/* Giorni e ora di pubblicazione (fuso orario del progetto Apps Script) */
-const SOCIAL_SCHEDULE = {
+/*
+ * Giorni e ora di pubblicazione PREDEFINITI (fuso orario del progetto).
+ * Dal portale admin (scheda Social) si possono cambiare: la scelta
+ * viene salvata nella proprietà SOCIAL_SCHEDULE e ha la precedenza.
+ */
+const SOCIAL_SCHEDULE_DEFAULT = {
   days: ['MONDAY', 'WEDNESDAY', 'FRIDAY'],
   hour: 18
 };
+
+const SOCIAL_WEEKDAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
 
 const SOCIAL_DEFAULT_CAPTION =
   'Flying Donkeys Virtual Squadron ✈️\n' +
@@ -695,29 +704,43 @@ const SOCIAL_DEFAULT_CAPTION =
 
 const SOCIAL_SHEETS = {
   log: 'SocialLog',
-  captions: 'SocialDidascalie'
+  captions: 'SocialDidascalie',
+  queue: 'SocialCoda'
 };
 
 
+/* Programmazione attuale: quella salvata dal portale, o la predefinita. */
+function getSocialSchedule() {
+  const saved = PropertiesService.getScriptProperties().getProperty('SOCIAL_SCHEDULE');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed.days) && parsed.days.length && parsed.hour >= 0 && parsed.hour <= 23) return parsed;
+    } catch (error) { /* valore rovinato: si usa la predefinita */ }
+  }
+  return SOCIAL_SCHEDULE_DEFAULT;
+}
+
+
 /*
- * Da eseguire UNA volta a mano dall'editor (menu a tendina in alto
- * → setupSocialSchedule → Esegui). Crea/aggiorna i trigger settimanali.
- * Rieseguila se cambi SOCIAL_SCHEDULE.
+ * Attiva (o aggiorna) la pubblicazione automatica con la programmazione
+ * attuale. Si può eseguire dall'editor oppure dal portale admin.
  */
 function setupSocialSchedule() {
   stopSocialSchedule();
 
-  SOCIAL_SCHEDULE.days.forEach(day => {
+  const schedule = getSocialSchedule();
+  schedule.days.forEach(day => {
     ScriptApp.newTrigger('publishNextSocialPost')
       .timeBased()
       .onWeekDay(ScriptApp.WeekDay[day])
-      .atHour(SOCIAL_SCHEDULE.hour)
+      .atHour(schedule.hour)
       .create();
   });
 
   getSocialLogSheet();
-  Logger.log('Pubblicazione programmata: ' + SOCIAL_SCHEDULE.days.join(', ') +
-    ' tra le ' + SOCIAL_SCHEDULE.hour + ':00 e le ' + (SOCIAL_SCHEDULE.hour + 1) + ':00.');
+  Logger.log('Pubblicazione programmata: ' + schedule.days.join(', ') +
+    ' tra le ' + schedule.hour + ':00 e le ' + (schedule.hour + 1) + ':00.');
 }
 
 
@@ -803,20 +826,51 @@ function socialImageUrl(file) {
 
 
 /*
- * Sceglie la foto: prima quelle mai pubblicate (in ordine 1, 2, 3...),
- * poi, finito il giro, quella pubblicata meno di recente.
- * Le foto nuove aggiunte alla galleria entrano da sole in coda.
+ * Sceglie la foto: prima quelle mai pubblicate, nell'ordine della coda
+ * (decisa dal portale admin, altrimenti 1, 2, 3...), poi, finito il
+ * giro, quella pubblicata meno di recente. Le foto escluse non escono
+ * mai. Le foto nuove aggiunte alla galleria entrano da sole in fondo.
  */
-function pickNextGalleryFile(files, lastPosted) {
+function pickNextGalleryFile(files, lastPosted, queue) {
   files = files || getGalleryFiles();
   lastPosted = lastPosted || getSocialLastPosted();
+  queue = queue || getSocialQueue(files);
 
   if (!files.length) throw new Error('La galleria del sito è vuota.');
 
-  const never = files.filter(f => !lastPosted[f]);
+  const candidates = queue.order.filter(f => queue.excluded.indexOf(f) === -1);
+  if (!candidates.length) throw new Error('Tutte le foto della galleria sono escluse dai social.');
+
+  const never = candidates.filter(f => !lastPosted[f]);
   if (never.length) return never[0];
 
-  return files.slice().sort((a, b) => lastPosted[a] - lastPosted[b])[0];
+  // Array.sort è stabile: a parità di data resta l'ordine della coda.
+  return candidates.slice().sort((a, b) => lastPosted[a] - lastPosted[b])[0];
+}
+
+
+/*
+ * Coda dal foglio SocialCoda (colonna A = foto nell'ordine voluto,
+ * colonna B = esclusa). Solo le foto ancora presenti in galleria;
+ * quelle non elencate si aggiungono in fondo, nell'ordine del sito.
+ */
+function getSocialQueue(files) {
+  files = files || getGalleryFiles();
+  const order = [];
+  const excluded = [];
+
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SOCIAL_SHEETS.queue);
+  if (sheet) {
+    sheet.getDataRange().getValues().slice(1).forEach(r => {
+      const file = String(r[0]).trim();
+      if (!file || files.indexOf(file) === -1 || order.indexOf(file) !== -1) return;
+      order.push(file);
+      if (r[1] === true || String(r[1]).toUpperCase() === 'TRUE') excluded.push(file);
+    });
+  }
+
+  files.forEach(f => { if (order.indexOf(f) === -1) order.push(f); });
+  return { order: order, excluded: excluded };
 }
 
 
@@ -897,21 +951,72 @@ function getSocialOverview() {
   const props = PropertiesService.getScriptProperties();
   const triggers = ScriptApp.getProjectTriggers()
     .filter(t => t.getHandlerFunction() === 'publishNextSocialPost');
+  const schedule = getSocialSchedule();
+  const queue = getSocialQueue(files);
+
+  let next = '';
+  try { next = pickNextGalleryFile(files, lastPostedDates, queue); } catch (error) { /* nessuna foto disponibile */ }
 
   return {
     files: files,
-    next: files.length ? pickNextGalleryFile(files, lastPostedDates) : '',
+    order: queue.order,
+    excluded: queue.excluded,
+    next: next,
     lastPosted: lastPosted,
     captions: getSocialCaptionMap(),
     defaultCaption: getSocialDefaultCaption(),
     log: log,
     schedule: {
       active: triggers.length > 0,
-      days: SOCIAL_SCHEDULE.days,
-      hour: SOCIAL_SCHEDULE.hour
+      days: schedule.days,
+      hour: schedule.hour
     },
     configured: !!(props.getProperty('META_PAGE_ID') && props.getProperty('META_PAGE_TOKEN') && props.getProperty('META_IG_USER_ID'))
   };
+}
+
+
+/*
+ * Salva giorni/ora e attiva o ferma la pubblicazione automatica.
+ * payload: { days: ['MONDAY', ...], hour: 18, active: true }
+ */
+function saveSocialSchedule(payload) {
+  const days = (payload.days || []).filter(d => SOCIAL_WEEKDAYS.indexOf(d) !== -1);
+  const hour = Number(payload.hour);
+
+  if (!days.length) throw new Error('Scegli almeno un giorno.');
+  if (!(hour >= 0 && hour <= 23) || Math.floor(hour) !== hour) throw new Error('Ora non valida.');
+
+  // Giorni in ordine di settimana, senza doppioni.
+  const sorted = SOCIAL_WEEKDAYS.filter(d => days.indexOf(d) !== -1);
+  PropertiesService.getScriptProperties()
+    .setProperty('SOCIAL_SCHEDULE', JSON.stringify({ days: sorted, hour: hour }));
+
+  if (payload.active) setupSocialSchedule();
+  else stopSocialSchedule();
+
+  return { days: sorted, hour: hour, active: !!payload.active };
+}
+
+
+/*
+ * Salva l'ordine della coda e le foto escluse.
+ * payload: { order: ['3.webp', '1.webp', ...], excluded: ['7.webp'] }
+ */
+function saveSocialQueue(payload) {
+  const order = (payload.order || []).map(String);
+  const excluded = (payload.excluded || []).map(String);
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SOCIAL_SHEETS.queue);
+  if (!sheet) sheet = ss.insertSheet(SOCIAL_SHEETS.queue);
+
+  const rows = [['Foto', 'Esclusa']].concat(order.map(f => [f, excluded.indexOf(f) !== -1]));
+  sheet.clearContents();
+  sheet.getRange(1, 1, rows.length, 2).setValues(rows);
+  sheet.setFrozenRows(1);
+
+  return { saved: order.length };
 }
 
 

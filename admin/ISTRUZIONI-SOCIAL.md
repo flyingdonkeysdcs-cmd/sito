@@ -2,12 +2,14 @@
 
 Lo script `admin/AppsScript.gs` (sezione **SOCIAL**) pubblica a rotazione
 le foto della galleria del sito (`images/gallery`) sulla Pagina Facebook e
-sull'account Instagram professionale: **lunedì, mercoledì e venerdì tra le
-18 e le 19**.
+sull'account Instagram professionale, nei giorni e all'ora scelti dalla
+scheda **Social** del portale admin (predefinito: lunedì, mercoledì e
+venerdì tra le 18 e le 19).
 
-- Prima pubblica le foto mai uscite (1, 2, 3...), poi ricomincia dalla
-  pubblicata meno di recente. Le foto nuove caricate in galleria entrano
-  in coda da sole.
+- Prima pubblica le foto mai uscite, nell'ordine della coda decisa nel
+  portale, poi ricomincia dalla pubblicata meno di recente. Le foto
+  escluse non escono mai. Le foto nuove caricate in galleria entrano in
+  fondo alla coda da sole.
 - Instagram accetta solo JPEG: le foto `.webp` vengono convertite dal sito
   stesso (`/api/social-image`), che le ritaglia anche se troppo larghe.
 - Ogni pubblicazione viene registrata nel foglio **SocialLog**. Se qualcosa
@@ -97,20 +99,33 @@ scritti nel codice** e non finiscono su GitHub.
    didascalia userebbe, senza pubblicare nulla.
 4. Per una prova vera: scegli **publishNextSocialPost** → **Esegui**.
    Controlla la Pagina, Instagram e il foglio **SocialLog**.
-5. Scegli **setupSocialSchedule** → **Esegui**. Da qui in poi pubblica da
-   solo. Non serve rifare la distribuzione dell'app web.
+5. Attiva la pubblicazione automatica: dal portale admin (scheda
+   **Social** → "Pubblicazione automatica attiva" → **Salva
+   programmazione**) oppure eseguendo **setupSocialSchedule**.
 
-Per fermare tutto: esegui **stopSocialSchedule**.
+Ogni volta che aggiorni lo script, rifai anche la distribuzione dell'app
+web (**Gestisci distribuzioni → matita → Nuova versione**), altrimenti il
+portale continua a usare la versione precedente.
 
-## Personalizzare
+Per fermare tutto: togli la spunta nel portale e salva, oppure esegui
+**stopSocialSchedule**.
 
-- **Didascalia per una singola foto**: crea un foglio chiamato
-  **SocialDidascalie** con il nome del file in colonna A (es. `3.webp`) e
-  il testo in colonna B. In fondo viene sempre aggiunta la didascalia
-  standard (link e hashtag); le foto senza riga usano solo quella.
-  Più comodo: scheda **Social** del portale admin.
-- **Didascalia standard**: proprietà `SOCIAL_CAPTION`, oppure modifica
-  `SOCIAL_DEFAULT_CAPTION` nello script.
-- **Giorni e ora**: modifica `SOCIAL_SCHEDULE` nello script (giorni in
-  inglese: `MONDAY` ... `SUNDAY`), salva e riesegui **setupSocialSchedule**.
-- **Rifare una foto subito**: cancella la sua riga nel foglio SocialLog.
+## Personalizzare (scheda Social del portale admin)
+
+- **Giorni e ora**: spunta i giorni, scegli l'ora e premi **Salva
+  programmazione**. Il minuto esatto dentro l'ora lo decide Google.
+- **Ordine di uscita**: nella sezione "In coda" sposta le foto con ◀ ▶ o
+  trascinandole, poi **Salva coda**. Accanto a ogni foto c'è la data
+  indicativa di pubblicazione.
+- **Escludere una foto**: pulsante **Escludi** (poi **Salva coda**). Resta
+  nella galleria del sito ma non va sui social; **Includi** la rimette.
+- **Didascalia per una singola foto**: pulsante **Didascalia**. In fondo
+  viene sempre aggiunta la didascalia standard (link e hashtag).
+- **Didascalia standard**: pulsante **Didascalia standard** in alto.
+- **Pubblicare subito**: **Pubblica ora la prossima**.
+
+I dati stanno nel foglio Google (fogli **SocialCoda**, **SocialDidascalie**,
+**SocialLog**) e nelle Proprietà dello script (`SOCIAL_SCHEDULE`,
+`SOCIAL_CAPTION`): si possono modificare anche a mano, ma il portale è più
+comodo. Per ripubblicare una foto già uscita come se fosse nuova,
+cancella le sue righe nel foglio SocialLog.
