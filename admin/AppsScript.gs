@@ -672,7 +672,7 @@ function uploadImageToGithub(payload) {
    ---------------------------------------------------------- */
 
 const SOCIAL_SITE_URL = 'https://www.flyingdonkeysvirtualsquadron.it';
-const SOCIAL_GRAPH_URL = 'https://graph.facebook.com/v23.0';
+const SOCIAL_GRAPH_URL = 'https://graph.facebook.com/v27.0';
 
 /* Giorni e ora di pubblicazione (fuso orario del progetto Apps Script) */
 const SOCIAL_SCHEDULE = {
