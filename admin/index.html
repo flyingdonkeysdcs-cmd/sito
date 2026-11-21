@@ -1611,7 +1611,7 @@
             <div style="display:flex;justify-content:space-between;gap:6px;align-items:center;">
               <span class="small">${escapeHtml(file)}</span>${badge}
             </div>
-            <div class="caption${custom ? ' custom' : ''}">${custom ? escapeHtml(custom) : 'Didascalia standard'}</div>
+            <div class="caption${custom ? ' custom' : ''}">${custom ? escapeHtml(custom) + '\n+ didascalia standard' : 'Solo didascalia standard'}</div>
             <button class="btn-ghost" data-social-caption="${escapeHtml(file)}">Didascalia</button>
           </div>
         </div>
@@ -1641,9 +1641,9 @@
     const current = socialData.captions[file] || '';
     const html = `
       <img src="/images/gallery/${encodeURIComponent(file)}" alt="" style="width:100%;border-radius:8px;margin-bottom:10px;">
-      <label>Didascalia per ${escapeHtml(file)} (lascia vuoto per usare quella standard)</label>
+      <label>Didascalia per ${escapeHtml(file)} (la didascalia standard viene aggiunta sempre in fondo; lascia vuoto per usare solo quella)</label>
       <textarea id="sc_caption" rows="8" style="width:100%;">${escapeHtml(current)}</textarea>
-      <p class="muted small">Standard attuale:<br><span style="white-space:pre-line;">${escapeHtml(socialData.defaultCaption)}</span></p>
+      <p class="muted small">Didascalia standard, aggiunta in fondo:<br><span style="white-space:pre-line;">${escapeHtml(socialData.defaultCaption)}</span></p>
     `;
 
     openModal('Didascalia ' + file, html, async () => {
@@ -1655,7 +1655,7 @@
   document.getElementById('socialDefaultBtn').addEventListener('click', () => {
     if (!socialData) return;
     const html = `
-      <label>Didascalia standard (usata per tutte le foto senza didascalia propria; lascia vuoto per ripristinare quella predefinita)</label>
+      <label>Didascalia standard (aggiunta in fondo a ogni post, dopo il testo specifico della foto; lascia vuoto per ripristinare quella predefinita)</label>
       <textarea id="sc_default" rows="8" style="width:100%;">${escapeHtml(socialData.defaultCaption)}</textarea>
     `;
     openModal('Didascalia standard', html, async () => {
