@@ -646,3 +646,264 @@ function uploadImageToGithub(payload) {
     url: 'https://www.flyingdonkeysvirtualsquadron.it/' + path
   };
 }
+
+
+/* ----------------------------------------------------------
+   SOCIAL — PUBBLICAZIONE AUTOMATICA FACEBOOK + INSTAGRAM
+
+   Pubblica a rotazione le foto della galleria del sito
+   (images/gallery) sulla Pagina Facebook e sull'account
+   Instagram professionale, nei giorni e all'ora indicati in
+   SOCIAL_SCHEDULE. Vedi admin/ISTRUZIONI-SOCIAL.md.
+
+   Proprietà dello script richieste (mai nel codice):
+     META_PAGE_ID      ID della Pagina Facebook
+     META_PAGE_TOKEN   token della Pagina (permanente)
+     META_IG_USER_ID   ID dell'account Instagram professionale
+   Facoltativa:
+     SOCIAL_CAPTION    didascalia standard (altrimenti quella sotto)
+
+   Fogli usati:
+     "SocialLog"        storico: data, foto, ID post, errori
+                        (creato da solo se manca)
+     "SocialDidascalie" facoltativo: colonna A = nome file
+                        (es. 3.webp), colonna B = didascalia
+                        specifica per quella foto
+   ---------------------------------------------------------- */
+
+const SOCIAL_SITE_URL = 'https://www.flyingdonkeysvirtualsquadron.it';
+const SOCIAL_GRAPH_URL = 'https://graph.facebook.com/v27.0';
+
+/* Giorni e ora di pubblicazione (fuso orario del progetto Apps Script) */
+const SOCIAL_SCHEDULE = {
+  days: ['MONDAY', 'WEDNESDAY', 'FRIDAY'],
+  hour: 18
+};
+
+const SOCIAL_DEFAULT_CAPTION =
+  'Flying Donkeys Virtual Squadron ✈️\n' +
+  'Squadriglia virtuale italiana su DCS World. Unisciti a noi!\n' +
+  SOCIAL_SITE_URL + '\n\n' +
+  '#DCSWorld #FlyingDonkeys #flightsim #simulazionevolo #aviazione';
+
+const SOCIAL_SHEETS = {
+  log: 'SocialLog',
+  captions: 'SocialDidascalie'
+};
+
+
+/*
+ * Da eseguire UNA volta a mano dall'editor (menu a tendina in alto
+ * → setupSocialSchedule → Esegui). Crea/aggiorna i trigger settimanali.
+ * Rieseguila se cambi SOCIAL_SCHEDULE.
+ */
+function setupSocialSchedule() {
+  stopSocialSchedule();
+
+  SOCIAL_SCHEDULE.days.forEach(day => {
+    ScriptApp.newTrigger('publishNextSocialPost')
+      .timeBased()
+      .onWeekDay(ScriptApp.WeekDay[day])
+      .atHour(SOCIAL_SCHEDULE.hour)
+      .create();
+  });
+
+  getSocialLogSheet();
+  Logger.log('Pubblicazione programmata: ' + SOCIAL_SCHEDULE.days.join(', ') +
+    ' tra le ' + SOCIAL_SCHEDULE.hour + ':00 e le ' + (SOCIAL_SCHEDULE.hour + 1) + ':00.');
+}
+
+
+/* Ferma la pubblicazione automatica. */
+function stopSocialSchedule() {
+  ScriptApp.getProjectTriggers()
+    .filter(t => t.getHandlerFunction() === 'publishNextSocialPost')
+    .forEach(t => ScriptApp.deleteTrigger(t));
+}
+
+
+/* Prova senza pubblicare: mostra nel log quale foto e didascalia userebbe. */
+function previewNextSocialPost() {
+  const file = pickNextGalleryFile();
+  Logger.log('Prossima foto: ' + file);
+  Logger.log('URL immagine: ' + socialImageUrl(file));
+  Logger.log('Didascalia:\n' + getSocialCaption(file));
+}
+
+
+/* Chiamata dai trigger (o a mano, per pubblicare subito). */
+function publishNextSocialPost() {
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(30000)) return;
+
+  try {
+    const config = getSocialConfig();
+    const file = pickNextGalleryFile();
+    const imageUrl = socialImageUrl(file);
+    const caption = getSocialCaption(file);
+
+    // Verifica che la conversione in JPEG funzioni prima di pubblicare.
+    const check = UrlFetchApp.fetch(imageUrl, { muteHttpExceptions: true });
+    if (check.getResponseCode() !== 200) {
+      throw new Error('Immagine non disponibile (' + check.getResponseCode() + '): ' + imageUrl);
+    }
+
+    let facebookId = '';
+    let instagramId = '';
+    const errors = [];
+
+    try {
+      facebookId = publishToFacebook(config, imageUrl, caption);
+    } catch (error) {
+      errors.push('Facebook: ' + (error.message || error));
+    }
+
+    try {
+      instagramId = publishToInstagram(config, imageUrl, caption);
+    } catch (error) {
+      errors.push('Instagram: ' + (error.message || error));
+    }
+
+    getSocialLogSheet().appendRow([new Date(), file, facebookId, instagramId, errors.join(' | ')]);
+
+    // Fa fallire l'esecuzione: Google manda una mail di errore al proprietario.
+    if (errors.length) throw new Error(errors.join(' | '));
+
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+
+function getSocialConfig() {
+  const props = PropertiesService.getScriptProperties();
+  const config = {
+    pageId: props.getProperty('META_PAGE_ID'),
+    pageToken: props.getProperty('META_PAGE_TOKEN'),
+    igUserId: props.getProperty('META_IG_USER_ID')
+  };
+
+  if (!config.pageId || !config.pageToken || !config.igUserId) {
+    throw new Error('Proprietà dello script mancanti: META_PAGE_ID, META_PAGE_TOKEN, META_IG_USER_ID (vedi ISTRUZIONI-SOCIAL.md).');
+  }
+  return config;
+}
+
+
+function socialImageUrl(file) {
+  return SOCIAL_SITE_URL + '/api/social-image?file=' + encodeURIComponent(file);
+}
+
+
+/*
+ * Sceglie la foto: prima quelle mai pubblicate (in ordine 1, 2, 3...),
+ * poi, finito il giro, quella pubblicata meno di recente.
+ * Le foto nuove aggiunte alla galleria entrano da sole in coda.
+ */
+function pickNextGalleryFile() {
+  const response = UrlFetchApp.fetch(SOCIAL_SITE_URL + '/api/gallery');
+  const files = JSON.parse(response.getContentText())
+    .map(img => String(img.src).split('/').pop());
+
+  if (!files.length) throw new Error('La galleria del sito è vuota.');
+
+  const lastPosted = {};
+  getSocialLogSheet().getDataRange().getValues().slice(1).forEach(row => {
+    const date = row[0];
+    const file = String(row[1]);
+    const ok = row[2] || row[3]; // almeno una piattaforma riuscita
+    if (file && ok && date instanceof Date) {
+      if (!lastPosted[file] || date > lastPosted[file]) lastPosted[file] = date;
+    }
+  });
+
+  const never = files.filter(f => !lastPosted[f]);
+  if (never.length) return never[0];
+
+  return files.slice().sort((a, b) => lastPosted[a] - lastPosted[b])[0];
+}
+
+
+function getSocialCaption(file) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SOCIAL_SHEETS.captions);
+  if (sheet) {
+    const row = sheet.getDataRange().getValues().find(r => String(r[0]).trim() === file);
+    if (row && String(row[1]).trim()) return String(row[1]).trim();
+  }
+  return PropertiesService.getScriptProperties().getProperty('SOCIAL_CAPTION') || SOCIAL_DEFAULT_CAPTION;
+}
+
+
+function getSocialLogSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SOCIAL_SHEETS.log);
+  if (!sheet) {
+    sheet = ss.insertSheet(SOCIAL_SHEETS.log);
+    sheet.appendRow(['Data', 'Foto', 'Post Facebook', 'Post Instagram', 'Errori']);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+
+/* Chiamate alla Graph API di Meta: restituiscono il JSON o lanciano l'errore. */
+function metaPost(path, params) {
+  const response = UrlFetchApp.fetch(SOCIAL_GRAPH_URL + path, {
+    method: 'post',
+    payload: params,
+    muteHttpExceptions: true
+  });
+  const data = JSON.parse(response.getContentText());
+  if (data.error) throw new Error(data.error.message);
+  return data;
+}
+
+
+function metaGet(path, params) {
+  const query = Object.keys(params)
+    .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+    .join('&');
+  const response = UrlFetchApp.fetch(SOCIAL_GRAPH_URL + path + '?' + query, { muteHttpExceptions: true });
+  const data = JSON.parse(response.getContentText());
+  if (data.error) throw new Error(data.error.message);
+  return data;
+}
+
+
+function publishToFacebook(config, imageUrl, caption) {
+  const data = metaPost('/' + config.pageId + '/photos', {
+    url: imageUrl,
+    message: caption,
+    access_token: config.pageToken
+  });
+  return data.post_id || data.id;
+}
+
+
+/* Instagram: 1) crea il contenitore, 2) attende che sia pronto, 3) pubblica. */
+function publishToInstagram(config, imageUrl, caption) {
+  const container = metaPost('/' + config.igUserId + '/media', {
+    image_url: imageUrl,
+    caption: caption,
+    access_token: config.pageToken
+  });
+
+  for (let i = 0; i < 10; i++) {
+    const status = metaGet('/' + container.id, {
+      fields: 'status_code',
+      access_token: config.pageToken
+    }).status_code;
+
+    if (status === 'FINISHED') break;
+    if (status === 'ERROR' || status === 'EXPIRED') {
+      throw new Error('Instagram non ha accettato la foto (stato ' + status + ').');
+    }
+    Utilities.sleep(3000);
+  }
+
+  const published = metaPost('/' + config.igUserId + '/media_publish', {
+    creation_id: container.id,
+    access_token: config.pageToken
+  });
+  return published.id;
+}
