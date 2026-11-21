@@ -93,6 +93,20 @@
   .badge.next{color:var(--accent);border-color:rgba(0,217,255,0.5);}
   .badge.done{color:var(--ok);border-color:rgba(74,222,128,0.4);}
   .social-section-title{font-size:1rem;margin:18px 0 10px;}
+  .social-card.excluded img{opacity:0.45;filter:grayscale(1);}
+  .social-card[draggable="true"]{cursor:grab;}
+  .social-card.dragging{opacity:0.4;}
+  .social-card.drop-target{border-color:var(--accent);border-style:dashed;}
+  .social-actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .social-actions button{padding:6px 10px;font-size:0.8rem;}
+  .social-actions button:disabled{opacity:0.35;cursor:default;}
+  .social-schedule{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+  .social-days{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+  .social-day{display:inline-flex;align-items:center;gap:6px;margin:0;color:var(--text);font-size:0.85rem;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;cursor:pointer;}
+  .social-day input{width:auto;margin:0;}
+  .social-schedule-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .social-queue-bar{position:sticky;top:0;z-index:5;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:rgba(0,217,255,0.12);border:1px solid rgba(0,217,255,0.4);border-radius:10px;padding:10px 14px;margin-bottom:12px;}
+  .social-queue-bar[hidden]{display:none;}
 
   table{width:100%;border-collapse:collapse;font-size:0.88rem;}
   th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;}
@@ -270,9 +284,23 @@
       </div>
       <div class="social-info" id="socialInfo">Caricamento...</div>
 
-      <h3 class="social-section-title">Foto della galleria</h3>
-      <p class="muted small">Le foto escono in quest'ordine; finito il giro, si ricomincia dalla pubblicata meno di recente. Per caricarne di nuove usa la scheda Galleria.</p>
-      <div class="social-grid" id="socialGrid"></div>
+      <div class="social-queue-bar" id="socialQueueBar" hidden>
+        <span>Modifiche alla coda non salvate</span>
+        <button class="btn-primary" id="socialQueueSaveBtn">Salva coda</button>
+        <button class="btn-ghost" id="socialQueueUndoBtn">Annulla</button>
+      </div>
+
+      <h3 class="social-section-title">In coda <span class="muted small" id="socialQueueCount"></span></h3>
+      <p class="muted small">Foto mai pubblicate, nell'ordine di uscita. Cambia l'ordine con ◀ ▶ o trascinando le foto, poi premi "Salva coda". Le date sono indicative. Le foto nuove caricate in Galleria si aggiungono in fondo.</p>
+      <div class="social-grid" id="socialQueueGrid"></div>
+
+      <h3 class="social-section-title">Già pubblicate <span class="muted small" id="socialDoneCount"></span></h3>
+      <p class="muted small">Quando la coda finisce si riparte da qui, dalla pubblicata meno di recente.</p>
+      <div class="social-grid" id="socialDoneGrid"></div>
+
+      <h3 class="social-section-title">Escluse dai social <span class="muted small" id="socialExcludedCount"></span></h3>
+      <p class="muted small">Restano nella galleria del sito, ma non vengono mai pubblicate.</p>
+      <div class="social-grid" id="socialExcludedGrid"></div>
 
       <h3 class="social-section-title">Ultimi post</h3>
       <div class="table-wrap"><table id="socialLogTable"></table></div>
@@ -1564,16 +1592,25 @@
      ============================================================ */
 
   let socialData = null;
+  let socialOrder = [];          // tutte le foto, nell'ordine della coda
+  let socialExcluded = new Set(); // foto che non escono mai
+  let socialDirty = false;       // modifiche alla coda non ancora salvate
+  let socialDragFile = null;
 
-  const SOCIAL_DAY_NAMES = {
-    MONDAY: 'lunedì', TUESDAY: 'martedì', WEDNESDAY: 'mercoledì', THURSDAY: 'giovedì',
-    FRIDAY: 'venerdì', SATURDAY: 'sabato', SUNDAY: 'domenica'
-  };
+  const SOCIAL_DAYS = [
+    ['MONDAY', 'lun'], ['TUESDAY', 'mar'], ['WEDNESDAY', 'mer'], ['THURSDAY', 'gio'],
+    ['FRIDAY', 'ven'], ['SATURDAY', 'sab'], ['SUNDAY', 'dom']
+  ];
+  // Date.getDay(): 0 = domenica
+  const SOCIAL_JS_DAY = { SUNDAY: 0, MONDAY: 1, TUESDAY: 2, WEDNESDAY: 3, THURSDAY: 4, FRIDAY: 5, SATURDAY: 6 };
 
   async function loadSocial() {
     setStatus('socialStatus', 'Caricamento...', '');
     try {
       socialData = await callApi('getSocial', {});
+      socialOrder = (socialData.order || socialData.files).slice();
+      socialExcluded = new Set(socialData.excluded || []);
+      socialDirty = false;
       renderSocial();
       setStatus('socialStatus', '', '');
     } catch (error) {
@@ -1582,50 +1619,217 @@
     }
   }
 
+  /* "21/11/2026 14:40" -> "202611211440", per ordinare per data */
+  function socialSortableDate(text) {
+    const m = String(text || '').match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})/);
+    return m ? m[3] + m[2] + m[1] + m[4] + m[5] : '';
+  }
+
+  /* Le tre liste mostrate, calcolate dallo stato locale (anche non salvato). */
+  function socialLists() {
+    const posted = socialData.lastPosted;
+    const queue = socialOrder.filter(f => !socialExcluded.has(f) && !posted[f]);
+    const done = socialOrder.filter(f => !socialExcluded.has(f) && posted[f])
+      .sort((a, b) => socialSortableDate(posted[a]).localeCompare(socialSortableDate(posted[b])));
+    const excluded = socialOrder.filter(f => socialExcluded.has(f));
+    return { queue, done, excluded, next: queue[0] || done[0] || '' };
+  }
+
+  /* Prossime finestre di pubblicazione secondo la programmazione salvata. */
+  function socialNextSlots(count) {
+    const s = socialData.schedule;
+    if (!s.active || !s.days.length || count <= 0) return [];
+    const jsDays = s.days.map(d => SOCIAL_JS_DAY[d]);
+    const slots = [];
+    const now = new Date();
+    const cursor = new Date(now.getFullYear(), now.getMonth(), now.getDate(), s.hour, 0, 0);
+    for (let i = 0; slots.length < count && i < 400; i++) {
+      if (jsDays.includes(cursor.getDay()) && cursor > now) slots.push(new Date(cursor));
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    return slots;
+  }
+
+  function socialSlotLabel(date) {
+    const day = SOCIAL_DAYS[(date.getDay() + 6) % 7][1];
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    return `${day} ${dd}/${mm}, ${date.getHours()}-${date.getHours() + 1}`;
+  }
+
   function renderSocial() {
     const d = socialData;
-    const days = d.schedule.days.map(day => SOCIAL_DAY_NAMES[day] || day).join(', ');
-    const scheduleText = d.schedule.active
-      ? `<b style="color:var(--ok);">Attiva</b> — ${escapeHtml(days)} tra le ${d.schedule.hour}:00 e le ${d.schedule.hour + 1}:00`
-      : `<b style="color:var(--danger);">Non attiva</b> — per avviarla esegui <code>setupSocialSchedule</code> nell'editor di Apps Script`;
+    const lists = socialLists();
+    const s = d.schedule;
+    const dayNames = s.days.map(day => (SOCIAL_DAYS.find(x => x[0] === day) || [day, day])[1]).join(', ');
 
     document.getElementById('socialInfo').innerHTML = `
-      <div>Pubblicazione automatica: ${scheduleText}</div>
-      <div>Prossima foto: <b>${escapeHtml(d.next || '—')}</b></div>
+      <div>Pubblicazione automatica: ${s.active
+        ? `<b style="color:var(--ok);">Attiva</b> — ${escapeHtml(dayNames)} tra le ${s.hour}:00 e le ${s.hour + 1}:00`
+        : '<b style="color:var(--danger);">Non attiva</b>'}</div>
+      <div>Prossima foto: <b>${escapeHtml(lists.next || '—')}</b></div>
       ${d.configured ? '' : '<div style="color:var(--danger);">Collegamento a Meta non configurato: mancano META_PAGE_ID, META_PAGE_TOKEN o META_IG_USER_ID nelle Proprietà dello script.</div>'}
+
+      <div class="social-schedule">
+        <div class="small muted" style="margin-bottom:6px;">Programmazione (l'orario esatto dentro l'ora lo decide Google)</div>
+        <div class="social-days">
+          ${SOCIAL_DAYS.map(([key, label]) => `
+            <label class="social-day"><input type="checkbox" value="${key}" ${s.days.includes(key) ? 'checked' : ''}> ${label}</label>
+          `).join('')}
+        </div>
+        <div class="social-schedule-row">
+          <label class="small muted" for="socialHour">Ora</label>
+          <select id="socialHour">
+            ${Array.from({ length: 24 }, (_, h) => `<option value="${h}" ${h === s.hour ? 'selected' : ''}>${h}:00 – ${h + 1}:00</option>`).join('')}
+          </select>
+          <label class="social-day"><input type="checkbox" id="socialActive" ${s.active ? 'checked' : ''}> Pubblicazione automatica attiva</label>
+          <button class="btn-primary" id="socialScheduleSaveBtn">Salva programmazione</button>
+        </div>
+      </div>
     `;
+    document.getElementById('socialScheduleSaveBtn').addEventListener('click', saveSocialSchedule);
 
-    const grid = document.getElementById('socialGrid');
-    grid.innerHTML = d.files.map(file => {
-      const custom = d.captions[file];
-      const isNext = file === d.next;
-      const posted = d.lastPosted[file];
-      const badge = isNext
-        ? '<span class="badge next">Prossima</span>'
-        : posted ? `<span class="badge done">Pubblicata il ${escapeHtml(posted)}</span>` : '<span class="badge">Mai pubblicata</span>';
+    const slots = socialNextSlots(lists.queue.length);
 
-      return `
-        <div class="social-card${isNext ? ' next' : ''}">
-          <img src="/images/gallery/${encodeURIComponent(file)}" alt="${escapeHtml(file)}" loading="lazy">
-          <div class="body">
-            <div style="display:flex;justify-content:space-between;gap:6px;align-items:center;">
-              <span class="small">${escapeHtml(file)}</span>${badge}
-            </div>
-            <div class="caption${custom ? ' custom' : ''}">${custom ? escapeHtml(custom) + '\n+ didascalia standard' : 'Solo didascalia standard'}</div>
+    document.getElementById('socialQueueBar').hidden = !socialDirty;
+    document.getElementById('socialQueueCount').textContent = `(${lists.queue.length})`;
+    document.getElementById('socialDoneCount').textContent = `(${lists.done.length})`;
+    document.getElementById('socialExcludedCount').textContent = `(${lists.excluded.length})`;
+
+    document.getElementById('socialQueueGrid').innerHTML = lists.queue.map((file, i) =>
+      socialCardHtml(file, 'queue', {
+        position: i + 1,
+        first: i === 0,
+        last: i === lists.queue.length - 1,
+        slot: slots[i] ? socialSlotLabel(slots[i]) : ''
+      })
+    ).join('') || '<p class="muted small">Nessuna foto in coda: si ripartirà dalle già pubblicate.</p>';
+
+    document.getElementById('socialDoneGrid').innerHTML = lists.done.map((file, i) =>
+      socialCardHtml(file, 'done', { isNext: !lists.queue.length && i === 0 })
+    ).join('') || '<p class="muted small">Ancora nessuna.</p>';
+
+    document.getElementById('socialExcludedGrid').innerHTML = lists.excluded.map(file =>
+      socialCardHtml(file, 'excluded', {})
+    ).join('') || '<p class="muted small">Nessuna foto esclusa.</p>';
+
+    wireSocialCards();
+    renderSocialLog();
+  }
+
+  function socialCardHtml(file, section, info) {
+    const custom = socialData.captions[file];
+    const posted = socialData.lastPosted[file];
+    const isNext = section === 'queue' ? info.first : !!info.isNext;
+
+    let badge = '';
+    if (section === 'queue') badge = isNext ? '<span class="badge next">Prossima</span>' : `<span class="badge">#${info.position}</span>`;
+    if (section === 'done') badge = isNext ? '<span class="badge next">Prossima</span>' : `<span class="badge done">Pubblicata il ${escapeHtml(posted)}</span>`;
+    if (section === 'excluded') badge = '<span class="badge">Esclusa</span>';
+
+    const moveButtons = section === 'queue' ? `
+      <button class="btn-ghost" data-social-move="-1" data-file="${escapeHtml(file)}" title="Anticipa" ${info.first ? 'disabled' : ''}>◀</button>
+      <button class="btn-ghost" data-social-move="1" data-file="${escapeHtml(file)}" title="Posticipa" ${info.last ? 'disabled' : ''}>▶</button>
+    ` : '';
+
+    const excludeButton = section === 'excluded'
+      ? `<button class="btn-ghost" data-social-include="${escapeHtml(file)}">Includi</button>`
+      : `<button class="btn-ghost" data-social-exclude="${escapeHtml(file)}">Escludi</button>`;
+
+    return `
+      <div class="social-card${isNext ? ' next' : ''}${section === 'excluded' ? ' excluded' : ''}" ${section === 'queue' ? `draggable="true" data-drag-file="${escapeHtml(file)}"` : ''}>
+        <img src="/images/gallery/${encodeURIComponent(file)}" alt="${escapeHtml(file)}" loading="lazy" draggable="false">
+        <div class="body">
+          <div style="display:flex;justify-content:space-between;gap:6px;align-items:center;">
+            <span class="small">${escapeHtml(file)}</span>${badge}
+          </div>
+          ${info.slot ? `<div class="small" style="color:var(--accent);">≈ ${escapeHtml(info.slot)}</div>` : ''}
+          ${section === 'done' && isNext ? `<div class="small muted">Ultima volta: ${escapeHtml(posted)}</div>` : ''}
+          <div class="caption${custom ? ' custom' : ''}">${custom ? escapeHtml(custom) + '\n+ didascalia standard' : 'Solo didascalia standard'}</div>
+          <div class="social-actions">
+            ${moveButtons}
+            ${excludeButton}
             <button class="btn-ghost" data-social-caption="${escapeHtml(file)}">Didascalia</button>
           </div>
         </div>
-      `;
-    }).join('') || '<p class="muted">Nessuna foto nella galleria.</p>';
+      </div>
+    `;
+  }
 
-    grid.querySelectorAll('[data-social-caption]').forEach(btn => {
+  function markSocialDirty() {
+    socialDirty = true;
+    renderSocial();
+  }
+
+  /* Sposta una foto della coda di una posizione (fra le sole foto in coda). */
+  function moveSocialFile(file, step) {
+    const queue = socialLists().queue;
+    const target = queue[queue.indexOf(file) + step];
+    if (!target) return;
+    const a = socialOrder.indexOf(file);
+    const b = socialOrder.indexOf(target);
+    socialOrder[a] = target;
+    socialOrder[b] = file;
+    markSocialDirty();
+  }
+
+  /* Trascinamento: mette "file" al posto di "target", spostando gli altri. */
+  function dropSocialFile(file, target) {
+    if (!file || !target || file === target) return;
+    const queue = socialLists().queue;
+    const movingDown = queue.indexOf(file) < queue.indexOf(target);
+    socialOrder.splice(socialOrder.indexOf(file), 1);
+    const index = socialOrder.indexOf(target) + (movingDown ? 1 : 0);
+    socialOrder.splice(index, 0, file);
+    markSocialDirty();
+  }
+
+  function wireSocialCards() {
+    const panel = document.getElementById('panel-social');
+
+    panel.querySelectorAll('[data-social-move]').forEach(btn => {
+      btn.addEventListener('click', () => moveSocialFile(btn.dataset.file, Number(btn.dataset.socialMove)));
+    });
+    panel.querySelectorAll('[data-social-exclude]').forEach(btn => {
+      btn.addEventListener('click', () => { socialExcluded.add(btn.dataset.socialExclude); markSocialDirty(); });
+    });
+    panel.querySelectorAll('[data-social-include]').forEach(btn => {
+      btn.addEventListener('click', () => { socialExcluded.delete(btn.dataset.socialInclude); markSocialDirty(); });
+    });
+    panel.querySelectorAll('[data-social-caption]').forEach(btn => {
       btn.addEventListener('click', () => openSocialCaptionEditor(btn.dataset.socialCaption));
     });
 
+    panel.querySelectorAll('[data-drag-file]').forEach(card => {
+      card.addEventListener('dragstart', event => {
+        socialDragFile = card.dataset.dragFile;
+        event.dataTransfer.effectAllowed = 'move';
+        card.classList.add('dragging');
+      });
+      card.addEventListener('dragend', () => {
+        socialDragFile = null;
+        card.classList.remove('dragging');
+      });
+      card.addEventListener('dragover', event => {
+        if (!socialDragFile) return;
+        event.preventDefault();
+        card.classList.add('drop-target');
+      });
+      card.addEventListener('dragleave', () => card.classList.remove('drop-target'));
+      card.addEventListener('drop', event => {
+        event.preventDefault();
+        card.classList.remove('drop-target');
+        dropSocialFile(socialDragFile, card.dataset.dragFile);
+      });
+    });
+  }
+
+  function renderSocialLog() {
+    const log = socialData.log;
     const mark = id => id ? '<span style="color:var(--ok);">✓</span>' : '<span style="color:var(--danger);">✗</span>';
-    document.getElementById('socialLogTable').innerHTML = d.log.length ? `
+    document.getElementById('socialLogTable').innerHTML = log.length ? `
       <tr><th>Data</th><th>Foto</th><th>Facebook</th><th>Instagram</th><th>Errori</th></tr>
-      ${d.log.map(row => `
+      ${log.map(row => `
         <tr>
           <td>${escapeHtml(row.date)}</td>
           <td>${escapeHtml(row.file)}</td>
@@ -1637,6 +1841,57 @@
     ` : '<tr><td class="muted">Nessun post ancora pubblicato.</td></tr>';
   }
 
+  async function saveSocialSchedule() {
+    const days = Array.from(document.querySelectorAll('.social-days input:checked')).map(i => i.value);
+    const hour = Number(document.getElementById('socialHour').value);
+    const active = document.getElementById('socialActive').checked;
+
+    if (!days.length) {
+      setStatus('socialStatus', 'Scegli almeno un giorno.', 'err');
+      return;
+    }
+
+    const btn = document.getElementById('socialScheduleSaveBtn');
+    btn.disabled = true;
+    setStatus('socialStatus', 'Salvataggio programmazione...', '');
+
+    try {
+      await callApi('saveSocialSchedule', { days, hour, active });
+      socialData.schedule = { days, hour, active };
+      renderSocial();
+      setStatus('socialStatus', active ? 'Programmazione salvata e attiva.' : 'Programmazione salvata, pubblicazione automatica ferma.', 'ok');
+    } catch (error) {
+      setStatus('socialStatus', 'Errore: ' + error.message, 'err');
+      btn.disabled = false;
+    }
+  }
+
+  document.getElementById('socialQueueSaveBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('socialQueueSaveBtn');
+    btn.disabled = true;
+    setStatus('socialStatus', 'Salvataggio coda...', '');
+
+    try {
+      await callApi('saveSocialQueue', { order: socialOrder, excluded: Array.from(socialExcluded) });
+      socialData.order = socialOrder.slice();
+      socialData.excluded = Array.from(socialExcluded);
+      socialDirty = false;
+      renderSocial();
+      setStatus('socialStatus', 'Coda salvata.', 'ok');
+    } catch (error) {
+      setStatus('socialStatus', 'Errore: ' + error.message, 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('socialQueueUndoBtn').addEventListener('click', () => {
+    socialOrder = (socialData.order || socialData.files).slice();
+    socialExcluded = new Set(socialData.excluded || []);
+    socialDirty = false;
+    renderSocial();
+  });
+
   function openSocialCaptionEditor(file) {
     const current = socialData.captions[file] || '';
     const html = `
@@ -1647,8 +1902,12 @@
     `;
 
     openModal('Didascalia ' + file, html, async () => {
-      await callApi('saveSocialCaption', { file, caption: document.getElementById('sc_caption').value });
-      await loadSocial();
+      const caption = document.getElementById('sc_caption').value.trim();
+      await callApi('saveSocialCaption', { file, caption });
+      // Aggiorna solo la didascalia: non perde le modifiche alla coda non salvate.
+      if (caption) socialData.captions[file] = caption;
+      else delete socialData.captions[file];
+      renderSocial();
     });
   }
 
@@ -1659,14 +1918,24 @@
       <textarea id="sc_default" rows="8" style="width:100%;">${escapeHtml(socialData.defaultCaption)}</textarea>
     `;
     openModal('Didascalia standard', html, async () => {
-      await callApi('saveSocialDefaultCaption', { caption: document.getElementById('sc_default').value });
-      await loadSocial();
+      const result = await callApi('saveSocialDefaultCaption', { caption: document.getElementById('sc_default').value });
+      socialData.defaultCaption = result.defaultCaption;
+      renderSocial();
     });
   });
 
   document.getElementById('socialPublishBtn').addEventListener('click', async () => {
     if (!socialData) return;
-    if (!confirm(`Pubblicare adesso ${socialData.next} su Facebook e Instagram?`)) return;
+    if (socialDirty) {
+      alert('Prima salva (o annulla) le modifiche alla coda.');
+      return;
+    }
+    const next = socialLists().next;
+    if (!next) {
+      alert('Nessuna foto da pubblicare.');
+      return;
+    }
+    if (!confirm(`Pubblicare adesso ${next} su Facebook e Instagram?`)) return;
 
     const btn = document.getElementById('socialPublishBtn');
     btn.disabled = true;
@@ -1687,7 +1956,10 @@
     }
   });
 
-  document.getElementById('socialReloadBtn').addEventListener('click', loadSocial);
+  document.getElementById('socialReloadBtn').addEventListener('click', () => {
+    if (socialDirty && !confirm('Ci sono modifiche alla coda non salvate: ricaricare e perderle?')) return;
+    loadSocial();
+  });
 
 })();
 </script>
