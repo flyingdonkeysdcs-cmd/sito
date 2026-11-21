@@ -12,6 +12,7 @@
      - Regole medagliere (foglio "RegoleMedaglie")
      - Mission Log (foglio "AAR")
      - Eventi calendario (stessi calendari del sito)
+     - Social: didascalie e pubblicazione Facebook/Instagram
 
    Sicurezza: una password condivisa, salvata come "Proprietà
    dello script" (mai nel codice, mai su GitHub). Ogni richiesta
@@ -88,6 +89,11 @@ function routeAction(action, payload) {
     case 'uploadImage':          return uploadImageToGithub(payload);
 
     case 'recordAttendance':     return recordAttendance(payload);
+
+    case 'getSocial':                return getSocialOverview();
+    case 'saveSocialCaption':        return saveSocialCaption(payload);
+    case 'saveSocialDefaultCaption': return saveSocialDefaultCaption(payload);
+    case 'publishSocialNow':         return publishSocialNow();
 
     default:
       throw new Error('Azione sconosciuta: ' + action);
@@ -800,22 +806,11 @@ function socialImageUrl(file) {
  * poi, finito il giro, quella pubblicata meno di recente.
  * Le foto nuove aggiunte alla galleria entrano da sole in coda.
  */
-function pickNextGalleryFile() {
-  const response = UrlFetchApp.fetch(SOCIAL_SITE_URL + '/api/gallery');
-  const files = JSON.parse(response.getContentText())
-    .map(img => String(img.src).split('/').pop());
+function pickNextGalleryFile(files, lastPosted) {
+  files = files || getGalleryFiles();
+  lastPosted = lastPosted || getSocialLastPosted();
 
   if (!files.length) throw new Error('La galleria del sito è vuota.');
-
-  const lastPosted = {};
-  getSocialLogSheet().getDataRange().getValues().slice(1).forEach(row => {
-    const date = row[0];
-    const file = String(row[1]);
-    const ok = row[2] || row[3]; // almeno una piattaforma riuscita
-    if (file && ok && date instanceof Date) {
-      if (!lastPosted[file] || date > lastPosted[file]) lastPosted[file] = date;
-    }
-  });
 
   const never = files.filter(f => !lastPosted[f]);
   if (never.length) return never[0];
@@ -824,13 +819,159 @@ function pickNextGalleryFile() {
 }
 
 
-function getSocialCaption(file) {
+/* Nomi dei file in images/gallery, nello stesso ordine del sito. */
+function getGalleryFiles() {
+  const response = UrlFetchApp.fetch(SOCIAL_SITE_URL + '/api/gallery');
+  return JSON.parse(response.getContentText())
+    .map(img => String(img.src).split('/').pop());
+}
+
+
+/* { "3.webp": Date ultima pubblicazione riuscita (almeno una piattaforma) } */
+function getSocialLastPosted() {
+  const lastPosted = {};
+  getSocialLogSheet().getDataRange().getValues().slice(1).forEach(row => {
+    const date = row[0];
+    const file = String(row[1]);
+    const ok = row[2] || row[3];
+    if (file && ok && date instanceof Date) {
+      if (!lastPosted[file] || date > lastPosted[file]) lastPosted[file] = date;
+    }
+  });
+  return lastPosted;
+}
+
+
+/* { "3.webp": "didascalia specifica" } dal foglio SocialDidascalie */
+function getSocialCaptionMap() {
+  const map = {};
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SOCIAL_SHEETS.captions);
   if (sheet) {
-    const row = sheet.getDataRange().getValues().find(r => String(r[0]).trim() === file);
-    if (row && String(row[1]).trim()) return String(row[1]).trim();
+    sheet.getDataRange().getValues().forEach(r => {
+      const file = String(r[0]).trim();
+      const caption = String(r[1]).trim();
+      if (file && caption) map[file] = caption;
+    });
   }
+  return map;
+}
+
+
+function getSocialDefaultCaption() {
   return PropertiesService.getScriptProperties().getProperty('SOCIAL_CAPTION') || SOCIAL_DEFAULT_CAPTION;
+}
+
+
+function getSocialCaption(file) {
+  return getSocialCaptionMap()[file] || getSocialDefaultCaption();
+}
+
+
+/* ---------- Azioni del portale admin (scheda "Social") ---------- */
+
+function getSocialOverview() {
+  const tz = Session.getScriptTimeZone();
+  const fmt = d => Utilities.formatDate(d, tz, 'dd/MM/yyyy HH:mm');
+
+  const files = getGalleryFiles();
+  const lastPostedDates = getSocialLastPosted();
+  const lastPosted = {};
+  Object.keys(lastPostedDates).forEach(f => { lastPosted[f] = fmt(lastPostedDates[f]); });
+
+  const log = getSocialLogSheet().getDataRange().getValues().slice(1)
+    .filter(row => row[1])
+    .map(row => ({
+      date: row[0] instanceof Date ? fmt(row[0]) : String(row[0]),
+      file: String(row[1]),
+      facebook: String(row[2] || ''),
+      instagram: String(row[3] || ''),
+      errors: String(row[4] || '')
+    }))
+    .reverse()
+    .slice(0, 30);
+
+  const props = PropertiesService.getScriptProperties();
+  const triggers = ScriptApp.getProjectTriggers()
+    .filter(t => t.getHandlerFunction() === 'publishNextSocialPost');
+
+  return {
+    files: files,
+    next: files.length ? pickNextGalleryFile(files, lastPostedDates) : '',
+    lastPosted: lastPosted,
+    captions: getSocialCaptionMap(),
+    defaultCaption: getSocialDefaultCaption(),
+    log: log,
+    schedule: {
+      active: triggers.length > 0,
+      days: SOCIAL_SCHEDULE.days,
+      hour: SOCIAL_SCHEDULE.hour
+    },
+    configured: !!(props.getProperty('META_PAGE_ID') && props.getProperty('META_PAGE_TOKEN') && props.getProperty('META_IG_USER_ID'))
+  };
+}
+
+
+/* Didascalia di una foto: testo vuoto = torna a quella standard. */
+function saveSocialCaption(payload) {
+  const file = String(payload.file || '').trim();
+  const caption = String(payload.caption || '').trim();
+  if (!file) throw new Error('Foto non specificata.');
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SOCIAL_SHEETS.captions);
+  if (!sheet) {
+    sheet = ss.insertSheet(SOCIAL_SHEETS.captions);
+    sheet.appendRow(['Foto', 'Didascalia']);
+    sheet.setFrozenRows(1);
+  }
+
+  const values = sheet.getDataRange().getValues();
+  const index = values.findIndex(r => String(r[0]).trim() === file);
+
+  if (index >= 0) {
+    if (caption) sheet.getRange(index + 1, 2).setValue(caption);
+    else sheet.deleteRow(index + 1);
+  } else if (caption) {
+    sheet.appendRow([file, caption]);
+  }
+
+  return { file: file, caption: caption };
+}
+
+
+/* Didascalia standard: testo vuoto = torna a quella scritta nello script. */
+function saveSocialDefaultCaption(payload) {
+  const caption = String(payload.caption || '').trim();
+  const props = PropertiesService.getScriptProperties();
+  if (caption) props.setProperty('SOCIAL_CAPTION', caption);
+  else props.deleteProperty('SOCIAL_CAPTION');
+  return { defaultCaption: getSocialDefaultCaption() };
+}
+
+
+/* "Pubblica ora": pubblica la prossima foto e restituisce l'esito. */
+function publishSocialNow() {
+  const before = getSocialLogSheet().getLastRow();
+  let failure = '';
+
+  try {
+    publishNextSocialPost();
+  } catch (error) {
+    failure = String(error.message || error);
+  }
+
+  const sheet = getSocialLogSheet();
+  if (sheet.getLastRow() === before) {
+    throw new Error(failure || 'Pubblicazione già in corso, riprova tra un minuto.');
+  }
+
+  const row = sheet.getRange(sheet.getLastRow(), 1, 1, 5).getValues()[0];
+  return {
+    file: String(row[1]),
+    facebook: String(row[2] || ''),
+    instagram: String(row[3] || ''),
+    errors: String(row[4] || '')
+  };
 }
 
 
