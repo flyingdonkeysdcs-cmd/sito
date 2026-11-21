@@ -106,7 +106,9 @@ Per fermare tutto: esegui **stopSocialSchedule**.
 
 - **Didascalia per una singola foto**: crea un foglio chiamato
   **SocialDidascalie** con il nome del file in colonna A (es. `3.webp`) e
-  la didascalia in colonna B. Le foto senza riga usano quella standard.
+  il testo in colonna B. In fondo viene sempre aggiunta la didascalia
+  standard (link e hashtag); le foto senza riga usano solo quella.
+  Più comodo: scheda **Social** del portale admin.
 - **Didascalia standard**: proprietà `SOCIAL_CAPTION`, oppure modifica
   `SOCIAL_DEFAULT_CAPTION` nello script.
 - **Giorni e ora**: modifica `SOCIAL_SCHEDULE` nello script (giorni in

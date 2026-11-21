@@ -673,8 +673,9 @@ function uploadImageToGithub(payload) {
      "SocialLog"        storico: data, foto, ID post, errori
                         (creato da solo se manca)
      "SocialDidascalie" facoltativo: colonna A = nome file
-                        (es. 3.webp), colonna B = didascalia
-                        specifica per quella foto
+                        (es. 3.webp), colonna B = testo specifico
+                        per quella foto; in fondo viene sempre
+                        aggiunta la didascalia standard
    ---------------------------------------------------------- */
 
 const SOCIAL_SITE_URL = 'https://www.flyingdonkeysvirtualsquadron.it';
@@ -862,8 +863,11 @@ function getSocialDefaultCaption() {
 }
 
 
+/* Testo specifico della foto (se c'è) + didascalia standard in fondo. */
 function getSocialCaption(file) {
-  return getSocialCaptionMap()[file] || getSocialDefaultCaption();
+  const custom = getSocialCaptionMap()[file];
+  const standard = getSocialDefaultCaption();
+  return custom ? custom + '\n\n' + standard : standard;
 }
 
 
